@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatApp", "ChatApp.csproj", "{88289D4E-10FD-4940-8D22-D0D8BB79BE8B}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ChatApp.Database", "ChatApp.Database\ChatApp.Database.sqlproj", "{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88289D4E-10FD-4940-8D22-D0D8BB79BE8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88289D4E-10FD-4940-8D22-D0D8BB79BE8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88289D4E-10FD-4940-8D22-D0D8BB79BE8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88289D4E-10FD-4940-8D22-D0D8BB79BE8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA2D104-74CE-4CE8-8ECE-9823B21EDE41}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F779196F-B943-4C86-9B4C-8CE612416BAF}
+	EndGlobalSection
+EndGlobal
