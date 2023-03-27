@@ -133,15 +133,15 @@ namespace ChatApp
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "MainApp";
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "MainApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer(npmScript: "start");
-                }
-            });
+            //    if (env.IsDevelopment())
+            //    {
+            //        spa.UseAngularCliServer(npmScript: "start");
+            //    }
+            //});
 
             // Uncomment this to enable template app.
 
