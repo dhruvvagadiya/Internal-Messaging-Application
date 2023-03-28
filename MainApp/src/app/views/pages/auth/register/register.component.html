@@ -9,32 +9,60 @@
         </div>
         <div class="col-md-8 pl-md-0">
           <div class="auth-form-wrapper px-4 py-5">
-            <a routerLink="." class="noble-ui-logo d-block mb-2">Noble<span>UI</span></a>
+            <a routerLink="." class="noble-ui-logo d-block mb-2">Chat<span>App</span></a>
             <h5 class="text-muted font-weight-normal mb-4">Create a free account.</h5>
+
+            <form (ngSubmit)="onRegister($event)" [formGroup]="signupForm">
+
               <div class="form-group">
                 <label for="exampleInputFirstName">First Name</label>
-                <input type="text" class="form-control" id="exampleInputFirstName" placeholder="First Name" [(ngModel)]="regModel.firstName">
+                <input type="text" class="form-control" id="exampleInputFirstName" placeholder="First Name"
+                  [(ngModel)]="regModel.firstName" name="fName" formControlName="fName">
+                <span *ngIf="signupForm.get('fName').invalid && signupForm.get('fName').touched" class="text-danger">* First Name is required</span>
+
               </div>
+
               <div class="form-group">
                 <label for="exampleInputLastName">Last Name</label>
-                <input type="text" class="form-control" id="exampleInputLastName" placeholder="Last Name" [(ngModel)]="regModel.lastName">
+                <input type="text" class="form-control" id="exampleInputLastName" placeholder="Last Name"
+                  [(ngModel)]="regModel.lastName" name="lName" formControlName="lName">
+                <span *ngIf="signupForm.get('lName').invalid && signupForm.get('lName').touched" class="text-danger">* Last Name is required</span>
+
               </div>
+
               <div class="form-group">
                 <label for="exampleInputUsername1">Username</label>
-                <input type="text" class="form-control" id="exampleInputUsername1" autocomplete="Username" placeholder="Username" [(ngModel)]="regModel.userName">
+                <input type="text" class="form-control" id="exampleInputUsername1" autocomplete="Username"
+                  placeholder="Username" [(ngModel)]="regModel.userName" name="username" formControlName="username">
+                <span *ngIf="signupForm.get('username').invalid && signupForm.get('username').touched" class="text-danger">* Username is required</span>
+
               </div>
+
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email" [(ngModel)]="regModel.email">
+                <input type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="Email"
+                  [(ngModel)]="regModel.email" formControlName="email">
+                <span *ngIf="signupForm.get('email').invalid && signupForm.get('email').touched" class="text-danger">* Please enter valid email
+                  address</span>
+
               </div>
+
               <div class="form-group">
                 <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" autocomplete="current-password" placeholder="Password" [(ngModel)]="regModel.password">
+                <input type="password" class="form-control" id="exampleInputPassword1" name="password"
+                  autocomplete="current-password" placeholder="Password" [(ngModel)]="regModel.password" formControlName="password">
+                <span *ngIf="signupForm.get('password').invalid && signupForm.get('password').touched" class="text-danger">* Password must be atleast 8
+                  characters long</span>
+
               </div>
               <div class="mt-3">
-                <button type="submit" class="btn btn-primary mr-2 mb-2 mb-md-0" [disabled]="disableRegButtton" (click)="onRegister($event)">Sign up</button>
+                <button type="submit" class="btn btn-primary mr-2 mb-2 mb-md-0"
+                  [disabled]="disableRegButtton || signupForm.invalid">Sign up</button>
               </div>
+              
               <a routerLink="/auth/login" class="d-block mt-3 text-muted">Already a user? Sign in</a>
+
+            </form>
           </div>
         </div>
       </div>

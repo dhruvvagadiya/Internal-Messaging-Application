@@ -7,6 +7,7 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

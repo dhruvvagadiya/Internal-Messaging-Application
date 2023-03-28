@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegistrationModel } from 'src/app/core/models/registration-model';
 import { AccountService } from 'src/app/core/service/account-service';
@@ -11,8 +12,11 @@ import Swal from 'sweetalert2'
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
+  
   regModel: RegistrationModel;
   disableRegButtton: boolean = false;
+  signupForm : FormGroup
+
   constructor(private router: Router, 
     private accountService: AccountService,
     private authService: AuthService) { }
@@ -25,6 +29,15 @@ export class RegisterComponent implements OnInit {
       email: '',
       password: '',
     }
+
+    this.signupForm = new FormGroup({
+      'fName' : new FormControl(null, [Validators.required]),
+      'lName' : new FormControl(null, [Validators.required]),
+      'username' : new FormControl(null, [Validators.required]),
+      'email' : new FormControl(null, [Validators.required, Validators.email]),
+      'password' : new FormControl(null, [Validators.required, Validators.minLength(8)])
+    });
+
   }
 
   onRegister(e) {

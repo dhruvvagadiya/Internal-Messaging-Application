@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/login-model';
 import { AccountService } from 'src/app/core/service/account-service';
@@ -14,6 +15,7 @@ export class LoginComponent implements OnInit {
 
   returnUrl: any;
   loginModel: LoginModel
+
   constructor(private router: Router,
     private route: ActivatedRoute,
     private accountService: AccountService,
@@ -29,9 +31,13 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  @ViewChild('loginForm') loginForm;
+
   onLoggedin(e) {
     e.preventDefault();
     console.log(this.loginModel);
+    console.log(this.loginForm);
+
     // Implementation of API.
     this.accountService.login(this.loginModel).subscribe((result: any) => {
       this.authService.login(result.token, () => {
