@@ -23,7 +23,7 @@ export class AuthService implements OnInit {
             this.user.next(this.getLoggedInUserInfo());
             callback();
         }
-
+        
     }
     logout(callback) {
         localStorage.removeItem('isLoggedin');

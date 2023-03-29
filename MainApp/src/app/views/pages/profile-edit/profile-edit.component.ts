@@ -57,10 +57,10 @@ export class ProfileEditComponent implements OnInit {
               timer: 1500,
               timerProgressBar: true,
             });
-
+            
             setTimeout(() => {
               this.router.navigate(["/"]);
-            }, 3000);
+            }, 1500);
 
           });
         },

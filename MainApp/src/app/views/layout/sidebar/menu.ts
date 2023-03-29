@@ -10,11 +10,11 @@ export const MENU: MenuItem[] = [
     icon: 'home',
     link: '/dashboard'
   },
-  // {
-  //   label: 'Chat',
-  //   icon: 'inbox',
-  //   link: '/apps/chat'
-  // },
+  {
+    label: 'Chat',
+    icon: 'inbox',
+    link: '/apps/chat'
+  },
   // {
   //   label: 'Calendar',
   //   icon: 'calendar',

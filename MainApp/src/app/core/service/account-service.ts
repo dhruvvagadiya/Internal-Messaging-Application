@@ -21,7 +21,7 @@ export class AccountService {
     }
 
     updateProfile(formData : FormData) {
-        return this.http.post(environment.apiUrl + "/account/updateprofile", formData);
+        return this.http.put(environment.apiUrl + "/account/updateprofile", formData);
     }
 
     getImage(){

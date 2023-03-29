@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using ChatApp.Business.Helpers;
@@ -68,7 +64,7 @@ namespace ChatApp.Controllers
             return BadRequest(new { Message = "User Already Exists. Please use different email and UserName." });
         }
 
-        [HttpPost("UpdateProfile")]
+        [HttpPut("UpdateProfile")]
         public IActionResult UpdateProfile([FromForm] UpdateModel updateModel, [FromHeader] string authorization)
         {
 
@@ -137,10 +133,10 @@ namespace ChatApp.Controllers
                     };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-            _config["Jwt:Issuer"],
-            claims,
-            expires: DateTime.Now.AddMinutes(120),
-            signingCredentials: credentials);
+                _config["Jwt:Issuer"],
+                claims,
+                expires: DateTime.Now.AddSeconds(120),
+                signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

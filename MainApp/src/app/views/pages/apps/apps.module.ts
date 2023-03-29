@@ -14,12 +14,12 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SimplemdeModule, SIMPLEMDE_CONFIG } from 'ng2-simplemde'
 
 import { AppsComponent } from './apps.component';
-import { CalendarComponent } from './calendar/calendar.component';
 import { ChatComponent } from './chat/chat.component';
-import { EmailComponent } from './email/email.component';
-import { InboxComponent } from './email/inbox/inbox.component';
-import { ReadComponent } from './email/read/read.component';
-import { ComposeComponent } from './email/compose/compose.component';
+// import { CalendarComponent } from './calendar/calendar.component';
+// import { EmailComponent } from './email/email.component';
+// import { InboxComponent } from './email/inbox/inbox.component';
+// import { ReadComponent } from './email/read/read.component';
+// import { ComposeComponent } from './email/compose/compose.component';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -43,46 +43,47 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'calendar',
+        redirectTo: 'chat',
         pathMatch: 'full',
       },
-      {
-        path: 'email',
-        component: EmailComponent,
-        children: [
-          {
-            path: '',
-            redirectTo: 'inbox',
-            pathMatch: 'full'
-          },
-          {
-            path: 'inbox',
-            component: InboxComponent
-          },
-          {
-            path: 'read',
-            component: ReadComponent
-          },
-          {
-            path: 'compose',
-            component: ComposeComponent
-          }
-        ]
-      },
+      // {
+      //   path: 'email',
+      //   component: EmailComponent,
+      //   children: [
+      //     {
+      //       path: '',
+      //       redirectTo: 'inbox',
+      //       pathMatch: 'full'
+      //     },
+      //     {
+      //       path: 'inbox',
+      //       component: InboxComponent
+      //     },
+      //     {
+      //       path: 'read',
+      //       component: ReadComponent
+      //     },
+      //     {
+      //       path: 'compose',
+      //       component: ComposeComponent
+      //     }
+      //   ]
+      // },
       {
         path: 'chat',
         component: ChatComponent
       },
-      {
-        path: 'calendar',
-        component: CalendarComponent
-      },
+      // {
+      //   path: 'calendar',
+      //   component: CalendarComponent
+      // },
     ]
   }
 ]
 
 @NgModule({
-  declarations: [EmailComponent, ChatComponent, CalendarComponent, AppsComponent, InboxComponent, ReadComponent, ComposeComponent],
+  // declarations: [EmailComponent, ChatComponent, CalendarComponent, AppsComponent, InboxComponent, ReadComponent, ComposeComponent],
+  declarations: [ChatComponent, AppsComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
