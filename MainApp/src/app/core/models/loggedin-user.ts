@@ -4,4 +4,5 @@ export interface LoggedInUser
     lastName?: string,
     email?:string,
     userName?: string
+    imageUrl? : string
 }

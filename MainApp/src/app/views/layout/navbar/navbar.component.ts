@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/service/auth-service';
 import Swal from 'sweetalert2'
 import { LoggedInUser } from 'src/app/core/models/loggedin-user';
+import { AccountService } from 'src/app/core/service/account-service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,19 +12,40 @@ import { LoggedInUser } from 'src/app/core/models/loggedin-user';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+
   loggedInUser: LoggedInUser
+  thumbnail: any;
+
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
     private router: Router,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+    private accountService : AccountService,
+  ) {
 
-  ngOnInit(): void {
-    this.loggedInUser = this.authService.getLoggedInUserInfo();
-    console.log(this.loggedInUser);
   }
 
+  ngOnInit(): void {
+    this.authService.user.subscribe(data => {
+      this.loggedInUser = data;
+    });
+
+    this.loggedInUser = this.authService.getLoggedInUserInfo();
+    
+    this.accountService.getImage().subscribe(
+      (res) => {
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+           this.thumbnail = reader.result;
+        }, false);
+     
+        if (res) {
+          reader.readAsDataURL(res);
+        }
+      }
+    );
+  }
   /**
    * Sidebar toggle on hamburger button click
    */

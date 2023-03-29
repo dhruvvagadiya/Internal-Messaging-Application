@@ -15,11 +15,13 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TokenInterceptor } from './core/helper/token-interceptor';
 import { AuthService } from './core/service/auth-service';
+import { ProfileEditComponent } from './views/pages/profile-edit/profile-edit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ErrorPageComponent,
+    ProfileEditComponent,
   ],
   imports: [
     BrowserModule,
