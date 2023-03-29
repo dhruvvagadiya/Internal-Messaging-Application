@@ -29,22 +29,34 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.authService.user.subscribe(data => {
       this.loggedInUser = data;
+
+      this.accountService.getImage().subscribe(
+        (res : Blob) => {
+          this.createImageFromBlob(res);
+        }
+      );
+      
     });
 
     this.loggedInUser = this.authService.getLoggedInUserInfo();
     
     this.accountService.getImage().subscribe(
-      (res) => {
-        let reader = new FileReader();
-        reader.addEventListener("load", () => {
-           this.thumbnail = reader.result;
-        }, false);
-     
-        if (res) {
-          reader.readAsDataURL(res);
-        }
+      (res : Blob) => {
+        this.createImageFromBlob(res);
       }
     );
+  }
+
+
+  createImageFromBlob(res : Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+        this.thumbnail = reader.result;
+    }, false);
+  
+    if (res) {
+      reader.readAsDataURL(res);
+    }
   }
   /**
    * Sidebar toggle on hamburger button click
