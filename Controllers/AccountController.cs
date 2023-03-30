@@ -106,13 +106,20 @@ namespace ChatApp.Controllers
 
             var user = _profileService.GetUser(user => user.UserName == username, false);
 
+            //if image is not set
+            if(user.ImageUrl == null)
+            {
+                return NoContent();
+            }
+
             var folderName = Path.Combine("Resources", "Images");
             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
             string path = Path.Combine(pathToSave, user.ImageUrl);
 
+            //if image does not exist
             if (!System.IO.File.Exists(path))
             {
-                return BadRequest();
+                return NoContent();
             }
 
             Byte[] b;

@@ -32,8 +32,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
       //change profile image also
       this.accountService.getImage().subscribe(
         (res : Blob) => {
+          if(res == null) return;
           this.createImageFromBlob(res);
-        }
+        }, error => {this.thumbnail = null}
       );
       
     });
@@ -43,8 +44,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
     
     this.accountService.getImage().subscribe(
       (res : Blob) => {
+        if(res == null) return;
         this.createImageFromBlob(res);
-      }
+      }, error => {}
     );
   }
 

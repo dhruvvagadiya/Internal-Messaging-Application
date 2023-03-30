@@ -32,8 +32,9 @@ export class NavbarComponent implements OnInit {
 
       this.accountService.getImage().subscribe(
         (res : Blob) => {
+          if(res == null) return;
           this.createImageFromBlob(res);
-        }
+        }, error => {}
       );
       
     });
@@ -42,8 +43,9 @@ export class NavbarComponent implements OnInit {
     
     this.accountService.getImage().subscribe(
       (res : Blob) => {
+        if(res == null) return;
         this.createImageFromBlob(res);
-      }
+      }, error => {}
     );
   }
 

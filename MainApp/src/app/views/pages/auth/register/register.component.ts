@@ -42,7 +42,8 @@ export class RegisterComponent implements OnInit {
 
   onRegister(e) {
     e.preventDefault();
-    console.log(this.regModel);
+    // console.log(this.regModel);
+    
     this.disableRegButtton = true; 
     this.accountService.register(this.regModel)
       .subscribe((data: any) => {

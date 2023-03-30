@@ -35,8 +35,8 @@ export class LoginComponent implements OnInit {
 
   onLoggedin(e) {
     e.preventDefault();
-    console.log(this.loginModel);
-    console.log(this.loginForm);
+    // console.log(this.loginModel);
+    // console.log(this.loginForm);
 
     // Implementation of API.
     this.accountService.login(this.loginModel).subscribe((result: any) => {
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
         });
         setTimeout(() => {
           this.router.navigate(["/"]);
-        }, (3000));
+        }, (2000));
         this.router.navigate([this.returnUrl]);
       });
     }, (err) => {
