@@ -53,7 +53,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         public Profile UpdateUser(UpdateModel updateModel, string username)
         {
             //check if username is valid or not
-            var user = this.context.Profiles.AsNoTracking().FirstOrDefault(e => e.UserName == username);
+            var user = GetUser(e => e.UserName == username);
 
             if (user == null)
             {
@@ -61,7 +61,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             }
 
             //check if other user with this mail already exists
-            var user2 = this.context.Profiles.AsNoTracking().FirstOrDefault(e => e.Email == updateModel.Email);
+            var user2 = GetUser(e => e.Email == updateModel.Email, tracked : false);
 
             if(user2.UserName != user.UserName)
             {
@@ -109,20 +109,35 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return user;
         }
 
-        public IEnumerable<Profile> GetAll(string name, string username)
+        public IEnumerable<GetUserModel> GetAll(string name, string username)
         {
             IQueryable<Profile> query = context.Set<Profile>();
 
             query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).Contains(name));
             query = query.Where(e => e.UserName != username);
 
-            return query.ToList();
+            IList<GetUserModel> list = new List<GetUserModel>();
+            foreach (var model in query.ToList())
+            {
+                list.Add(new GetUserModel()
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Id = model.Id
+                }); 
+            }
+
+            return list;
         }
 
         //get user by filter
-        public Profile GetUser(Expression<Func<Profile, bool>> filter)
+        public Profile GetUser(Expression<Func<Profile, bool>> filter, bool tracked = true)
         {
-            return context.Profiles.FirstOrDefault(filter);
+            if (tracked)
+            {
+                return context.Profiles.FirstOrDefault(filter);
+            }
+            return context.Profiles.AsNoTracking().FirstOrDefault(filter);
         }
 
         private bool CheckEmailOrUserNameExists(string userName, string email)

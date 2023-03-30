@@ -104,7 +104,7 @@ namespace ChatApp.Controllers
             string username = token.Claims.First(c => c.Type == "sub").Value;
             //string path = token.Claims.First(c => c.Type == "imageUrl").Value;
 
-            var user = _profileService.GetUser(user => user.UserName == username);
+            var user = _profileService.GetUser(user => user.UserName == username, false);
 
             var folderName = Path.Combine("Resources", "Images");
             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
