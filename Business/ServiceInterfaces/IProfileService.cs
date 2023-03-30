@@ -1,5 +1,6 @@
 ﻿using ChatApp.Context.EntityClasses;
-using ChatApp.Models;
+using ChatApp.Models.Auth;
+using ChatApp.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,6 @@ namespace ChatApp.Business.ServiceInterfaces
 
         Profile GetUser(Expression<Func<Profile, bool>> filter, bool tracked);
 
-        IEnumerable<GetUserModel> GetAll(string name, string username);
+        IEnumerable<ProfileDTO> GetAll(string name, string username);
     }
 }

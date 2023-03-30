@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatApp.Models
+namespace ChatApp.Models.Auth
 {
     public class RegisterModel
     {
@@ -16,10 +16,10 @@ namespace ChatApp.Models
         [Required]
         public string UserName { get; set; }
         [Required]
-        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage ="Please enter valid email address")]
+        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage = "Please enter valid email address")]
         public string Email { get; set; }
         [Required]
-        [MinLength(8, ErrorMessage ="Password must be at least 8 characters long")]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
         public string Password { get; set; }
     }
 }

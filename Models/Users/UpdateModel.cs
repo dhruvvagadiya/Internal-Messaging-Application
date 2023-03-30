@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace ChatApp.Models
+namespace ChatApp.Models.Users
 {
     public class UpdateModel
     {

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ChatApp.Models
+namespace ChatApp.Models.Users
 {
-    public class GetUserModel
+    public class ProfileDTO
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

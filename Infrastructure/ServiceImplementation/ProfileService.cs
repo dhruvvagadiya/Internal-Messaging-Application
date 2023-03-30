@@ -2,7 +2,8 @@
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
-using ChatApp.Models;
+using ChatApp.Models.Auth;
+using ChatApp.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -109,17 +110,17 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return user;
         }
 
-        public IEnumerable<GetUserModel> GetAll(string name, string username)
+        public IEnumerable<ProfileDTO> GetAll(string name, string username)
         {
             IQueryable<Profile> query = context.Set<Profile>();
 
             query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).Contains(name));
             query = query.Where(e => e.UserName != username);
 
-            IList<GetUserModel> list = new List<GetUserModel>();
+            IList<ProfileDTO> list = new List<ProfileDTO>();
             foreach (var model in query.ToList())
             {
-                list.Add(new GetUserModel()
+                list.Add(new ProfileDTO()
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
