@@ -29,16 +29,33 @@
                     </div>
                   </div>
                 </div>
-                <form class="search-form">
-                  <div class="input-group border rounded-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text border-0 rounded-sm">
-                        <i class="feather icon-search icon-sm cursor-pointer"></i>
+
+                <div>
+                  <form class="search-form">
+                    <div class="input-group border rounded-sm">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text border-0 rounded-sm">
+                          <i class="feather icon-search icon-sm cursor-pointer"></i>
+                        </div>
                       </div>
+                      <input type="text" class="form-control  border-0 rounded-sm" (input)="onInput($event)" id="searchForm" placeholder="Search here...">
                     </div>
-                    <input type="text" class="form-control  border-0 rounded-sm" id="searchForm" placeholder="Search here...">
+                  </form>
+
+                  <div class="position-absolute mt-2" *ngIf="openMenu && userMatched.length > 0" clickOutside (clickOutside)="hideMenu()">
+                    <ul class="list-group">
+                      <li class="list-group-item bg-white" *ngFor="let user of userMatched">
+                        <a href="" (click)="false" class="d-flex align-items-center">
+                          <div class="d-flex justify-content-between mt-2">
+                              <h6 class="text-body">{{user.firstName}} {{user.lastName}}</h6>
+                          </div>
+                        </a>
+                      </li>
+                    </ul>
                   </div>
-                </form>
+
+                </div>
+
               </div>
               <div class="aside-body">
                 <ul ngbNav #defaultNav="ngbNav" [(activeId)]="defaultNavActiveId" class="nav-tabs mt-3">
@@ -75,24 +92,6 @@
                       </div>
                     </ng-template>
                   </li>  <!-- End chat tab-->
-
-                  <li [ngbNavItem]="2">
-                    <a ngbNavLink>
-                      <div class="d-flex flex-row flex-lg-column flex-xl-row align-items-center">
-                        <i class="feather icon-phone-call icon-xs mr-sm-2 mr-lg-0 mr-xl-2 mb-md-1 mb-xl-0"></i>
-                        <p class="d-none d-sm-block">Calls</p>
-                      </div>
-                    </a>
-                  </li> <!-- End calls tab-->
-
-                  <li [ngbNavItem]="3">
-                    <a ngbNavLink>
-                      <div class="d-flex flex-row flex-lg-column flex-xl-row align-items-center">
-                        <i class="feather icon-users icon-xs mr-sm-2 mr-lg-0 mr-xl-2 mb-md-1 mb-xl-0"></i>
-                        <p class="d-none d-sm-block">Contacts</p>
-                      </div>
-                    </a>
-                  </li> <!-- End contacts tab-->
                 </ul>
                 <div [ngbNavOutlet]="defaultNav" class="mt-3"></div>
 

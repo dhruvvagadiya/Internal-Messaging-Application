@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
+
 import { LoggedInUser } from 'src/app/core/models/loggedin-user';
 import { AccountService } from 'src/app/core/service/account-service';
 import { AuthService } from 'src/app/core/service/auth-service';
@@ -13,6 +14,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
   defaultNavActiveId = 1;
   loggedInUser: LoggedInUser
   thumbnail: any;
+  timeOutId;
+  userMatched = [];
+  openMenu = false;
 
   constructor(
     private accountService : AccountService,
@@ -20,9 +24,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
+
+    //changed user on update
     this.authService.user.subscribe(data => {
       this.loggedInUser = data;
 
+      //change profile image also
       this.accountService.getImage().subscribe(
         (res : Blob) => {
           this.createImageFromBlob(res);
@@ -31,6 +38,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
       
     });
     
+    //get initial values
     this.loggedInUser = this.authService.getLoggedInUserInfo();
     
     this.accountService.getImage().subscribe(
@@ -51,7 +59,43 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   }
 
+  //hide menu
+  hideMenu(){
+    this.openMenu = false;
+  }
 
+  //debouncing of request
+  searchUsers (event) {
+
+    if(this.timeOutId){
+      clearTimeout(this.timeOutId);
+    }
+
+    this.timeOutId = setTimeout(() => {
+      this.accountService.getUsers(event.target.value).subscribe(
+        (res : {data : []}) => {
+          this.userMatched = res.data;
+        }
+      )
+    }, 1000);
+
+  }
+
+  //get users on input
+  onInput(event){
+
+    //if no string is entered
+    if(event.target.value === null || event.target.value.length === 0){
+      this.userMatched = [];
+      clearTimeout(this.timeOutId);
+      return;
+    }
+
+    this.openMenu = true;
+    this.searchUsers(event);
+  }
+
+  //generate image from response
   createImageFromBlob(res : Blob) {
     let reader = new FileReader();
     reader.addEventListener("load", () => {

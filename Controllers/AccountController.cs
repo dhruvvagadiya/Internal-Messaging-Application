@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -103,7 +105,10 @@ namespace ChatApp.Controllers
             //string path = token.Claims.First(c => c.Type == "imageUrl").Value;
 
             var user = _profileService.GetUser(user => user.UserName == username);
-            string path = user.ImageUrl;
+
+            var folderName = Path.Combine("Resources", "Images");
+            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+            string path = Path.Combine(pathToSave, user.ImageUrl);
 
             if (!System.IO.File.Exists(path))
             {
@@ -115,6 +120,14 @@ namespace ChatApp.Controllers
             return File(b, "image/jpeg");
         }
 
+        [HttpGet("GetUsers/{name}")]
+        public IActionResult GetUsers(string? name, [FromHeader] string authorization)
+        {
+            var token = GetToken(authorization.Split()[1]);
+            string username = token.Claims.First(c => c.Type == "sub").Value;
+            var userList = _profileService.GetAll(name.ToUpper().Trim(), username);
+            return  Ok(new {data = userList});
+        }
         #endregion
 
         #region Methods

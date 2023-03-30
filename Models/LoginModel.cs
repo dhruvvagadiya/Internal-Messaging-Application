@@ -11,6 +11,7 @@ namespace ChatApp.Models
         [Required]
         public string Username { get; set; }
         [Required]
+        [RegularExpression(@"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$", ErrorMessage = "Please enter valid email address")]
         public string EmailAddress { get; set; }
         [Required]
         public string Password { get; set; }

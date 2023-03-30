@@ -42,6 +42,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     CreatedAt = DateTime.UtcNow,
                     ProfileType = ProfileType.User
                 };
+
+                newUser.LastUpdatedAt = DateTime.Now;
                 context.Profiles.Add(newUser);
                 context.SaveChanges();
             }
@@ -80,9 +82,9 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
                 //delete old image to update with new one
                 if(user.ImageUrl != null) {
-                    if (System.IO.File.Exists(user.ImageUrl))
+                    if (System.IO.File.Exists(Path.Combine(pathToSave, user.ImageUrl)))
                     {
-                        System.IO.File.Delete(user.ImageUrl);
+                        System.IO.File.Delete(Path.Combine(pathToSave, user.ImageUrl));
                     }
                 }
 
@@ -93,17 +95,28 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 }
 
                 //update image url
-                user.ImageUrl = dbPath;
+                user.ImageUrl = fileName + extension;
 
             }
 
             user.FirstName = updateModel.FirstName;
             user.LastName = updateModel.LastName;
+            user.LastUpdatedAt = DateTime.Now;
 
             context.Profiles.Update(user);
             context.SaveChanges();
 
             return user;
+        }
+
+        public IEnumerable<Profile> GetAll(string name, string username)
+        {
+            IQueryable<Profile> query = context.Set<Profile>();
+
+            query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).Contains(name));
+            query = query.Where(e => e.UserName != username);
+
+            return query.ToList();
         }
 
         //get user by filter

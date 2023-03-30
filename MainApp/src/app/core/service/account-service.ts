@@ -27,4 +27,8 @@ export class AccountService {
     getImage(){
         return this.http.get(environment.apiUrl + "/account/getimage", { responseType: 'blob' });
     }
+
+    getUsers(name : string){
+        return this.http.get(environment.apiUrl + "/account/getusers/" + name);
+    }
 }
