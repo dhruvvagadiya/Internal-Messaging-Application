@@ -17,5 +17,6 @@ namespace ChatApp.Context
         /// Gets or sets Answers.
         /// </summary>
         public virtual DbSet<Profile> Profiles { get; set; }
+        public virtual DbSet<Chat> Chats { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace ChatApp.Models.Auth
         [Required]
         public string UserName { get; set; }
         [Required]
-        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage = "Please enter valid email address")]
+        [EmailAddress(ErrorMessage = "Please enter valid email address")]
         public string Email { get; set; }
         [Required]
         [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]

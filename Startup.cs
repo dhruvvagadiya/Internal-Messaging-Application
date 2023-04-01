@@ -93,7 +93,9 @@ namespace ChatApp
             });
 
             // Service Registration
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IChatService, ChatService>();
 
             // In production, the Angular files will be served from this directory
 

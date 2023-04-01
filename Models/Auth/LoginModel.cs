@@ -11,7 +11,7 @@ namespace ChatApp.Models.Auth
         [Required]
         public string Username { get; set; }
         [Required]
-        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage = "Please enter valid email address")]
+        [EmailAddress(ErrorMessage ="Please enter valid email address")]
         public string EmailAddress { get; set; }
         [Required]
         public string Password { get; set; }

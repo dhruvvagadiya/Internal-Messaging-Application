@@ -5,6 +5,8 @@ import { AuthService } from 'src/app/core/service/auth-service';
 import Swal from 'sweetalert2'
 import { LoggedInUser } from 'src/app/core/models/loggedin-user';
 import { AccountService } from 'src/app/core/service/account-service';
+import { UserService } from 'src/app/core/service/user-service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -14,52 +16,28 @@ import { AccountService } from 'src/app/core/service/account-service';
 export class NavbarComponent implements OnInit {
 
   loggedInUser: LoggedInUser
-  thumbnail: any;
+  thumbnail: string = "https://via.placeholder.com/30x30";
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
     private router: Router,
     private authService: AuthService,
-    private accountService : AccountService,
+    private userService : UserService
   ) {
 
   }
 
   ngOnInit(): void {
-    this.authService.user.subscribe(data => {
-      this.loggedInUser = data;
-
-      this.accountService.getImage().subscribe(
-        (res : Blob) => {
-          if(res == null) return;
-          this.createImageFromBlob(res);
-        }, error => {}
-      );
-      
-    });
-
-    this.loggedInUser = this.authService.getLoggedInUserInfo();
     
-    this.accountService.getImage().subscribe(
-      (res : Blob) => {
-        if(res == null) return;
-        this.createImageFromBlob(res);
-      }, error => {}
-    );
+    this.userService.user.subscribe(e => {
+      this.loggedInUser = e;
+      this.thumbnail = this.userService.getProfileUrl(e);
+    })
+    
+    this.loggedInUser = this.authService.getLoggedInUserInfo();
   }
 
-
-  createImageFromBlob(res : Blob) {
-    let reader = new FileReader();
-    reader.addEventListener("load", () => {
-        this.thumbnail = reader.result;
-    }, false);
-  
-    if (res) {
-      reader.readAsDataURL(res);
-    }
-  }
   /**
    * Sidebar toggle on hamburger button click
    */

@@ -1,0 +1,39 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+    <div>
+      <h4 class="mb-3 mb-md-0">Edit Profile</h4>
+
+      <form class="mt-3" enctype="multipart/form-data" [formGroup]="profileEditForm" (ngSubmit)="UpdateProfile()">
+
+        <div class="form-group">
+          <label class="form-label" for="customFile">Upload Profile Image</label>
+          <input type="file" class="form-control" id="customFile" (change)="onFileChanged($event)" accept=".jpg,.png,.jpeg"/>
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputFirstName">First Name</label>
+            <input type="text" class="form-control" id="exampleInputFirstName" placeholder="First Name"
+              formControlName="FirstName">
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputLastName">Last Name</label>
+            <input type="text" class="form-control" id="exampleInputLastName" placeholder="Last Name"
+              formControlName="LastName">
+        </div>
+
+        <div class="form-group">
+          <label for="exampleInputLastName">Email</label>
+          <input type="text" class="form-control" id="exampleInputLastName" placeholder="Email Name"
+            formControlName="Email">
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary mr-2 mb-2 mb-md-0"
+              [disabled]="profileEditForm.invalid">Save</button>
+              <a class="btn btn-danger mr-2 mb-2 mb-md-0" [routerLink]="['/', 'dashboard']">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+    
+  </div>

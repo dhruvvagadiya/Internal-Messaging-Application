@@ -10,7 +10,7 @@ namespace ChatApp.Models.Users
         [Required]
         public string LastName { get; set; }
         [Required]
-        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage = "Please enter valid email address")]
+        [EmailAddress(ErrorMessage = "Please enter valid email address")]
         public string Email { get; set; }
         public IFormFile File { get; set; }
     }

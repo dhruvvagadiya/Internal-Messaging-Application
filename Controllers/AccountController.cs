@@ -25,7 +25,7 @@ namespace ChatApp.Controllers
     public class AccountController : ControllerBase
     {
         #region Private fields
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         private readonly IProfileService _profileService;
 
         #endregion
@@ -66,76 +66,6 @@ namespace ChatApp.Controllers
             }
             return BadRequest(new { Message = "User Already Exists. Please use different email and UserName." });
         }
-
-        [HttpPut("UpdateProfile")]
-        public IActionResult UpdateProfile([FromForm] UpdateModel updateModel, [FromHeader] string authorization)
-        {
-
-            //retrive token from request headers
-            var token = GetToken(authorization.Split()[1]);
-
-            //get username from claims
-            string username = token.Claims.First(c => c.Type == "sub").Value;
-
-            //get updated user
-            var updated = _profileService.UpdateUser(updateModel, username);
-
-            if(updated.UserName == null || updated.UserName.Length == 0)
-            {
-                return BadRequest(new { Message = "Email already exists. Please try again" });
-            }
-
-            if (updated != null)
-            {
-                var tokenString = GenerateJSONWebToken(updated);
-                return Ok(new { token = tokenString, user = updated });
-            }
-
-            //error
-            return BadRequest(new { Message = "Error occured while updating user profile. Please try again" });
-        }
-
-        [HttpGet("GetImage")]
-        public async Task<IActionResult> GetImage([FromHeader] string authorization)
-        {
-            //retrive token from request headers
-            var token = GetToken(authorization.Split()[1]);
-
-            //get username from claims
-            string username = token.Claims.First(c => c.Type == "sub").Value;
-            //string path = token.Claims.First(c => c.Type == "imageUrl").Value;
-
-            var user = _profileService.GetUser(user => user.UserName == username, false);
-
-            //if image is not set
-            if(user.ImageUrl == null)
-            {
-                return NoContent();
-            }
-
-            var folderName = Path.Combine("Resources", "Images");
-            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-            string path = Path.Combine(pathToSave, user.ImageUrl);
-
-            //if image does not exist
-            if (!System.IO.File.Exists(path))
-            {
-                return NoContent();
-            }
-
-            Byte[] b;
-            b = System.IO.File.ReadAllBytes(path);
-            return File(b, "image/jpeg");
-        }
-
-        [HttpGet("GetUsers/{name}")]
-        public IActionResult GetUsers(string? name, [FromHeader] string authorization)
-        {
-            var token = GetToken(authorization.Split()[1]);
-            string username = token.Claims.First(c => c.Type == "sub").Value;
-            var userList = _profileService.GetAll(name.ToUpper().Trim(), username);
-            return  Ok(new {data = userList});
-        }
         #endregion
 
         #region Methods
@@ -160,12 +90,6 @@ namespace ChatApp.Controllers
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private JwtSecurityToken GetToken(string auth)
-        {
-            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(auth);
-            return jwt;
         }
 
         #endregion

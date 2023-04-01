@@ -13,8 +13,22 @@ export const MENU: MenuItem[] = [
   {
     label: 'Chat',
     icon: 'inbox',
-    link: '/apps/chat'
+    link: '/chat'
   },
+  {
+    label: 'Profile',
+    isTitle: true
+  },
+  {
+    label: 'Edit Profile ',
+    icon: 'edit',
+    link: 'profile/edit'
+  },
+  {
+    label: 'View Profile',
+    icon: 'user',
+    link: 'profile/detail'
+  }
   // {
   //   label: 'Calendar',
   //   icon: 'calendar',

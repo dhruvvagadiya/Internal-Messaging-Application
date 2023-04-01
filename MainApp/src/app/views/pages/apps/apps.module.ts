@@ -14,7 +14,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SimplemdeModule, SIMPLEMDE_CONFIG } from 'ng2-simplemde'
 
 import { AppsComponent } from './apps.component';
-import { ChatComponent } from './chat/chat.component';
+// import { ChatComponent } from '../chat/chat.component';
 // import { CalendarComponent } from './calendar/calendar.component';
 // import { EmailComponent } from './email/email.component';
 // import { InboxComponent } from './email/inbox/inbox.component';
@@ -24,7 +24,6 @@ import { ChatComponent } from './chat/chat.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { ClickOutsideDirective } from 'src/app/core/Directives/click-outside.directive';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -70,10 +69,6 @@ const routes: Routes = [
       //     }
       //   ]
       // },
-      {
-        path: 'chat',
-        component: ChatComponent
-      },
       // {
       //   path: 'calendar',
       //   component: CalendarComponent
@@ -84,7 +79,7 @@ const routes: Routes = [
 
 @NgModule({
   // declarations: [EmailComponent, ChatComponent, CalendarComponent, AppsComponent, InboxComponent, ReadComponent, ComposeComponent],
-  declarations: [ChatComponent, AppsComponent, ClickOutsideDirective],
+  declarations: [AppsComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),

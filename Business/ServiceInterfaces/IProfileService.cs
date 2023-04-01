@@ -15,10 +15,5 @@ namespace ChatApp.Business.ServiceInterfaces
 
         Profile RegisterUser(RegisterModel regModel);
 
-        Profile UpdateUser(UpdateModel updateModel, string username);
-
-        Profile GetUser(Expression<Func<Profile, bool>> filter, bool tracked);
-
-        IEnumerable<ProfileDTO> GetAll(string name, string username);
     }
 }

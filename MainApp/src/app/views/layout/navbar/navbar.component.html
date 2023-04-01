@@ -8,12 +8,12 @@
       
       <li class="nav-item nav-profile" ngbDropdown>
         <a class="nav-link" ngbDropdownToggle id="profileDropdown">
-          <img [src]="thumbnail ? thumbnail : 'https://via.placeholder.com/80x80'" alt="profile">
+          <img [src]="thumbnail" alt="profile">
         </a>
         <div ngbDropdownMenu aria-labelledby="profileDropdown">
           <div class="dropdown-header d-flex flex-column align-items-center">
             <div class="figure mb-3">
-              <img [src]="thumbnail ? thumbnail : 'https://via.placeholder.com/80x80'" alt="">
+              <img [src]="thumbnail" alt="{{ loggedInUser.userName}} profile">
             </div>
             <div class="info text-center">
               <p class="name font-weight-bold mb-0">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</p>
@@ -24,7 +24,7 @@
             <ul class="profile-nav p-0 pt-3">
               
               <li class="nav-item">
-                <a routerLink="edit" class="nav-link">
+                <a routerLink="/profile/edit" class="nav-link">
                   <i class="feather icon-edit"></i>
                   <span>Edit Profile</span>
                 </a>

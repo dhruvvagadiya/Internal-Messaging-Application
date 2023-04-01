@@ -3,9 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { BaseComponent } from './views/layout/base/base.component';
 import { AuthGuard } from './core/guard/auth.guard';
 import { ErrorPageComponent } from './views/pages/error-page/error-page.component';
-import { ProfileEditComponent } from './views/pages/profile-edit/profile-edit.component';
-import { ChatComponent } from './views/pages/apps/chat/chat.component';
-
 
 const routes: Routes = [
   { path:'auth', loadChildren: () => import('./views/pages/auth/auth.module').then(m => m.AuthModule) },
@@ -19,11 +16,11 @@ const routes: Routes = [
         loadChildren: () => import('./views/pages/dashboard/dashboard.module').then(m => m.DashboardModule)
       },
       {
-        path: 'apps',
-        loadChildren: () => import('./views/pages/apps/apps.module').then(m => m.AppsModule)
+        path: 'chat',
+        loadChildren: () => import('./views/pages/chat/chat.module').then(m => m.ChatModule)
       },
       {
-        path: 'edit', component : ProfileEditComponent
+        path: 'profile', loadChildren: () => import('./views/pages/profile/profile.module').then(m => m.ProfileModule)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, 
     ]

@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Images\" />
+    <None Include="wwwroot\Images\5fda36fb-9b3c-457d-b6be-8e0a5894f5c4.jpg" />
   </ItemGroup>
 
   
