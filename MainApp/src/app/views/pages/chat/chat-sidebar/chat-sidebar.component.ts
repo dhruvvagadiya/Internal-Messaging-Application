@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LoggedInUser } from 'src/app/core/models/loggedin-user';
 import { RecentChatModel } from 'src/app/core/models/recent-chat';
 import { AuthService } from 'src/app/core/service/auth-service';
+import { ChatService } from 'src/app/core/service/chat-service';
 import { UserService } from 'src/app/core/service/user-service';
 import { environment } from 'src/environments/environment';
 
@@ -18,20 +19,28 @@ export class ChatSideBarComponent implements OnInit {
     timeOutId;
     
     
-    @Input() recentChats : RecentChatModel [];
+    // @Input() recentChats : RecentChatModel [];
+    recentChats : RecentChatModel [];
     @Input() user : LoggedInUser;
-    @Output() selectedUser = new EventEmitter<LoggedInUser>();
+    // @Output() selectedUser = new EventEmitter<LoggedInUser>();
     
-    constructor(private userService : UserService, private authService :AuthService) {
+    constructor(private userService : UserService, private authService :AuthService, private chatService : ChatService) {
     }
 
     ngOnInit() {
       this.user = this.authService.getLoggedInUserInfo();
+
+      //get recent chat
+      this.chatService.getRecentUsers().subscribe(
+        (res : RecentChatModel []) => {
+          this.recentChats = res;
+        }
+      );
     }
 
-    selectUser(user : LoggedInUser){
-      this.selectedUser.emit(user);
-    }
+    // selectUser(user : LoggedInUser){
+    //   this.selectedUser.emit(user);
+    // }
 
       //hide menu
     hideMenu(){

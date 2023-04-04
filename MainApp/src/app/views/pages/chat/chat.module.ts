@@ -11,8 +11,14 @@ import { ChatSideBarComponent } from "./chat-sidebar/chat-sidebar.component";
 const routes: Routes = [
     {
       path: '',
-      component: ChatComponent
-    }
+      component: ChatComponent,
+      children : [
+        {
+          path : ':userName',
+          component : ChatMessageComponent
+        }
+      ]
+    },
   ]
 
 @NgModule({
@@ -24,7 +30,8 @@ const routes: Routes = [
       NgbNavModule,
       NgbCollapseModule,
       PerfectScrollbarModule
-    ]
+    ],
+    exports : [RouterModule]
   })
 
 export class ChatModule {

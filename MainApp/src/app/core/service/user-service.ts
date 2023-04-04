@@ -11,7 +11,7 @@ import { AuthService } from "./auth-service";
 
 export class UserService implements OnInit {
 
-    user = new  BehaviorSubject<LoggedInUser>(null);
+    user = new BehaviorSubject<LoggedInUser>(null);
 
     constructor(private http: HttpClient, private authService : AuthService) {
         this.getCurrentUserDetails();
@@ -32,15 +32,18 @@ export class UserService implements OnInit {
         return this.http.get(environment.apiUrl + "/user/getusers/" + name);
     }
 
+    getUser(username : string){
+        return this.http.get<LoggedInUser>(environment.apiUrl + "/user/"+ username);
+    }
+
     getLoggedInUser() {
         const curuser = this.authService.getLoggedInUserInfo();
-        return this.http.get<LoggedInUser>(environment.apiUrl + "/user/"+curuser.sub);
-        
+        return this.getUser(curuser.sub);
     }
 
     getCurrentUserDetails() {
         const curuser = this.authService.getLoggedInUserInfo();
-        this.http.get<LoggedInUser>(environment.apiUrl + "/user/"+curuser.sub).subscribe(e => { 
+        this.getLoggedInUser().subscribe(e => { 
             this.user.next(e);
         });
     }

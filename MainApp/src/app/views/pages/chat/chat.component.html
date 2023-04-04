@@ -4,15 +4,16 @@
       <div class="card-body">
         <div class="row position-relative">
           <div class="col-lg-4 chat-aside border-lg-right">
-            <app-chat-sidebar [user]="loggedInUser" [recentChats]="recentChats" (selectedUser)="onUserSelect($event)"></app-chat-sidebar>
+            <!-- <app-chat-sidebar [user]="loggedInUser" [recentChats]="recentChats"></app-chat-sidebar> -->
+            <app-chat-sidebar [user]="loggedInUser"></app-chat-sidebar>
           </div>
 
-          <div class="col-lg-8 chat-content" *ngIf="userSelected">
-            <app-chat-message [user]="loggedInUser" [selectedUser] = "userSelected" ></app-chat-message>
+          <div class="col-lg-8 chat-content">
+            <router-outlet></router-outlet>
           </div>
-          <div class="col-lg-8 chat-content" *ngIf="!userSelected">
+          <!-- <div class="col-lg-8 chat-content" *ngIf="!userSelected">
             <p>Please select a user</p>
-          </div>
+          </div> -->
 
         </div>
       </div>

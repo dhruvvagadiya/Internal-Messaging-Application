@@ -19,8 +19,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
   loggedInUser: LoggedInUser
   thumbnail = "https://via.placeholder.com/80x80";
   userMatched : LoggedInUser[] = [];
-  userSelected : LoggedInUser;
-  recentChats : RecentChatModel[] = [];
+  // userSelected : LoggedInUser;
+  // recentChats : RecentChatModel[] = [];
 
   constructor(
     private userService : UserService, private chatService : ChatService
@@ -32,7 +32,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
       this.loggedInUser = e;
 
       if(e != null && this.loggedInUser.imageUrl) {
-        this.thumbnail = environment.hostUrl + "/images/" + this.loggedInUser.imageUrl;
+        this.thumbnail = this.userService.getProfileUrl(e);
       }
     });
     
@@ -40,13 +40,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.userService.getLoggedInUser().subscribe(
       e => this.loggedInUser = e
     )
-    
-    //get recent chat
-    this.chatService.getRecentUsers().subscribe(
-      (res : RecentChatModel []) => {
-        this.recentChats = res;
-      }
-    );
   }
 
   ngAfterViewInit(): void {
@@ -60,13 +53,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   }
 
-  onUserSelect(event : LoggedInUser){
-    this.userSelected = event;
-  }
-
-  getProfile(user : LoggedInUser){
-    return this.userService.getProfileUrl(user);
-  }
+  // onUserSelect(event : LoggedInUser){
+  //   this.userSelected = event;
+  // }
 
   // back to chat-list for tablet and mobile devices
   backToChatList() {

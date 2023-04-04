@@ -42,11 +42,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(private sampleService: SampleService) { }
   ngOnInit(): void {
-    this.sampleService.runSampleAPI().subscribe((result) => {
-      console.log(result);
-    }, (err) => {
-
-    })
   }
 
 }

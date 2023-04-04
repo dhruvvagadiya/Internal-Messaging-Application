@@ -48,7 +48,7 @@
           <ul class="list-group">
 
             <li class="list-group-item bg-white" *ngFor="let user of userMatched">
-              <a (click)="selectUser(user)" class="d-flex align-items-center">
+              <a class="d-flex align-items-center" [routerLink]="user.userName">
                 <figure class="mb-0 mr-2">
                   <img [src]="getProfile(user)" class="img-xs rounded-circle" alt="user">
                 </figure>
@@ -80,7 +80,7 @@
               <ul class="list-unstyled chat-list px-1">
 
                 <li class="chat-item pr-1" *ngFor="let obj of recentChats;">
-                  <a (click)="selectUser(obj.user)" class="d-flex align-items-center">
+                  <a [routerLink]="obj.user.userName" class="d-flex align-items-center">
                     <figure class="mb-0 mr-2">
                       <img [src]="getProfile(obj.user)" class="img-xs rounded-circle" alt="user">
                       <div class="status online"></div>
