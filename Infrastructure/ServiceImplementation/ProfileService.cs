@@ -23,13 +23,22 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         {
             this.context = context;
         }
-        public Profile CheckPassword(LoginModel model)
+        public Profile CheckPassword(LoginModel model, out string curSalt)
         {
-            return this.context.Profiles.FirstOrDefault(x => model.Password == x.Password
-            && (x.Email.ToLower().Trim() == model.EmailAddress.ToLower().Trim() || x.UserName.ToLower().Trim() == model.Username.ToLower().Trim()));
+            curSalt = "";
+
+            //get user
+            var user = this.context.Profiles.FirstOrDefault(x => x.Email.ToLower().Trim() == model.EmailAddress.ToLower().Trim() || x.UserName.ToLower().Trim() == model.Username.ToLower().Trim());
+
+            if (user == null) return null;
+
+            //if user exists then get salt
+            curSalt = context.Salts.FirstOrDefault(e => e.UserId == user.Id).UsedSalt;
+
+            return user;
         }
 
-        public Profile RegisterUser(RegisterModel regModel)
+        public Profile RegisterUser(RegisterModel regModel, string salt)
         {
             Profile newUser = null;
             if (!CheckEmailOrUserNameExists(regModel.UserName, regModel.Email))
@@ -46,7 +55,17 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 };
 
                 newUser.LastUpdatedAt = DateTime.Now;
+                
+                //add profile to db
                 context.Profiles.Add(newUser);
+                context.SaveChanges();
+
+                //add salt to db
+                context.Salts.Add(new Salt()
+                {
+                    UsedSalt = salt,
+                    UserId = newUser.Id
+                });
                 context.SaveChanges();
             }
             return newUser;

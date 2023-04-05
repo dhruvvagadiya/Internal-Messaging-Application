@@ -11,9 +11,9 @@ namespace ChatApp.Business.ServiceInterfaces
 {
     public interface IProfileService
     {
-        Profile CheckPassword(LoginModel loginModel);
+        Profile CheckPassword(LoginModel loginModel, out string curSalt);
 
-        Profile RegisterUser(RegisterModel regModel);
+        Profile RegisterUser(RegisterModel regModel, string salt);
 
     }
 }
