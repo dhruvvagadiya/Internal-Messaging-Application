@@ -12,5 +12,7 @@ namespace ChatApp.Models.Chat
         public string Type { get; set; }
         [Required]
         public string Content { get; set; }
+
+        public int? RepliedTo { get; set; }
     }
 }

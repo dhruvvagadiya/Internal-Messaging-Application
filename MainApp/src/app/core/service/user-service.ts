@@ -12,7 +12,7 @@ import { AuthService } from "./auth-service";
 export class UserService implements OnInit {
 
     user = new BehaviorSubject<LoggedInUser>(null);
-
+    
     constructor(private http: HttpClient, private authService : AuthService) {
         this.getCurrentUserDetails();
     }
@@ -32,7 +32,7 @@ export class UserService implements OnInit {
         return this.http.get(environment.apiUrl + "/user/getusers/" + name);
     }
 
-    getUser(username : string){
+    getUser(username : string){        
         return this.http.get<LoggedInUser>(environment.apiUrl + "/user/"+ username);
     }
 

@@ -16,7 +16,7 @@ namespace ChatApp.Business.Helpers
             profileDTO.UserName = user.UserName;
             profileDTO.FirstName = user.FirstName;
             profileDTO.LastName = user.LastName;
-            profileDTO.Id = user.Id;
+            //profileDTO.Id = user.Id;
             profileDTO.Email = user.Email;
             profileDTO.ImageUrl = user.ImageUrl;
             profileDTO.CreatedAt = user.CreatedAt;
@@ -28,27 +28,27 @@ namespace ChatApp.Business.Helpers
             return profileDTO;
         }
 
-        public static IEnumerable<ChatModel> ConvertChatToChatModel(IEnumerable<Chat> curList, string from, string to, int fromId, int toId)
-        {
-            var returnObj = new List<ChatModel>();
+        //public static IEnumerable<ChatModel> ConvertChatToChatModel(IEnumerable<Chat> curList, string from, string to, int fromId, int toId)
+        //{
+        //    var returnObj = new List<ChatModel>();
 
-            foreach (var chat in curList)
-            {
-                var newObj = new ChatModel()
-                {
-                    Id = chat.Id,
-                    MessageFrom = (chat.MessageFrom == fromId) ? from : to,
-                    MessageTo = (chat.MessageTo == fromId) ? from : to,
-                    Type = "Text",
-                    Content = chat.Content,
-                    CreatedAt = chat.CreatedAt,
-                    UpdatedAt = chat.UpdatedAt
-                };
+        //    foreach (var chat in curList)
+        //    {
+        //        var newObj = new ChatModel()
+        //        {
+        //            Id = chat.Id,
+        //            MessageFrom = (chat.MessageFrom == fromId) ? from : to,
+        //            MessageTo = (chat.MessageTo == fromId) ? from : to,
+        //            Type = "Text",
+        //            Content = chat.Content,
+        //            CreatedAt = chat.CreatedAt,
+        //            UpdatedAt = chat.UpdatedAt
+        //        };
 
-                returnObj.Add(newObj);
-            }
+        //        returnObj.Add(newObj);
+        //    }
 
-            return returnObj;
-        }
+        //    return returnObj;
+        //}
     }
 }

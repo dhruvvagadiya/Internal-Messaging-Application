@@ -11,5 +11,8 @@ namespace ChatApp.Context.EntityClasses
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        //id of chat msg if it is replied
+        public int? RepliedTo { get; set; }
     }
 }

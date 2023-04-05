@@ -1,12 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 
 import { LoggedInUser } from 'src/app/core/models/loggedin-user';
-import { RecentChatModel } from 'src/app/core/models/recent-chat';
-import { AccountService } from 'src/app/core/service/account-service';
-import { AuthService } from 'src/app/core/service/auth-service';
-import { ChatService } from 'src/app/core/service/chat-service';
 import { UserService } from 'src/app/core/service/user-service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-chat',
@@ -18,13 +13,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   loggedInUser: LoggedInUser
   thumbnail = "https://via.placeholder.com/80x80";
-  userMatched : LoggedInUser[] = [];
-  // userSelected : LoggedInUser;
-  // recentChats : RecentChatModel[] = [];
 
-  constructor(
-    private userService : UserService, private chatService : ChatService
-  ) { }
+  constructor(private userService : UserService) { }
 
   ngOnInit(): void {
 
@@ -52,10 +42,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     });
 
   }
-
-  // onUserSelect(event : LoggedInUser){
-  //   this.userSelected = event;
-  // }
 
   // back to chat-list for tablet and mobile devices
   backToChatList() {

@@ -5,5 +5,6 @@ export interface MessageModel {
     id : number,
     messageFrom : string,
     messageTo : string,
-    type : string
+    type : string,
+    repliedTo? : string
 }

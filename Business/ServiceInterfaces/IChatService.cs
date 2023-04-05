@@ -7,7 +7,7 @@ namespace ChatApp.Business.ServiceInterfaces
     {
         IEnumerable<ChatModel> GetChatList (int userFrom, int userTo, string fromUserName, string toUserName);
 
-        ChatModel SendTextMessage(string fromUser, string toUser, string content);
+        ChatModel SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo);
 
         IEnumerable<RecentChatModel> GetRecentList(int userID);
     }

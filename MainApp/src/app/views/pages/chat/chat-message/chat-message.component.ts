@@ -1,4 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { LoggedInUser } from "src/app/core/models/loggedin-user";
 import { MessageModel } from "src/app/core/models/message-model";
@@ -6,15 +12,19 @@ import { ChatService } from "src/app/core/service/chat-service";
 import { UserService } from "src/app/core/service/user-service";
 
 @Component({
-  selector: "<app-chat-message>",
-  templateUrl: "chat-message.component.html",
+  selector: "app-chat-message",
+  templateUrl: "./chat-message.component.html",
+  styleUrls : ["./chat-message.component.scss"]
 })
-export class ChatMessageComponent implements OnInit {
+
+export class ChatMessageComponent implements OnInit, AfterViewChecked {
   user: LoggedInUser;
   selectedUser: LoggedInUser;
   thumbnail = "https://via.placeholder.com/80x80";
 
   isLoading = false;
+  replyMsgId?: number;
+  replyMsgContent: string;
 
   messageList: MessageModel[] = [];
 
@@ -25,8 +35,6 @@ export class ChatMessageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log("init");
-
     this.userService.user.subscribe((e) => {
       this.user = e;
 
@@ -36,30 +44,44 @@ export class ChatMessageComponent implements OnInit {
     });
 
     //get initial values
-    this.userService.getLoggedInUser().subscribe((e) => (this.user = e));
+    // this.userService.getLoggedInUser().subscribe((e) => (this.user = e));
 
-    this.route.params.subscribe((data : Params) => {
-        let uName: string;
-        uName = data["userName"];
-        // console.log(uName);
+    //load chat of particular user if route param is changed
+    this.route.params.subscribe((data: Params) => {
 
-        //get selected user
-        this.userService.getUser(uName).subscribe((e) => (this.selectedUser = e));
+      this.replyMsgId = null;
 
-        //get chat
-        this.isLoading = true;
-        this.chatService.getChatWithUser(uName).subscribe(
-            (res: MessageModel[]) => {
-            this.messageList = res;
-            },
-            (err) => {
-            console.log(err);
-            }
-        );
-        this.isLoading = false;
+      let uName: string;
+      uName = data["userName"];
+
+      //get selected user
+      this.userService.getUser(uName).subscribe((e) => (this.selectedUser = e));
+
+      //get chat
+      this.isLoading = true;
+      this.chatService.getChatWithUser(uName).subscribe(
+        (res: MessageModel[]) => {
+          this.messageList = res;
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+      this.isLoading = false;
     });
+
   }
 
+  //scroll msg after they are rendered on screen
+  @ViewChild("scrollContainer") scrollContainer: ElementRef;
+  ngAfterViewChecked(): void {
+    try {
+      this.scrollContainer.nativeElement.scrollTop =
+        this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {}
+  }
+
+  //reaload chat
   reloadChat() {
     this.isLoading = true;
     this.chatService.getChatWithUser(this.selectedUser.userName).subscribe(
@@ -73,6 +95,7 @@ export class ChatMessageComponent implements OnInit {
     this.isLoading = false;
   }
 
+  //send message
   sendMessage(event: HTMLInputElement) {
     if (event.value.length > 0) {
       this.chatService
@@ -81,6 +104,7 @@ export class ChatMessageComponent implements OnInit {
           receiver: this.selectedUser.userName,
           content: event.value,
           type: "text",
+          repliedTo : this.replyMsgId
         })
         .subscribe(
           (res: MessageModel) => {
@@ -90,16 +114,26 @@ export class ChatMessageComponent implements OnInit {
             console.log(err);
           }
         );
+      
+      this.replyMsgId = null;
       event.value = "";
     }
   }
 
+  //get profile url
   getProfile(user: LoggedInUser) {
     return this.userService.getProfileUrl(user);
+  }
+
+  //set reply msg id and content
+  replyMsg(id: number, content: string) {
+    this.replyMsgId = id;
+    this.replyMsgContent = content;
   }
 
   // back to chat-list for tablet and mobile devices
   backToChatList() {
     document.querySelector(".chat-content").classList.toggle("show");
   }
+
 }

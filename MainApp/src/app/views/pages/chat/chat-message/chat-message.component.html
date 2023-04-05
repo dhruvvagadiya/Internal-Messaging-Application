@@ -1,6 +1,7 @@
 <div *ngIf="isLoading" class="spinner-border" role="status">
 </div>
 
+<!-- user profile details -->
 <div *ngIf="!isLoading && selectedUser" class="chat-header border-bottom pb-2">
     <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center">
@@ -32,17 +33,25 @@
         </div>
     </div>
 </div>
+<!-- user profile end -->
 
-<div class="chat-body" [perfectScrollbar]>
+<!-- Rendering message list -->
+<div class="chat-body" [perfectScrollbar] #scrollContainer>
     <ul class="messages" *ngFor="let message of messageList;">
         <li class="message-item friend" *ngIf="message.messageFrom === selectedUser.userName">
             <img [src]="getProfile(selectedUser)" class="img-xs rounded-circle" alt="avatar">
             <div class="content">
                 <div class="message">
                     <div class="bubble">
+                        <p *ngIf="message.repliedTo !== null" class="text-muted">{{message.repliedTo}}</p>
                         <p>{{message.content}}</p>
                     </div>
-                    <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                    <div class="d-flex">
+                        <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                        <a (click)="replyMsg(message.id, message.content)">
+                            <i class="feather icon-corner-down-left icon-sm text-muted" ngbTooltip="Reply to message"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </li>
@@ -50,37 +59,63 @@
             <img [src]="getProfile(user)" class="img-xs rounded-circle" alt="avatar">
             <div class="content">
                 <div class="message">
-                    <div class="bubble">
-                        <p>{{ message.content }}</p>
+                    <div class="bubble mymsg" style="background: rgba(18, 187, 74, 0.2);">
+                        <div>
+                            <p *ngIf="message.repliedTo !== null" class="text-muted">{{message.repliedTo}}</p>
+                        </div>
+                        <div>
+                            <p>{{ message.content }}</p>
+                        </div>
                     </div>
-                    <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                    <div class="d-flex justify-content-end">
+                        <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                        <a (click)="replyMsg(message.id, message.content)">
+                            <i class="feather icon-corner-down-left icon-sm text-muted" ngbTooltip="Reply to message"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </li>
     </ul>
 </div>
-<div class="chat-footer d-flex">
-    <div>
-        <button type="button" class="btn border btn-icon rounded-circle mr-2" ngbTooltip="Emoji">
-            <i class="feather icon-sun text-muted"></i>
-        </button>
+<!-- Message list end -->
+
+<!-- Chat footer start -->
+<div class="chat-footer">
+    <div class="ml-4 py-2 bg-light rounded" *ngIf="replyMsgId">
+        <div class="ml-2 mr-2">
+            <div class="d-flex justify-content-between">
+                <p class="text-muted">Replying to : </p>
+                <a (click)="replyMsgId = null"><i class="feather icon-x border rounded icon-sm text-muted"></i></a>
+            </div>
+            <p> {{replyMsgContent}} </p>
+        </div>
     </div>
-    <div class="d-none d-md-block">
-        <button type="button" class="btn border btn-icon rounded-circle mr-2" ngbTooltip="Attatch files">
-            <i class="feather icon-paperclip text-muted"></i>
-        </button>
-    </div>
-    <div class="d-none d-md-block">
-        <button type="button" class="btn border btn-icon rounded-circle mr-2" ngbTooltip="Record you voice">
-            <i class="feather icon-mic text-muted"></i>
-        </button>
-    </div>
+    <div class="d-flex mt-2">
+        <div>
+            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Emoji">
+                <i class="feather icon-sun text-muted"></i>
+            </button>
+        </div>
+        <div class="d-none d-md-block">
+            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Attatch files">
+                <i class="feather icon-paperclip text-muted"></i>
+            </button>
+        </div>
+        <div class="d-none d-md-block">
+            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Record you voice">
+                <i class="feather icon-mic text-muted"></i>
+            </button>
+        </div>
         <div class="search-form flex-grow mr-2 input-group">
             <input type="text" class="form-control rounded-pill" (keydown.enter)="sendMessage(messageInput)" id="chatForm" placeholder="Type a message" #messageInput>
         </div>
-    <div>
-        <button type="button" class="btn btn-primary btn-icon rounded-circle" (click)="sendMessage(messageInput)">
-            <i class="feather icon-send"></i>
-        </button>
+        <div>
+            <button type="button" class="btn btn-primary btn-icon rounded-circle" (click)="sendMessage(messageInput)">
+                <i class="feather icon-send"></i>
+            </button>
+        </div>
     </div>
 </div>
+
+<!-- chat footer end -->

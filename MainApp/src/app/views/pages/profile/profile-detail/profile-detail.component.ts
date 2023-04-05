@@ -17,25 +17,27 @@ export class ProfileDetailComponent implements OnInit {
   thumbnail : string;
 
   constructor(private userService : UserService, private authService : AuthService){
-    this.fetchUserDetails();
+    // this.fetchUserDetails();
   }
 
   ngOnInit(): void {
-    this.userService.user.subscribe(e => {
-      this.user = e;
-      this.thumbnail = this.userService.getProfileUrl(e);
-    })
-    
-    this.user = this.authService.getLoggedInUserInfo();
-  }
 
-  private fetchUserDetails() {
-    this.userService.getLoggedInUser().subscribe((result) => {
-      this.user = result;
-      // console.log(result);
-    },
-    (err) => {
-      console.log(err);
+    this.userService.user.subscribe((e) => {
+      this.user = e;
+
+      if (e != null && this.user.imageUrl) {
+        this.thumbnail = this.userService.getProfileUrl(e);
+      }
     });
   }
+
+  // private fetchUserDetails() {
+  //   this.userService.getLoggedInUser().subscribe((result) => {
+  //     this.user = result;
+  //     // console.log(result);
+  //   },
+  //   (err) => {
+  //     console.log(err);
+  //   });
+  // }
 }

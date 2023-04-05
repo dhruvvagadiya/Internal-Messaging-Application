@@ -2,6 +2,7 @@
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Infrastructure.ServiceImplementation;
 using ChatApp.Models.Chat;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -10,15 +11,23 @@ namespace ChatApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ChatController : ControllerBase
     {
+        #region Fields
         private readonly IUserService _userService;
         private readonly IChatService _chatService;
+        #endregion
+
+        #region Constructor
         public ChatController(IUserService userService, IChatService chatService)
         {
             _userService = userService;
             _chatService = chatService;
         }
+        #endregion
+
+        #region EndPoints
 
         [HttpGet]
         [Route("{toUser}")]
@@ -71,12 +80,11 @@ namespace ChatApp.Controllers
             return Ok(recentList);
         }
 
+        //add message to DB
         [HttpPost]
         [Route("{toUser}")]
         public IActionResult SendMessage(string toUser, [FromBody] ChatSendModel SendChat)
         {
-            //add message to DB
-
             string fromUser = JwtHelper.GetUsernameFromRequest(Request);
             //string fromUser = "dhruvPatel";
 
@@ -88,15 +96,18 @@ namespace ChatApp.Controllers
                 return BadRequest();
             }
 
+            //validate both sender and receiver
             if(SendChat.Sender != fromUser || SendChat.Receiver != toUser) { return BadRequest(); } 
 
             if(SendChat.Type == "text")
             {
-                var sentMessage = _chatService.SendTextMessage(fromUser, toUser, SendChat.Content);
+                var sentMessage = _chatService.SendTextMessage(fromUser, toUser, SendChat.Content, SendChat.RepliedTo);
                 return Ok(sentMessage);
             }
 
             return BadRequest("Bad Request !");
         }
+
+        #endregion
     }
 }

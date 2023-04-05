@@ -3,10 +3,8 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Chat;
-using ChatApp.Models.Users;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
@@ -29,7 +27,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             var returnChat = chats;
 
-            IEnumerable<ChatModel> list = ModelMapper.ConvertChatToChatModel(returnChat, fromUserName, toUserName, userFrom, userTo);
+            IEnumerable<ChatModel> list = ConvertChatToChatModel(returnChat, fromUserName, toUserName, userFrom, userTo);
 
             return list;
         }
@@ -41,6 +39,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             var chats = _context.Chats.Where(e => (e.MessageFrom == userID || e.MessageTo == userID)).Select(e => e.MessageFrom == userID ? e.MessageTo : e.MessageFrom).Distinct();
 
 
+            //convert chats to chatModel..
             var returnObj = new List<RecentChatModel>();
 
             foreach (var chat in chats)
@@ -69,11 +68,14 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 returnObj.Add(userObj);
             }
 
+            //order list by last msg time :)
+            returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList();;
+
             return returnObj;
         }
 
         //send message
-        public ChatModel SendTextMessage(string fromUser, string toUser, string content)
+        public ChatModel SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo)
         {
             int fromId = _userService.GetIdFromUsername(fromUser);
             int toId = _userService.GetIdFromUsername(toUser);
@@ -87,9 +89,24 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             chat.UpdatedAt = DateTime.Now;
             chat.Type = "text";
 
+            if(RepliedTo != null)
+            {
+                chat.RepliedTo = RepliedTo;
+            }
+            else
+            {
+                chat.RepliedTo = -1;
+            }
+
             //save chat
             _context.Chats.Add(chat);
             _context.SaveChanges();
+
+            string ReplyMsg = "";
+            if(RepliedTo != null)
+            {
+                ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == RepliedTo).Content;
+            }
 
             //return chatModel
             var returnObj = new ChatModel()
@@ -99,11 +116,41 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 Content = content,
                 Type = "text",
                 CreatedAt = chat.CreatedAt,
-                UpdatedAt = chat.UpdatedAt
+                UpdatedAt = chat.UpdatedAt,
+                RepliedTo = ReplyMsg
             };
 
             return returnObj;
         }
 
+
+        private IEnumerable<ChatModel> ConvertChatToChatModel(IEnumerable<Chat> curList, string from, string to, int fromId, int toId)
+        {
+            var returnObj = new List<ChatModel>();
+
+            foreach (var chat in curList)
+            {
+                var newObj = new ChatModel()
+                {
+                    Id = chat.Id,
+                    MessageFrom = (chat.MessageFrom == fromId) ? from : to,
+                    MessageTo = (chat.MessageTo == fromId) ? from : to,
+                    Type = "Text",
+                    Content = chat.Content,
+                    CreatedAt = chat.CreatedAt,
+                    UpdatedAt = chat.UpdatedAt
+                };
+
+                //if msg is replied then get content
+                if(chat.RepliedTo != -1)
+                {
+                    newObj.RepliedTo = _context.Chats.FirstOrDefault(e => e.Id == chat.RepliedTo).Content;
+                }
+
+                returnObj.Add(newObj);
+            }
+
+            return returnObj;
+        }
     }
 }

@@ -11,5 +11,8 @@ namespace ChatApp.Models.Chat
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        //content of parent msg
+        public string? RepliedTo { get; set; }
     }
 }
