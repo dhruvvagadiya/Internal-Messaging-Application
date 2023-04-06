@@ -48,12 +48,13 @@
           <ul class="list-group">
 
             <li class="list-group-item" style="z-index: 1;" *ngFor="let user of userMatched">
-              <a class="d-flex align-items-center" [routerLink]="user.userName">
+              <a class="d-flex align-items-center" [routerLink]="user.userName" (click)="hideMenu()">
                 <figure class="mb-0 mr-2">
                   <img [src]="getProfile(user)" class="img-xs rounded-circle" alt="user">
                 </figure>
-                <div class="d-flex justify-content-between mt-2">
+                <div class="justify-content-between mt-2">
                   <h6 class="text-body">{{user.firstName}} {{user.lastName}}</h6>
+                  <p class="text-muted">@{{user.userName}}</p>
                 </div>
               </a>
             </li>
@@ -94,7 +95,7 @@
                       </div>
                       <div class="d-flex flex-column align-items-end">
                         <p class="text-muted tx-13 mb-1">{{obj.lastMsgTime ? (obj.lastMsgTime | date : 'shortTime')  : ''}}</p>
-                        <div class="badge badge-pill badge-primary ml-auto">5</div>
+                        <div class="badge badge-pill badge-primary ml-auto">{{obj.unseenCount > 0 ? obj.unseenCount : ''}}</div>
                       </div>
                     </div>
                   </a>

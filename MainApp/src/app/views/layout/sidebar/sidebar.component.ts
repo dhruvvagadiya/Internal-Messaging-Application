@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 import MetisMenu from 'metismenujs/dist/metismenujs';
@@ -19,7 +19,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   menuItems = [];
   @ViewChild('sidebarMenu') sidebarMenu: ElementRef;
 
-  constructor(@Inject(DOCUMENT) private document: Document, private renderer: Renderer2, router: Router) { 
+  constructor(@Inject(DOCUMENT) private document: Document, router: Router) { 
     router.events.forEach((event) => {
       if (event instanceof NavigationEnd) {
 

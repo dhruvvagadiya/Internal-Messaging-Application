@@ -81,6 +81,13 @@ namespace ChatApp.Controllers
 
             return BadRequest(new { Message = "User Already Exists. Please use different email and UserName." });
         }
+        [HttpGet("Logout")]
+        public IActionResult LogOut()
+        {
+            string username = JwtHelper.GetUsernameFromRequest(Request);
+            _profileService.HandleLogout(username);
+            return Ok();
+        }
         #endregion
 
         #region Methods
@@ -101,7 +108,7 @@ namespace ChatApp.Controllers
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddSeconds(120),
+                expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

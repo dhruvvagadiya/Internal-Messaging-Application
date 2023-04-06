@@ -15,5 +15,6 @@ namespace ChatApp.Business.ServiceInterfaces
 
         Profile RegisterUser(RegisterModel regModel, string salt);
 
+        void HandleLogout(string username);
     }
 }

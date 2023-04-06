@@ -1,12 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, Inject, Renderer2 } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/service/auth-service';
 import Swal from 'sweetalert2'
-import { LoggedInUser } from 'src/app/core/models/loggedin-user';
-import { AccountService } from 'src/app/core/service/account-service';
+import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { UserService } from 'src/app/core/service/user-service';
-import { environment } from 'src/environments/environment';
+import { AccountService } from 'src/app/core/service/account-service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,10 +19,10 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private renderer: Renderer2,
     private router: Router,
     private authService: AuthService,
-    private userService : UserService
+    private userService : UserService,
+    private accoutService : AccountService
   ) {
 
   }
@@ -36,6 +35,10 @@ export class NavbarComponent implements OnInit {
     })
     
     this.loggedInUser = this.authService.getLoggedInUserInfo();
+
+    this.userService.getLoggedInUser().subscribe(
+      e => this.loggedInUser = e
+    );
   }
 
   /**
@@ -51,17 +54,19 @@ export class NavbarComponent implements OnInit {
    */
   onLogout(e) {
     e.preventDefault();
-    this.authService.logout(() => {
-      Swal.fire({
-        title: 'Success!',
-        text: 'User has been logged out.',
-        icon: 'success',
-        timer: 2000,
-        timerProgressBar: true,
-      });
-      this.router.navigate(['/auth/login']);
-    });
 
+    this.accoutService.logout().subscribe(res => {
+      this.authService.logout(() => {
+        Swal.fire({
+          title: 'Success!',
+          text: 'User has been logged out.',
+          icon: 'success',
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        this.router.navigate(['/auth/login']);
+      });
+    });
   }
 
 }

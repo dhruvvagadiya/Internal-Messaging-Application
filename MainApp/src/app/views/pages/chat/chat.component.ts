@@ -1,6 +1,8 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import { LoggedInUser } from 'src/app/core/models/loggedin-user';
+import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
+import { AuthService } from 'src/app/core/service/auth-service';
 import { UserService } from 'src/app/core/service/user-service';
 
 @Component({
@@ -9,27 +11,30 @@ import { UserService } from 'src/app/core/service/user-service';
   styleUrls: ['./chat.component.scss']
 })
 
-export class ChatComponent implements OnInit, AfterViewInit {
+export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loggedInUser: LoggedInUser
   thumbnail = "https://via.placeholder.com/80x80";
+  subscription : Subscription
 
-  constructor(private userService : UserService) { }
+  constructor(private userService : UserService, private authService : AuthService) { }
 
   ngOnInit(): void {
 
-    this.userService.user.subscribe(e => {
+    this.subscription = this.userService.user.subscribe(e => {
       this.loggedInUser = e;
 
       if(e != null && this.loggedInUser.imageUrl) {
         this.thumbnail = this.userService.getProfileUrl(e);
       }
     });
-    
-    //get initial values
+
+    this.loggedInUser = this.authService.getLoggedInUserInfo();
+
     this.userService.getLoggedInUser().subscribe(
       e => this.loggedInUser = e
-    )
+    );
+
   }
 
   ngAfterViewInit(): void {
@@ -41,6 +46,10 @@ export class ChatComponent implements OnInit, AfterViewInit {
       })
     });
 
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   // back to chat-list for tablet and mobile devices

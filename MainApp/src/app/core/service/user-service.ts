@@ -2,7 +2,7 @@ import { Injectable, OnInit } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { environment } from "src/environments/environment";
 import { BehaviorSubject } from "rxjs";
-import { LoggedInUser } from "../models/loggedin-user";
+import { LoggedInUser } from "../models/user/loggedin-user";
 import { AuthService } from "./auth-service";
 
 @Injectable({
@@ -42,7 +42,6 @@ export class UserService implements OnInit {
     }
 
     getCurrentUserDetails() {
-        const curuser = this.authService.getLoggedInUserInfo();
         this.getLoggedInUser().subscribe(e => { 
             this.user.next(e);
         });

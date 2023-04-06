@@ -1,15 +1,8 @@
-﻿using ChatApp.Business.ServiceInterfaces;
-using ChatApp.Context.EntityClasses;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
 
 namespace ChatApp.Business.Helpers
 {

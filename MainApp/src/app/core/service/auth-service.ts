@@ -1,7 +1,6 @@
 import { Injectable, OnInit } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
 import { JwtHelper } from "../helper/jwt-helper";
-import { LoggedInUser } from "../models/loggedin-user";
+import { LoggedInUser } from "../models/user/loggedin-user";
 
 @Injectable({
     providedIn: 'root'

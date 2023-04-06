@@ -25,6 +25,19 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).ToList();
 
+
+            //make all chats seen when fetched
+            foreach (var chat in chats)
+            {
+                if(chat.MessageTo == userFrom)
+                {
+                    chat.SeenByReceiver = 1;
+                }
+            }
+
+            _context.UpdateRange(chats);
+            _context.SaveChanges();
+
             var returnChat = chats;
 
             IEnumerable<ChatModel> list = ConvertChatToChatModel(returnChat, fromUserName, toUserName, userFrom, userTo);
@@ -46,10 +59,15 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             {
                 Profile profile = _userService.GetUser(e => e.Id == chat);
 
-                //sort chats by created date then select last chat from table
-                var lastMsgObj = _context.Chats.OrderBy(o => o.CreatedAt).LastOrDefault(
+                var allMsgs = _context.Chats.OrderBy(o => o.CreatedAt).Where(
                     e => (e.MessageFrom == userID && e.MessageTo == profile.Id) || (e.MessageFrom == profile.Id && e.MessageTo == userID)
                     );
+
+                //count where receiver is current user and is not seen by user
+                var unseenCnt = allMsgs.Count(e => e.MessageTo == userID && e.SeenByReceiver == 0);
+
+                //sort chats by created date then select last chat from table
+                var lastMsgObj = allMsgs.LastOrDefault();
 
                 string lastMsg = "";
                 DateTime? lastMsgTime = null;
@@ -64,6 +82,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 userObj.User = ModelMapper.ConvertProfileToDTO(profile);
                 userObj.LastMessage = lastMsg;
                 userObj.LastMsgTime = lastMsgTime;
+                userObj.UnseenCount = unseenCnt;
 
                 returnObj.Add(userObj);
             }
@@ -88,6 +107,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             chat.CreatedAt = DateTime.Now;
             chat.UpdatedAt = DateTime.Now;
             chat.Type = "text";
+            chat.SeenByReceiver = 0;
 
             if(RepliedTo != null)
             {
@@ -138,7 +158,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Type = "Text",
                     Content = chat.Content,
                     CreatedAt = chat.CreatedAt,
-                    UpdatedAt = chat.UpdatedAt
+                    UpdatedAt = chat.UpdatedAt,
+                    SeenByReceiver = chat.SeenByReceiver
                 };
 
                 //if msg is replied then get content

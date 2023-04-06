@@ -14,7 +14,7 @@
             </figure>
             <div>
                 <p>{{selectedUser.firstName}} {{selectedUser.lastName}}</p>
-                <p class="text-muted tx-13">Online</p>
+                <p class="text-muted tx-13">Last seen at {{selectedUser.lastSeen ? (selectedUser.lastSeen | date : 'shortTime') : '-'}}</p>
             </div>
         </div>
         <div class="d-flex align-items-center mr-n1">
@@ -43,7 +43,7 @@
             <div class="content">
                 <div class="message">
                     <div class="bubble">
-                        <p *ngIf="message.repliedTo !== null" class="text-muted">{{message.repliedTo}}</p>
+                        <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
                         <p>{{message.content}}</p>
                     </div>
                     <div class="d-flex">
@@ -61,7 +61,7 @@
                 <div class="message">
                     <div class="bubble mymsg" style="background: rgba(18, 187, 74, 0.2);">
                         <div>
-                            <p *ngIf="message.repliedTo !== null" class="text-muted">{{message.repliedTo}}</p>
+                            <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
                         </div>
                         <div>
                             <p>{{ message.content }}</p>
@@ -72,6 +72,9 @@
                         <a (click)="replyMsg(message.id, message.content)">
                             <i class="feather icon-corner-down-left icon-sm text-muted" ngbTooltip="Reply to message"></i>
                         </a>
+                    </div>
+                    <div *ngIf="message.seenByReceiver == 1">
+                        <span>Read</span>
                     </div>
                 </div>
             </div>

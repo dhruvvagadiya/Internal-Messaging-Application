@@ -1,7 +1,5 @@
 ﻿using ChatApp.Context.EntityClasses;
-using ChatApp.Models.Chat;
 using ChatApp.Models.Users;
-using System.Collections.Generic;
 
 namespace ChatApp.Business.Helpers
 {
@@ -24,6 +22,7 @@ namespace ChatApp.Business.Helpers
             profileDTO.LastUpdatedBy = user.LastUpdatedBy;
             profileDTO.LastUpdatedAt = user.LastUpdatedAt;
             profileDTO.ProfileType = user.ProfileType;
+            profileDTO.LastSeen = user.LastSeen;
 
             return profileDTO;
         }

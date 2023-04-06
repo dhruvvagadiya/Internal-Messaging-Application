@@ -17,5 +17,6 @@ namespace ChatApp.Models.Users
         public int? CreatedBy { get; set; }
         public DateTime? LastUpdatedAt { get; set; }
         public int? LastUpdatedBy { get; set; }
+        public DateTime? LastSeen { get; set; }
     }
 }

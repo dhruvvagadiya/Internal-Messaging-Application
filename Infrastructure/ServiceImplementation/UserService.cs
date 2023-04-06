@@ -88,7 +88,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         {
             IQueryable<Profile> query = context.Set<Profile>();
 
-            query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).Contains(name));
+            query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).StartsWith(name));
             query = query.Where(e => e.UserName != username);
 
             IList<ProfileDTO> list = new List<ProfileDTO>();

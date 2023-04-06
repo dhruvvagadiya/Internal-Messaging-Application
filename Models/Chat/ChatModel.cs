@@ -14,5 +14,7 @@ namespace ChatApp.Models.Chat
 
         //content of parent msg
         public string? RepliedTo { get; set; }
+        public int? SeenByReceiver { get; set; }
+
     }
 }

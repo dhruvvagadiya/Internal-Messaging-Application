@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoggedInUser } from 'src/app/core/models/loggedin-user';
+import { Subscription } from 'rxjs';
+import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { AuthService } from 'src/app/core/service/auth-service';
 import { UserService } from 'src/app/core/service/user-service';
 import Swal from 'sweetalert2';
@@ -12,15 +13,26 @@ import Swal from 'sweetalert2';
   styleUrls: ['./profile-edit.component.scss'],
   preserveWhitespaces: true
 })
-export class ProfileEditComponent implements OnInit {
+export class ProfileEditComponent implements OnInit, OnDestroy {
 
   loggedInUser: LoggedInUser
   profileEditForm : FormGroup
   file : File
+  thumbnail : string
+  subscription : Subscription
 
   constructor(private authService : AuthService, private router : Router, private userService : UserService) { }
 
   ngOnInit(): void {
+
+    this.subscription = this.userService.user.subscribe((e) => {
+      this.loggedInUser = e;
+
+      if (e != null && this.loggedInUser.imageUrl) {
+        this.thumbnail = this.userService.getProfileUrl(e);
+      }
+    });
+
     this.loggedInUser = this.authService.getLoggedInUserInfo();
 
     this.profileEditForm = new FormGroup({
@@ -31,8 +43,6 @@ export class ProfileEditComponent implements OnInit {
   }
 
   UpdateProfile(){
-
-    // console.log(this.profileEditForm);
 
     //formData obj that contains file to be uploaded
     const formData = new FormData();
@@ -45,10 +55,8 @@ export class ProfileEditComponent implements OnInit {
       formData.append(key, value);
     }
 
-    // console.log(formData);
-
     this.userService
-      .updateProfile(formData, this.loggedInUser.sub)
+      .updateProfile(formData, this.loggedInUser.userName ? this.loggedInUser.userName : this.loggedInUser.sub)
       .subscribe(
         (result: any) => {
           this.authService.login(result.token, () => {
@@ -83,6 +91,10 @@ export class ProfileEditComponent implements OnInit {
     if (event.target.files.length > 0) {
       this.file = event.target.files[0];
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
 }

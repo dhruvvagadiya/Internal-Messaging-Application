@@ -9,7 +9,7 @@
     [UpdatedAt] DATETIME2 NULL DEFAULT GETDATE(), 
     [DeletedAt] DATETIME2 NULL,
     [RepliedTo] INT, 
-    [IsSeen] INT NULL DEFAULT 0, 
+    [SeenByReceiver] INT NULL DEFAULT 0, 
     CONSTRAINT [FK_Chats_MessageFrom_To_Profiles] FOREIGN KEY (MessageFrom) REFERENCES dbo.Profiles(Id),
     CONSTRAINT [FK_Chats_MessgeTo_To_Profiles] FOREIGN KEY (MessageTo) REFERENCES dbo.Profiles(Id),
 )

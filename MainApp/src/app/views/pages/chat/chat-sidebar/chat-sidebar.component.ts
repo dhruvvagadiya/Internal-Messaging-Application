@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { LoggedInUser } from "src/app/core/models/loggedin-user";
-import { RecentChatModel } from "src/app/core/models/recent-chat";
+import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
+import { RecentChatModel } from "src/app/core/models/chat/recent-chat";
 import { ChatService } from "src/app/core/service/chat-service";
 import { UserService } from "src/app/core/service/user-service";
 
@@ -23,7 +23,6 @@ export class ChatSideBarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-
     //get recent chat
     this.chatService.getRecentUsers().subscribe((res: RecentChatModel[]) => {
       this.recentChats = res;

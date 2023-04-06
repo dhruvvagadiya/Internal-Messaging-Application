@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { SendMessage } from '../models/send-message';
+import { SendMessage } from '../models/chat/send-message';
 
 @Injectable({providedIn: 'root'})
 export class ChatService {

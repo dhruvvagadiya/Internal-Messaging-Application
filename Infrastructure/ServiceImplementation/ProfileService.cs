@@ -38,6 +38,17 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return user;
         }
 
+        //set last seend when user is logged out
+        public void HandleLogout(string username)
+        {
+            var user = context.Profiles.FirstOrDefault(e => e.UserName == username);
+            if(user == null) return;
+
+            user.LastSeen = DateTime.Now;
+            context.Update(user);
+            context.SaveChanges();
+        }
+
         public Profile RegisterUser(RegisterModel regModel, string salt)
         {
             Profile newUser = null;

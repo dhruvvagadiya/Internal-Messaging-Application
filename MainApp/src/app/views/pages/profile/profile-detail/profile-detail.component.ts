@@ -1,8 +1,8 @@
-import { Component, OnInit } from "@angular/core";
-import { LoggedInUser } from "src/app/core/models/loggedin-user";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
+import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
 import { AuthService } from "src/app/core/service/auth-service";
 import { UserService } from "src/app/core/service/user-service";
-import { environment } from "src/environments/environment";
 
 @Component({
     selector: 'app-profile-detail',
@@ -11,10 +11,11 @@ import { environment } from "src/environments/environment";
     preserveWhitespaces: true
   })
   
-export class ProfileDetailComponent implements OnInit {
+export class ProfileDetailComponent implements OnInit, OnDestroy {
 
   user : LoggedInUser;
   thumbnail : string;
+  subscription : Subscription
 
   constructor(private userService : UserService, private authService : AuthService){
     // this.fetchUserDetails();
@@ -22,13 +23,23 @@ export class ProfileDetailComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.userService.user.subscribe((e) => {
+    this.subscription = this.userService.user.subscribe((e) => {
       this.user = e;
-
+      
       if (e != null && this.user.imageUrl) {
         this.thumbnail = this.userService.getProfileUrl(e);
       }
     });
+
+    this.user = this.authService.getLoggedInUserInfo();
+
+    this.userService.getLoggedInUser().subscribe(
+      e => this.user = e
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   // private fetchUserDetails() {

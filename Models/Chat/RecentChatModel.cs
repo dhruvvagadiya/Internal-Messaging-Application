@@ -7,6 +7,7 @@ namespace ChatApp.Models.Chat
     {
         public DateTime? LastMsgTime { get; set; }
         public string LastMessage { get; set; }
+        public int UnseenCount { get; set; }
         public ProfileDTO User { get; set; }
     }
 }

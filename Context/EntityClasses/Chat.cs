@@ -14,5 +14,8 @@ namespace ChatApp.Context.EntityClasses
 
         //id of chat msg if it is replied
         public int? RepliedTo { get; set; }
+
+        //is seen by receiver
+        public int? SeenByReceiver { get; set; }
     }
 }

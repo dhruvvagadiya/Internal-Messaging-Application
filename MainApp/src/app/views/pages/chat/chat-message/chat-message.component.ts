@@ -2,12 +2,14 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { LoggedInUser } from "src/app/core/models/loggedin-user";
-import { MessageModel } from "src/app/core/models/message-model";
+import { Subscription } from "rxjs";
+import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
+import { MessageModel } from "src/app/core/models/chat/message-model";
 import { ChatService } from "src/app/core/service/chat-service";
 import { UserService } from "src/app/core/service/user-service";
 
@@ -17,7 +19,7 @@ import { UserService } from "src/app/core/service/user-service";
   styleUrls : ["./chat-message.component.scss"]
 })
 
-export class ChatMessageComponent implements OnInit, AfterViewChecked {
+export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
   user: LoggedInUser;
   selectedUser: LoggedInUser;
   thumbnail = "https://via.placeholder.com/80x80";
@@ -27,6 +29,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   replyMsgContent: string;
 
   messageList: MessageModel[] = [];
+  subscription : Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,7 +38,8 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit() {
-    this.userService.user.subscribe((e) => {
+
+    this.subscription = this.userService.user.subscribe((e) => {
       this.user = e;
 
       if (e != null && this.user.imageUrl) {
@@ -129,6 +133,10 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   replyMsg(id: number, content: string) {
     this.replyMsgId = id;
     this.replyMsgContent = content;
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   // back to chat-list for tablet and mobile devices
