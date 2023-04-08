@@ -16,14 +16,20 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 {
     public class UserService : IUserService
     {
+        #region Private fields
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly ChatAppContext context;
+        #endregion
 
+        #region Constructor
         public UserService(ChatAppContext context, IWebHostEnvironment hostEnvironment)
         {
             this.context = context;
             _hostEnvironment = hostEnvironment;
         }
+        #endregion
+
+        #region Methods
         public Profile UpdateUser(UpdateModel updateModel, string username)
         {
             //check if username is valid or not
@@ -76,6 +82,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             user.FirstName = updateModel.FirstName;
             user.LastName = updateModel.LastName;
+            user.Status = updateModel.Status;
             user.LastUpdatedAt = DateTime.Now;
 
             context.Profiles.Update(user);
@@ -89,6 +96,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             IQueryable<Profile> query = context.Set<Profile>();
 
             query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).StartsWith(name));
+
+            //remove current user from the list
             query = query.Where(e => e.UserName != username);
 
             IList<ProfileDTO> list = new List<ProfileDTO>();
@@ -118,13 +127,13 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
         public int GetIdFromUsername(string username)
         {
-            var user = context.Profiles.FirstOrDefault(e => e.UserName == username);
+            var user = GetUser(e => e.UserName == username);
             if(user == null)
             {
                 return -1;
             }
             return user.Id;
         }
-
+        #endregion
     }
 }

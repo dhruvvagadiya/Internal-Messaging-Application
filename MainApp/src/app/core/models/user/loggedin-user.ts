@@ -10,7 +10,8 @@ export interface LoggedInUser
     createdBy? : number,
     lastUpdatedAt? : Date,
     lastUpdatedBy? : number,
-    lastSeen? : Date, 
+    lastSeen? : Date,
+    status? : string, 
     sub : string
 }
     

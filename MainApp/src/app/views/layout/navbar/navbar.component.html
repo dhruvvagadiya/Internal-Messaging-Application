@@ -13,11 +13,11 @@
         <div ngbDropdownMenu aria-labelledby="profileDropdown">
           <div class="dropdown-header d-flex flex-column align-items-center">
             <div class="figure mb-3">
-              <img [src]="thumbnail" alt="{{ loggedInUser.userName}} profile">
+              <img [src]="thumbnail" alt="{{ loggedInUser?.userName}} profile">
             </div>
             <div class="info text-center">
-              <p class="name font-weight-bold mb-0">{{loggedInUser.firstName}} {{loggedInUser.lastName}}</p>
-              <p class="email text-muted mb-3">{{loggedInUser.email}}</p>
+              <p class="name font-weight-bold mb-0">{{loggedInUser?.firstName}} {{loggedInUser?.lastName}}</p>
+              <p class="email text-muted mb-3">{{loggedInUser?.email}}</p>
             </div>
           </div>
           <div class="dropdown-body">

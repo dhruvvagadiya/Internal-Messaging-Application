@@ -21,15 +21,20 @@ namespace ChatApp.Controllers
     [Authorize]
     public class UserController : ControllerBase
     {
+        #region Private fields
         private readonly IConfiguration _config;
         private readonly IUserService _userService;
+        #endregion
 
+        #region Constructor
         public UserController(IConfiguration config, IUserService userService)
         {
             _config = config;
             _userService = userService;
         }
+        #endregion
 
+        #region API End points
 
         [HttpPut("{username}")]
         public IActionResult UpdateProfile([FromForm] UpdateModel updateModel, string username)
@@ -62,11 +67,40 @@ namespace ChatApp.Controllers
 
         [HttpGet("GetUsers/{name}")]
         public IActionResult GetUsers(string? name, [FromHeader] string authorization)
-      {
+        {
             string username = JwtHelper.GetUsernameFromRequest(Request);
             var userList = _userService.GetAll(name.ToUpper().Trim(), username);
             return Ok(new { data = userList });
         }
+
+        #endregion
+
+        #region Methods
+        private string GenerateJSONWebToken(Profile profileInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[] {
+                    new Claim(JwtRegisteredClaimNames.Sub, profileInfo.UserName),
+                    new Claim(JwtRegisteredClaimNames.Email, profileInfo.Email),
+                    new Claim(ClaimsConstant.FirstNameClaim, profileInfo.FirstName),
+                    new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
+                    new Claim(ClaimsConstant.StatusClaim, profileInfo.Status),
+                    //new Claim(ClaimsConstant.ImageUrlClaim, profileInfo.ImageUrl),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    };
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+                _config["Jwt:Issuer"],
+                claims,
+                expires: DateTime.Now.AddSeconds(120),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        #endregion
 
 
         //[HttpGet("GetImage")]
@@ -101,31 +135,5 @@ namespace ChatApp.Controllers
         //    b = System.IO.File.ReadAllBytes(path);
         //    return File(b, "image/jpeg");
         //}
-
-        #region Methods
-        private string GenerateJSONWebToken(Profile profileInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[] {
-                    new Claim(JwtRegisteredClaimNames.Sub, profileInfo.UserName),
-                    new Claim(JwtRegisteredClaimNames.Email, profileInfo.Email),
-                    new Claim(ClaimsConstant.FirstNameClaim, profileInfo.FirstName),
-                    new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
-                    //new Claim(ClaimsConstant.ImageUrlClaim, profileInfo.ImageUrl),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddSeconds(120),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        #endregion
     }
 }

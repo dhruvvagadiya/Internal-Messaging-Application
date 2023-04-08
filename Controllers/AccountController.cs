@@ -102,6 +102,7 @@ namespace ChatApp.Controllers
                     new Claim(ClaimsConstant.FirstNameClaim, profileInfo.FirstName),
                     new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
                     //new Claim(ClaimsConstant.ImageUrlClaim, profileInfo.ImageUrl),
+                    new Claim(ClaimsConstant.StatusClaim, profileInfo.Status),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 

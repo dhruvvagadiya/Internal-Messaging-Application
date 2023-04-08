@@ -8,7 +8,7 @@
           </figure>
           <div>
             <h6>{{user.firstName}} {{user.lastName}}</h6>
-            <p class="text-muted tx-13">Online</p>
+            <p class="text-muted tx-13">{{user.status}}</p>
           </div>
         </div>
         <div class="dropdown" ngbDropdown>
@@ -82,6 +82,8 @@
               </p>
               <ul class="list-unstyled chat-list px-1">
 
+                <li class="chat-item p-3" *ngIf="!recentChats || recentChats.length == 0">No chats to display</li>
+
                 <li class="chat-item pr-1" *ngFor="let obj of recentChats;">
                   <a [routerLink]="obj.user.userName" class="d-flex align-items-center">
                     <figure class="mb-0 mr-2">
@@ -91,7 +93,7 @@
                     <div class="d-flex justify-content-between flex-grow border-bottom">
                       <div>
                         <p class="text-body font-weight-bold">{{obj.user.firstName}} {{obj.user.lastName}}</p>
-                        <p class="text-muted tx-13">{{obj.lastMessage}}</p>
+                        <p class="text-muted tx-13">{{obj.lastMessage ? obj.lastMessage : 'file'}}</p>
                       </div>
                       <div class="d-flex flex-column align-items-end">
                         <p class="text-muted tx-13 mb-1">{{obj.lastMsgTime ? (obj.lastMsgTime | date : 'shortTime')  : ''}}</p>

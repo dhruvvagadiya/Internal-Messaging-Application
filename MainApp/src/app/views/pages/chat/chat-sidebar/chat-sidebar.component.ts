@@ -25,6 +25,7 @@ export class ChatSideBarComponent implements OnInit {
   ngOnInit() {
     //get recent chat
     this.chatService.getRecentUsers().subscribe((res: RecentChatModel[]) => {
+      // console.log(res);
       this.recentChats = res;
     });
   }

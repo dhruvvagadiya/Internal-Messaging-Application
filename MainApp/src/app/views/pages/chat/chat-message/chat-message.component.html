@@ -1,124 +1,203 @@
-<div *ngIf="isLoading" class="spinner-border" role="status">
-</div>
-
-<!-- user profile details -->
-<div *ngIf="!isLoading && selectedUser" class="chat-header border-bottom pb-2">
-    <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-            <i (click)="backToChatList()"
-                class="feather icon-corner-up-left icon-md mr-2 ml-n2 text-muted d-lg-none"></i>
-            <figure class="mb-0 mr-2">
-                <img [src]="getProfile(selectedUser)" class="img-sm rounded-circle" alt="image">
-                <div class="status online"></div>
-                <div class="status online"></div>
-            </figure>
-            <div>
-                <p>{{selectedUser.firstName}} {{selectedUser.lastName}}</p>
-                <p class="text-muted tx-13">Last seen at {{selectedUser.lastSeen ? (selectedUser.lastSeen | date : 'shortTime') : '-'}}</p>
-            </div>
-        </div>
-        <div class="d-flex align-items-center mr-n1">
-            <a (click)="reloadChat()">
-                <i class="feather icon-refresh-ccw icon-md text-muted mr-3" ngbTooltip="Refresh Content"></i>
-            </a>
-            <a href="" (click)="false">
-                <i class="feather icon-video icon-md text-muted mr-3" ngbTooltip="Start video call"></i>
-            </a>
-            <a href="" (click)="false">
-                <i class="feather icon-phone-call icon-md text-muted mr-0 mr-sm-3" ngbTooltip="Start voice call"></i>
-            </a>
-            <a href="" (click)="false" class="d-none d-sm-block">
-                <i class="feather icon-user-plus icon-md text-muted" ngbTooltip="Add to contacts"></i>
-            </a>
-        </div>
-    </div>
-</div>
-<!-- user profile end -->
-
-<!-- Rendering message list -->
-<div class="chat-body" [perfectScrollbar] #scrollContainer>
-    <ul class="messages" *ngFor="let message of messageList;">
-        <li class="message-item friend" *ngIf="message.messageFrom === selectedUser.userName">
-            <img [src]="getProfile(selectedUser)" class="img-xs rounded-circle" alt="avatar">
-            <div class="content">
-                <div class="message">
-                    <div class="bubble">
-                        <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
-                        <p>{{message.content}}</p>
-                    </div>
-                    <div class="d-flex">
-                        <span>{{ message.createdAt | date : 'shortTime' }}</span>
-                        <a (click)="replyMsg(message.id, message.content)">
-                            <i class="feather icon-corner-down-left icon-sm text-muted" ngbTooltip="Reply to message"></i>
-                        </a>
-                    </div>
+<div *ngIf="user && selectedUser">
+    
+    <!-- user profile details -->
+    <div class="chat-header border-bottom pb-2">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <i (click)="backToChatList()"
+                    class="feather icon-corner-up-left icon-md mr-2 ml-n2 text-muted d-lg-none"></i>
+                <figure class="mb-0 mr-2">
+                    <img [src]="getProfile(selectedUser)" class="img-sm rounded-circle" alt="image">
+                    <div class="status online"></div>
+                    <div class="status online"></div>
+                </figure>
+                <div>
+                    <p>{{selectedUser.firstName}} {{selectedUser.lastName}}</p>
+                    <p class="text-muted tx-13">{{selectedUser.status}}</p>
+                    <!-- <p class="text-muted tx-13">Last seen at {{selectedUser.lastSeen ? (selectedUser.lastSeen | date :
+                        'shortTime') : '-'}}</p> -->
                 </div>
             </div>
-        </li>
-        <li class="message-item me" *ngIf="message.messageFrom === user.userName">
-            <img [src]="getProfile(user)" class="img-xs rounded-circle" alt="avatar">
-            <div class="content">
-                <div class="message">
-                    <div class="bubble mymsg" style="background: rgba(18, 187, 74, 0.2);">
-                        <div>
+            <div class="d-flex align-items-center mr-n1">
+                <a (click)="reloadChat()">
+                    <i class="feather icon-refresh-ccw icon-md text-muted mr-3" ngbTooltip="Refresh Content"></i>
+                </a>
+                <a href="" (click)="false">
+                    <i class="feather icon-video icon-md text-muted mr-3" ngbTooltip="Start video call"></i>
+                </a>
+                <a href="" (click)="false">
+                    <i class="feather icon-phone-call icon-md text-muted mr-0 mr-sm-3"
+                        ngbTooltip="Start voice call"></i>
+                </a>
+                <a href="" (click)="false" class="d-none d-sm-block">
+                    <i class="feather icon-user-plus icon-md text-muted" ngbTooltip="Add to contacts"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- user profile end -->
+
+    <!-- Rendering message list -->
+    <div class="chat-body" [perfectScrollbar] #scrollContainer>
+        <ul class="messages" *ngFor="let message of messageList;">
+
+            <li class="message-item" [ngClass]="message.messageFrom === selectedUser.userName ? 'friend' : 'me'">
+
+                <img [src]="getProfile(message.messageFrom == selectedUser.userName ? selectedUser : user)" class="img-xs rounded-circle" alt="avatar">
+
+                <div class="content">
+                    <div class="message">
+
+                        <div class="bubble" *ngIf="message.repliedTo || message.content" [ngClass]="message.messageFrom == user.userName ? 'mymsg' : ''">
                             <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
+                            <p *ngIf="message.content">{{message.content}}</p>
                         </div>
-                        <div>
-                            <p>{{ message.content }}</p>
+
+                        <div *ngIf="message.type !== 'text'">
+                            
+                            <img *ngIf="message.type === 'image'" [src]="getMsgUrl(message.filePath)" class="img-md" height="200px" width="200px" alt="avatar">
+
+                            <video width="320" height="240" controls *ngIf="message.type === 'video'">
+                                <source [src]="getMsgUrl(message.filePath)" type="video/mp4">
+                                <source [src]="getMsgUrl(message.filePath)" type="video/ogg">
+                              Your browser does not support the video tag.
+                            </video>
+
+                            <audio controls *ngIf="message.type === 'audio'">
+                                <source [src]="getMsgUrl(message.filePath)" type="audio/ogg">
+                                <source [src]="getMsgUrl(message.filePath)" type="audio/mpeg">
+                              Your browser does not support the audio element.
+                            </audio>
+                            
                         </div>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <span>{{ message.createdAt | date : 'shortTime' }}</span>
-                        <a (click)="replyMsg(message.id, message.content)">
-                            <i class="feather icon-corner-down-left icon-sm text-muted" ngbTooltip="Reply to message"></i>
-                        </a>
-                    </div>
-                    <div *ngIf="message.seenByReceiver == 1">
-                        <span>Read</span>
+
+                        <!-- for text content -->
+                        <div class="d-flex" *ngIf="message.type === 'text'"
+                            [ngClass]="message.messageFrom == user.userName ? 'justify-content-end' : ''">
+                            <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                            <a (click)="replyMsg(message.id, message.content)" class="d-box">
+                                <i class="feather icon-corner-down-left icon-sm text-muted"
+                                    ngbTooltip="Reply to message"></i>
+                            </a>
+                        </div>
+
+                        <div *ngIf="message.type === 'text' && message.messageFrom === user.userName && message.seenByReceiver == 1">
+                            <span>Read</span>
+                        </div>
+
+                        <!-- for files -->
+                        <div class="mt-2"  *ngIf="message.type !== 'text'">
+                            <span class="d-box">{{ message.createdAt | date : 'shortTime' }}</span>
+                            <span *ngIf="message.messageFrom === user.userName && message.seenByReceiver == 1">Read</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </li>
-    </ul>
-</div>
-<!-- Message list end -->
+            </li>
+        </ul>
+    </div>
+    <!-- Message list end -->
 
-<!-- Chat footer start -->
-<div class="chat-footer">
-    <div class="ml-4 py-2 bg-light rounded" *ngIf="replyMsgId">
-        <div class="ml-2 mr-2">
-            <div class="d-flex justify-content-between">
-                <p class="text-muted">Replying to : </p>
-                <a (click)="replyMsgId = null"><i class="feather icon-x border rounded icon-sm text-muted"></i></a>
+    <!-- Chat footer start -->
+    <div class="chat-footer">
+
+        <!-- msg reply -->
+        <div class="ml-4 py-2 bg-light rounded" *ngIf="replyMsgId">
+            <div class="ml-2 mr-2">
+                <div class="d-flex justify-content-between">
+                    <p class="text-muted">Replying to : </p>
+                    <a (click)="replyMsgId = null"><i class="feather icon-x border rounded icon-sm text-muted" ngbTooltip="Remove reply"></i></a>
+                </div>
+                <p> {{replyMsgContent}} </p>
             </div>
-            <p> {{replyMsgContent}} </p>
+        </div>
+
+        <div class="ml-4 py-2 bg-light rounded" *ngIf="file">
+            <div class="ml-2 mr-2">
+                <div class="d-flex justify-content-between">
+                    <p>Click on send button to send file</p>
+                    <a (click)="file = null"><i class="feather icon-x border rounded icon-sm text-muted" ngbTooltip="Remove File"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- bottom bar -->
+        <div class="d-flex mt-2">
+            <div>
+                <button type="button" class="btn btn-icon mr-2" ngbTooltip="Emoji">
+                    <i class="feather icon-sun text-muted"></i>
+                </button>
+            </div>
+            <div class="d-none d-md-block">
+                <button type="button" (click)="ChatImageUpload.click()" class="btn btn-icon mr-2" ngbTooltip="Attatch files">
+                    <i class="feather icon-paperclip text-muted"></i>
+                </button>
+                <input type="file" #ChatImageUpload (change)="onFileChanged($event)" hidden accept="audio/*,video/*,image/*">
+            </div>
+            <div class="d-none d-md-block">
+                <button type="button" class="btn btn-icon mr-2" ngbTooltip="Record you voice">
+                    <i class="feather icon-mic text-muted"></i>
+                </button>
+            </div>
+            <div class="search-form flex-grow mr-2 input-group">
+                <input type="text" class="form-control rounded-pill" (keydown.enter)="sendMessage(messageInput)"
+                    id="chatForm" placeholder="Type a message" #messageInput>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary btn-icon rounded-circle"
+                    (click)="sendMessage(messageInput)">
+                    <i class="feather icon-send"></i>
+                </button>
+            </div>
         </div>
     </div>
-    <div class="d-flex mt-2">
-        <div>
-            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Emoji">
-                <i class="feather icon-sun text-muted"></i>
-            </button>
-        </div>
-        <div class="d-none d-md-block">
-            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Attatch files">
-                <i class="feather icon-paperclip text-muted"></i>
-            </button>
-        </div>
-        <div class="d-none d-md-block">
-            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Record you voice">
-                <i class="feather icon-mic text-muted"></i>
-            </button>
-        </div>
-        <div class="search-form flex-grow mr-2 input-group">
-            <input type="text" class="form-control rounded-pill" (keydown.enter)="sendMessage(messageInput)" id="chatForm" placeholder="Type a message" #messageInput>
-        </div>
-        <div>
-            <button type="button" class="btn btn-primary btn-icon rounded-circle" (click)="sendMessage(messageInput)">
-                <i class="feather icon-send"></i>
-            </button>
-        </div>
-    </div>
+
+    <!-- chat footer end -->
 </div>
 
-<!-- chat footer end -->
+<!-- text from friend -->
+<!-- <li class="message-item friend" *ngIf="message.messageFrom === selectedUser.userName && message.type === 'text'">
+                <img [src]="getProfile(selectedUser)" class="img-xs rounded-circle" alt="avatar">
+                <div class="content">
+                    <div class="message">
+                        <div class="bubble">
+                            <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
+                            <p>{{message.content}}</p>
+                        </div>
+                        <div class="d-flex">
+                            <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                            <a (click)="replyMsg(message.id, message.content)">
+                                <i class="feather icon-corner-down-left icon-sm text-muted"
+                                    ngbTooltip="Reply to message"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li> -->
+
+<!-- text from you -->
+<!-- <li class="message-item me" *ngIf="message.messageFrom === user.userName && message.type === 'text'">
+                <img [src]="getProfile(user)" class="img-xs rounded-circle" alt="avatar">
+                <div class="content">
+                    <div class="message">
+                        <div class="bubble mymsg" style="background: rgba(18, 187, 74, 0.2);">
+                            <div>
+                                <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u>
+                                </p>
+                            </div>
+                            <div>
+                                <p>{{ message.content }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                            <a (click)="replyMsg(message.id, message.content)">
+                                <i class="feather icon-corner-down-left icon-sm text-muted"
+                                    ngbTooltip="Reply to message"></i>
+                            </a>
+                        </div>
+                        <div *ngIf="message.seenByReceiver == 1">
+                            <span>Read</span>
+                        </div>
+                    </div>
+                </div>
+            </li> -->

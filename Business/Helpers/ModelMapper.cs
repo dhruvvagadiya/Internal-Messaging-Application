@@ -23,6 +23,7 @@ namespace ChatApp.Business.Helpers
             profileDTO.LastUpdatedAt = user.LastUpdatedAt;
             profileDTO.ProfileType = user.ProfileType;
             profileDTO.LastSeen = user.LastSeen;
+            profileDTO.Status = user.Status;
 
             return profileDTO;
         }

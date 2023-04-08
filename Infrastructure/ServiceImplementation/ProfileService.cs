@@ -62,7 +62,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     UserName = regModel.UserName,
                     Email = regModel.Email,
                     CreatedAt = DateTime.UtcNow,
-                    ProfileType = ProfileType.User
+                    ProfileType = ProfileType.User,
+                    Status = "Employee"
                 };
 
                 newUser.LastUpdatedAt = DateTime.Now;

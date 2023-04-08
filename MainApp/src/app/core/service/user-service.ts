@@ -11,7 +11,7 @@ import { AuthService } from "./auth-service";
 
 export class UserService implements OnInit {
 
-    user = new BehaviorSubject<LoggedInUser>(null);
+    private userSubject = new BehaviorSubject<LoggedInUser>(null);
     
     constructor(private http: HttpClient, private authService : AuthService) {
         this.getCurrentUserDetails();
@@ -36,21 +36,21 @@ export class UserService implements OnInit {
         return this.http.get<LoggedInUser>(environment.apiUrl + "/user/"+ username);
     }
 
-    getLoggedInUser() {
+    getCurrentUserDetails() {
         const curuser = this.authService.getLoggedInUserInfo();
-        return this.getUser(curuser.sub);
+        this.getUser(curuser.sub).subscribe(e => { 
+            this.userSubject.next(e);
+        });
     }
 
-    getCurrentUserDetails() {
-        this.getLoggedInUser().subscribe(e => { 
-            this.user.next(e);
-        });
+    getUserSubject(){
+        return this.userSubject.asObservable();
     }
 
     getProfileUrl(user : LoggedInUser){
         if(user && user.imageUrl) {
             return environment.hostUrl + "/images/" + user.imageUrl
         }
-        return "https://via.placeholder.com/80x80";
+        return "https://w7.pngwing.com/pngs/754/2/png-transparent-samsung-galaxy-a8-a8-user-login-telephone-avatar-pawn-blue-angle-sphere-thumbnail.png";
     }
 }

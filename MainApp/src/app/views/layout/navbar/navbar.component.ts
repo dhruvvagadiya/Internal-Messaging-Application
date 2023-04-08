@@ -29,16 +29,10 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     
-    this.userService.user.subscribe(e => {
+    this.userService.getUserSubject().subscribe(e => {
       this.loggedInUser = e;
       this.thumbnail = this.userService.getProfileUrl(e);
-    })
-    
-    this.loggedInUser = this.authService.getLoggedInUserInfo();
-
-    this.userService.getLoggedInUser().subscribe(
-      e => this.loggedInUser = e
-    );
+    });
   }
 
   /**

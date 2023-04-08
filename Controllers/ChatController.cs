@@ -83,7 +83,7 @@ namespace ChatApp.Controllers
         //add message to DB
         [HttpPost]
         [Route("{toUser}")]
-        public IActionResult SendMessage(string toUser, [FromBody] ChatSendModel SendChat)
+        public IActionResult SendMessage(string toUser, [FromForm] ChatSendModel SendChat)
         {
             string fromUser = JwtHelper.GetUsernameFromRequest(Request);
             //string fromUser = "dhruvPatel";
@@ -97,11 +97,19 @@ namespace ChatApp.Controllers
             }
 
             //validate both sender and receiver
-            if(SendChat.Sender != fromUser || SendChat.Receiver != toUser) { return BadRequest(); } 
+            if(SendChat.Sender != fromUser || SendChat.Receiver != toUser) { return BadRequest(); }
 
-            if(SendChat.Type == "text")
+            //if both content and file are not provided
+            if(SendChat.Content == null && SendChat.File == null) { return BadRequest();  }
+
+            if (SendChat.Type == "text" && SendChat.Content != null)
             {
                 var sentMessage = _chatService.SendTextMessage(fromUser, toUser, SendChat.Content, SendChat.RepliedTo);
+                return Ok(sentMessage);
+            }
+            else if(SendChat.Type == "file" && SendChat.File != null)
+            {
+                var sentMessage = _chatService.SendFileMessage(fromUser, toUser, SendChat);
                 return Ok(sentMessage);
             }
 

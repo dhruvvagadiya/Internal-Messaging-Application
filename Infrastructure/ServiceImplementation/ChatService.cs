@@ -3,21 +3,34 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Chat;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
 {
     public class ChatService : IChatService
     {
+        #region Private Fields
         private readonly ChatAppContext _context;
         private readonly IUserService _userService;
-        public ChatService(ChatAppContext context, IUserService userService)
+        private readonly IWebHostEnvironment _hostEnvironment;
+        #endregion
+
+        #region Constructor
+        public ChatService(ChatAppContext context, IUserService userService, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
             _userService = userService;
+            _hostEnvironment = hostEnvironment;
         }
+        #endregion
+
+        #region Methods
 
         //get chatList
         public IEnumerable<ChatModel> GetChatList(int userFrom, int userTo, string fromUserName, string toUserName)
@@ -143,7 +156,81 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return returnObj;
         }
 
+        //send files
+        public ChatModel SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat)
+        {
+            //var tmp = SendChat.File.ContentType;
+            //save file
+            var file = SendChat.File;
 
+            string wwwRootPath = _hostEnvironment.WebRootPath;
+
+            string fileName = Guid.NewGuid().ToString(); //new generated name of the file
+            var extension = Path.GetExtension(file.FileName); // extension of the file
+
+            var pathToSave = Path.Combine(wwwRootPath, @"chat");
+
+            var dbPath = Path.Combine(pathToSave, fileName + extension);
+            using (var fileStreams = new FileStream(dbPath, FileMode.Create))
+            {
+                file.CopyTo(fileStreams);
+            }
+
+            //save chat in Database
+            int fromId = _userService.GetIdFromUsername(fromUser);
+            int toId = _userService.GetIdFromUsername(toUser);
+
+            Chat chat = new Chat();
+
+            chat.MessageFrom = fromId;
+            chat.MessageTo = toId;
+            chat.Content = SendChat.Content;
+            chat.CreatedAt = DateTime.Now;
+            chat.UpdatedAt = DateTime.Now;
+            chat.Type = file.ContentType.Split('/')[0];
+            chat.SeenByReceiver = 0;
+            chat.FilePath = fileName + extension;
+
+            if (SendChat.RepliedTo != null)
+            {
+                chat.RepliedTo = SendChat.RepliedTo;
+            }
+            else
+            {
+                chat.RepliedTo = -1;
+            }
+
+            //save chat
+            _context.Chats.Add(chat);
+            _context.SaveChanges();
+
+
+            //convert to chatModel
+            string ReplyMsg = "";
+            if (SendChat.RepliedTo != null)
+            {
+                ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == SendChat.RepliedTo).Content;
+            }
+
+            var returnObj = new ChatModel()
+            {
+                MessageFrom = fromUser,
+                MessageTo = toUser,
+                Content = chat.Content,
+                Type = file.ContentType.Split('/')[0],
+                CreatedAt = chat.CreatedAt,
+                UpdatedAt = chat.UpdatedAt,
+                RepliedTo = ReplyMsg,
+                FilePath = fileName + extension,
+            };
+
+            //return chatModel
+            return returnObj;
+        }
+
+        #endregion
+
+        #region Private Methods
         private IEnumerable<ChatModel> ConvertChatToChatModel(IEnumerable<Chat> curList, string from, string to, int fromId, int toId)
         {
             var returnObj = new List<ChatModel>();
@@ -155,11 +242,12 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Id = chat.Id,
                     MessageFrom = (chat.MessageFrom == fromId) ? from : to,
                     MessageTo = (chat.MessageTo == fromId) ? from : to,
-                    Type = "Text",
+                    Type = chat.Type,
                     Content = chat.Content,
                     CreatedAt = chat.CreatedAt,
                     UpdatedAt = chat.UpdatedAt,
-                    SeenByReceiver = chat.SeenByReceiver
+                    SeenByReceiver = chat.SeenByReceiver,
+                    FilePath = chat.FilePath,
                 };
 
                 //if msg is replied then get content
@@ -173,5 +261,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             return returnObj;
         }
+
+        #endregion
     }
 }

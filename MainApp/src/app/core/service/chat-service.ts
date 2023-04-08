@@ -12,7 +12,7 @@ export class ChatService {
         return this.http.get(environment.apiUrl + "/chat/recent");
     }
 
-    sendChat(username : string, data : SendMessage) {
+    sendChat(username : string, data : FormData) {
         return this.http.post(environment.apiUrl + "/chat/" + username, data);
     }
 

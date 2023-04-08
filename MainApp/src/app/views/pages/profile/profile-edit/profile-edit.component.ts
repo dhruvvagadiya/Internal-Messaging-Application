@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { AuthService } from 'src/app/core/service/auth-service';
 import { UserService } from 'src/app/core/service/user-service';
@@ -13,33 +12,32 @@ import Swal from 'sweetalert2';
   styleUrls: ['./profile-edit.component.scss'],
   preserveWhitespaces: true
 })
-export class ProfileEditComponent implements OnInit, OnDestroy {
+export class ProfileEditComponent implements OnInit {
 
   loggedInUser: LoggedInUser
   profileEditForm : FormGroup
+  thumbnail : any =  "https://via.placeholder.com/30x30";
   file : File
-  thumbnail : string
-  subscription : Subscription
 
   constructor(private authService : AuthService, private router : Router, private userService : UserService) { }
 
   ngOnInit(): void {
 
-    this.subscription = this.userService.user.subscribe((e) => {
+    this.userService.getUserSubject().subscribe(e => {
       this.loggedInUser = e;
-
-      if (e != null && this.loggedInUser.imageUrl) {
-        this.thumbnail = this.userService.getProfileUrl(e);
-      }
+      this.thumbnail = this.userService.getProfileUrl(e);
     });
 
     this.loggedInUser = this.authService.getLoggedInUserInfo();
 
     this.profileEditForm = new FormGroup({
+      'UserName' : new FormControl(this.loggedInUser.sub, [Validators.required]),
       'FirstName' : new FormControl(this.loggedInUser.firstName, [Validators.required]),
       'LastName' : new FormControl(this.loggedInUser.lastName, [Validators.required]),
+      'Status' : new FormControl(this.loggedInUser.status, [Validators.required, Validators.maxLength(50)]),
       'Email' : new FormControl(this.loggedInUser.email, [Validators.required, Validators.email])
     });
+
   }
 
   UpdateProfile(){
@@ -90,11 +88,15 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
   onFileChanged(event) {
     if (event.target.files.length > 0) {
       this.file = event.target.files[0];
-    }
-  }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+      //show sample profile image on screen
+      var reader = new FileReader();
+        reader.onload = (e) => {
+            this.thumbnail = e.target.result;
+        };
+      reader.readAsDataURL(this.file);
+
+    }
   }
 
 }

@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/user/login-model';
 import { AccountService } from 'src/app/core/service/account-service';
 import { AuthService } from 'src/app/core/service/auth-service';
+import { UserService } from 'src/app/core/service/user-service';
 import Swal from 'sweetalert2'
 
 @Component({
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
   constructor(private router: Router,
     private route: ActivatedRoute,
     private accountService: AccountService,
+    private userService: UserService,
     private authService: AuthService) { }
 
   ngOnInit(): void {
@@ -48,6 +50,10 @@ export class LoginComponent implements OnInit {
           timer: 2000,
          timerProgressBar: true,
         });
+
+        //get new user
+        this.userService.getCurrentUserDetails();
+
         setTimeout(() => {
           this.router.navigate(["/"]);
         }, (2000));

@@ -1,5 +1,6 @@
 export interface MessageModel {
     content : string,
+    filePath? : string,
     createdAt : Date,
     updatedAt : Date,
     id : number,
@@ -7,5 +8,5 @@ export interface MessageModel {
     messageTo : string,
     type : string,
     repliedTo? : string,
-    seenByReceiver : number
+    seenByReceiver : number,
 }

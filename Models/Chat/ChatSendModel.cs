@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ChatApp.Models.Chat
 {
@@ -10,9 +12,12 @@ namespace ChatApp.Models.Chat
         public string Receiver { get; set; }
         [Required]
         public string Type { get; set; }
-        [Required]
+        //[Required]
         public string Content { get; set; }
 
+        public IFormFile? File { get; set; }
+
+        [AllowNull]
         public int? RepliedTo { get; set; }
     }
 }

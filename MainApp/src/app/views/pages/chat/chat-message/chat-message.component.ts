@@ -2,16 +2,15 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
-  OnDestroy,
   OnInit,
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
-import { Subscription } from "rxjs";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
 import { MessageModel } from "src/app/core/models/chat/message-model";
 import { ChatService } from "src/app/core/service/chat-service";
 import { UserService } from "src/app/core/service/user-service";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-chat-message",
@@ -19,17 +18,18 @@ import { UserService } from "src/app/core/service/user-service";
   styleUrls : ["./chat-message.component.scss"]
 })
 
-export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class ChatMessageComponent implements OnInit, AfterViewChecked {
   user: LoggedInUser;
   selectedUser: LoggedInUser;
   thumbnail = "https://via.placeholder.com/80x80";
 
-  isLoading = false;
   replyMsgId?: number;
   replyMsgContent: string;
+  file : File;
+
+  @ViewChild('messageInput') MessageInput;
 
   messageList: MessageModel[] = [];
-  subscription : Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,21 +39,16 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
 
   ngOnInit() {
 
-    this.subscription = this.userService.user.subscribe((e) => {
+    this.userService.getUserSubject().subscribe(e => {
       this.user = e;
-
-      if (e != null && this.user.imageUrl) {
-        this.thumbnail = this.userService.getProfileUrl(e);
-      }
+      this.thumbnail = this.userService.getProfileUrl(e);
     });
-
-    //get initial values
-    // this.userService.getLoggedInUser().subscribe((e) => (this.user = e));
 
     //load chat of particular user if route param is changed
     this.route.params.subscribe((data: Params) => {
 
       this.replyMsgId = null;
+      this.file = null;
 
       let uName: string;
       uName = data["userName"];
@@ -62,16 +57,13 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
       this.userService.getUser(uName).subscribe((e) => (this.selectedUser = e));
 
       //get chat
-      this.isLoading = true;
       this.chatService.getChatWithUser(uName).subscribe(
         (res: MessageModel[]) => {
-          this.messageList = res;
-        },
+          this.messageList = res;        },
         (err) => {
           console.log(err);
         }
       );
-      this.isLoading = false;
     });
 
   }
@@ -87,7 +79,6 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
 
   //reaload chat
   reloadChat() {
-    this.isLoading = true;
     this.chatService.getChatWithUser(this.selectedUser.userName).subscribe(
       (res: MessageModel[]) => {
         this.messageList = res;
@@ -96,32 +87,67 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
         console.log(err);
       }
     );
-    this.isLoading = false;
   }
 
   //send message
   sendMessage(event: HTMLInputElement) {
-    if (event.value.length > 0) {
-      this.chatService
-        .sendChat(this.selectedUser.userName, {
-          sender: this.user.userName,
-          receiver: this.selectedUser.userName,
-          content: event.value,
-          type: "text",
-          repliedTo : this.replyMsgId
-        })
-        .subscribe(
-          (res: MessageModel) => {
-            this.messageList.push(res);
-          },
-          (err) => {
-            console.log(err);
-          }
-        );
-      
-      this.replyMsgId = null;
-      event.value = "";
+
+    //if there is not input and also no file uploaded
+    if(event.value.length === 0 && this.file === null){
+      return;
     }
+
+    const formData = new FormData();
+
+    if(this.file){
+      formData.append('file', this.file);
+    }
+    formData.append('sender', this.user.userName);
+    formData.append('receiver', this.selectedUser.userName);
+    formData.append('type', this.file ? 'file' : 'text');
+    formData.append('content', event.value);
+
+    if(this.replyMsgId){
+      formData.append('repliedTo', '' + this.replyMsgId);
+    }
+    
+
+    this.chatService
+      .sendChat(this.selectedUser.userName, formData)
+      .subscribe(
+        (res: MessageModel) => {
+          this.messageList.push(res);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    
+    this.replyMsgId = null;
+    event.value = "";
+    this.file = null;
+  }
+
+  //add file to form at each change
+  onFileChanged(event) {
+    if (event.target.files.length > 0) {
+      this.file = event.target.files[0];
+    }
+  }
+
+  //set reply msg id and content
+  replyMsg(id: number, content: string) {
+
+    //get cursor on the input tag on click
+    this.MessageInput.nativeElement.focus();
+    
+    this.replyMsgId = id;
+    this.replyMsgContent = content;
+  }
+
+  closeMsgAndFile(){
+    this.file = null;
+    this.replyMsgId = null;
   }
 
   //get profile url
@@ -129,19 +155,12 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
     return this.userService.getProfileUrl(user);
   }
 
-  //set reply msg id and content
-  replyMsg(id: number, content: string) {
-    this.replyMsgId = id;
-    this.replyMsgContent = content;
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+  getMsgUrl(filePath : string){
+    return environment.hostUrl + "/chat/" + filePath;
   }
 
   // back to chat-list for tablet and mobile devices
   backToChatList() {
     document.querySelector(".chat-content").classList.toggle("show");
   }
-
 }
