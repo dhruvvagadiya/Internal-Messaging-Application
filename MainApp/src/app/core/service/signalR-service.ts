@@ -6,7 +6,9 @@ import { MessageModel } from '../models/chat/message-model';
 
 @Injectable({providedIn: 'root'})
 export class SignalrService {
-    constructor() { }
+
+    constructor() {   
+    }
     
     hubConnection : signalR.HubConnection;
 
@@ -40,11 +42,18 @@ export class SignalrService {
     sendMessage(res : MessageModel){
         this.hubConnection.invoke("sendMessage", res)
             .catch(err => console.log(err));
+        
+        //FOR SENDER ADD RECEIVER TO RECENT CHAT
+        //FOR RECEIVER ADD SENDER TO RECENT CHAT
+        this.hubConnection.invoke('GetRecentChat', res.messageFrom, res.messageTo);
     }
 
     //mark all msgs seen where msgFrom is sender & msgTo is receiver
     seenMessages(sender : string, receiver : string) {
         this.hubConnection.invoke('seenMessages', sender, receiver);
+
+        //FOR SENDER & RECEIVER UPDATE SEEN CNT
+        this.hubConnection.invoke('GetRecentChat', receiver, sender);  //because params are ultaaaa
     }
 
     //close connection when user logout

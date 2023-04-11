@@ -3,6 +3,7 @@ import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
 import { RecentChatModel } from "src/app/core/models/chat/recent-chat";
 import { ChatService } from "src/app/core/service/chat-service";
 import { UserService } from "src/app/core/service/user-service";
+import { SignalrService } from "src/app/core/service/signalR-service";
 
 @Component({
   selector: "app-chat-sidebar",
@@ -19,14 +20,34 @@ export class ChatSideBarComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private signalrService : SignalrService
   ) {}
 
   ngOnInit() {
     //get recent chat
     this.chatService.getRecentUsers().subscribe((res: RecentChatModel[]) => {
-      // console.log(res);
       this.recentChats = res;
+    });
+    
+    this.signalrService.hubConnection.on("updateRecentChat", (obj : RecentChatModel) => {
+
+      //remove curObj from list if exists
+      this.recentChats = this.recentChats.filter(e => e.user.userName !== obj.user.userName);
+
+      //add to first position
+      // this.recentChats.unshift(obj);
+      if(obj.lastMsgTime){
+        this.recentChats.push(obj);
+
+        this.recentChats.sort(function(a : RecentChatModel, b : RecentChatModel) {
+          const date1 = new Date(a.lastMsgTime).getTime();
+          const date2 = new Date(b.lastMsgTime).getTime();
+  
+          return date2 - date1;
+        });
+      }
+    
     });
   }
 
@@ -35,7 +56,7 @@ export class ChatSideBarComponent implements OnInit {
     this.openMenu = false;
   }
 
-  //debouncing of request
+  //debouncing of user search request
   searchUsers(event) {
     if (this.timeOutId) {
       clearTimeout(this.timeOutId);
@@ -52,7 +73,8 @@ export class ChatSideBarComponent implements OnInit {
 
   //get users on input
   onInput(event) {
-    //if no string is entered
+
+    //if no string is entered do nothing
     
     if (event.target.value === null || event.target.value.length === 0) {
       this.userMatched = [];
@@ -64,10 +86,12 @@ export class ChatSideBarComponent implements OnInit {
     this.searchUsers(event);
   }
 
+  //profile Image
   getProfile(user: LoggedInUser) {
     return this.userService.getProfileUrl(user);
   }
 
+  //reload recent chats
   reloadRecentChat(){
     this.chatService.getRecentUsers().subscribe((res: RecentChatModel[]) => {
       this.recentChats = res;

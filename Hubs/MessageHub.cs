@@ -1,4 +1,5 @@
-﻿using ChatApp.Context;
+﻿using ChatApp.Business.Helpers;
+using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Chat;
 using Microsoft.AspNetCore.SignalR;
@@ -11,12 +12,17 @@ namespace ChatApp.Hubs
 {
     public class MessageHub : Hub
     {
+        #region Fields
         private readonly ChatAppContext _context;
 
+        #endregion
+
+        #region Constructor
         public MessageHub(ChatAppContext context)
         {
             _context = context;
         }
+        #endregion
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
@@ -33,6 +39,61 @@ namespace ChatApp.Hubs
             return Task.CompletedTask;
         }
 
+        public async Task GetRecentChat(string from, string to)
+        {
+            var conId = Context.ConnectionId;
+
+            //get userId's of both
+            var senderProfile = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == from).GetAwaiter().GetResult();
+            var receiverProfile = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == to).GetAwaiter().GetResult();
+
+            int fromId = senderProfile.Id;
+            int toId = receiverProfile.Id;
+
+
+            //get all chats
+            var allMsgs = _context.Chats.OrderBy(o => o.CreatedAt).Where(
+                e => (e.MessageFrom == fromId && e.MessageTo == toId) || (e.MessageFrom == toId && e.MessageTo == fromId)
+                );
+
+            //count where receiver is current user and is not seen by user
+            var unseenCnt = allMsgs.Count(e => e.MessageTo == toId && e.SeenByReceiver == 0);
+
+            //sort chats by created date then select last chat from table
+            var lastMsgObj = allMsgs.LastOrDefault();
+
+            string lastMsg = "";
+            DateTime? lastMsgTime = null;
+
+            if (lastMsgObj != null)
+            {
+                lastMsg = lastMsgObj.Content;
+                lastMsgTime = lastMsgObj.CreatedAt;
+            }
+
+            var userObj = new RecentChatModel();
+            userObj.User = ModelMapper.ConvertProfileToDTO(senderProfile);
+            userObj.LastMessage = lastMsg;
+            userObj.LastMsgTime = lastMsgTime;
+            userObj.UnseenCount = unseenCnt;
+
+            //receiver connection if online
+            var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == toId);
+
+            if(rConnection != null)
+            {
+                //send this model to receiver
+                await Clients.Client(rConnection.SignalId).SendAsync("updateRecentChat", userObj);
+            }
+
+            //for sender unseencount = 0 rest will be same
+
+            userObj.UnseenCount = 0;
+            userObj.User = ModelMapper.ConvertProfileToDTO(receiverProfile);
+
+            await Clients.Client(conId).SendAsync("updateRecentChat", userObj);
+
+        }
 
         public async Task sendMessage(ChatModel chat)
             {
@@ -56,7 +117,6 @@ namespace ChatApp.Hubs
             }
 
         }
-
 
         public async Task seenMessages(string fromUser, string ToUser)
         {
@@ -82,6 +142,7 @@ namespace ChatApp.Hubs
             }
         }
 
+        #region Methods
         public string saveConnection(string username)
         {
             var tmp = _context.Profiles.FirstOrDefault(e => e.UserName.Equals(username));
@@ -130,5 +191,6 @@ namespace ChatApp.Hubs
                 _context.SaveChanges();
             }
         }
+        #endregion
     }
 }

@@ -13,7 +13,7 @@ export class UserService implements OnInit {
 
     private userSubject = new BehaviorSubject<LoggedInUser>(null);
     
-    constructor(private http: HttpClient, private authService : AuthService) {
+    constructor(private http: HttpClient, private authService : AuthService) {        
         this.getCurrentUserDetails();
     }
 
@@ -37,10 +37,12 @@ export class UserService implements OnInit {
     }
 
     getCurrentUserDetails() {
-        const curuser = this.authService.getLoggedInUserInfo();
-        this.getUser(curuser.sub).subscribe(e => { 
-            this.userSubject.next(e);
-        });
+        const curuser = this.authService.getLoggedInUserInfo();        
+        if(curuser.sub){
+            this.getUser(curuser.sub).subscribe(e => { 
+                this.userSubject.next(e);
+            });
+        }
     }
 
     getUserSubject(){

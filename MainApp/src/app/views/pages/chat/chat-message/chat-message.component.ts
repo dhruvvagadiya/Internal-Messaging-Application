@@ -73,18 +73,18 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
 
     });
 
-      //push message to list
-      this.signalrService.hubConnection.on('receiveMessage', (value : MessageModel) => {
-        
-        //CHECK IF USER IS RECEIVER AND ALSO CUR PAGE IS OF SENDER
-        if(value.messageTo === this.user.userName && value.messageFrom === this.selectedUser.userName){
-          this.messageList.push(value);
+    //push message to list
+    this.signalrService.hubConnection.on('receiveMessage', (value : MessageModel) => {
+      
+      //CHECK IF USER IS RECEIVER AND ALSO CUR PAGE IS OF SENDER
+      if(value.messageTo === this.user.userName && value.messageFrom === this.selectedUser.userName){
+        this.messageList.push(value);
 
-          //SEND SENDER EVENT THAT RECEIVER HAS SEEN MSGS
-          this.signalrService.seenMessages(this.selectedUser.userName, this.user.userName);
-        }
-        
-      });
+        //SEND SENDER EVENT THAT RECEIVER HAS SEEN MSGS
+        this.signalrService.seenMessages(this.selectedUser.userName, this.user.userName);
+      }
+      
+    });
 
       //if receiver has seen the msgs
       this.signalrService.hubConnection.on('seenMessage', () => {
