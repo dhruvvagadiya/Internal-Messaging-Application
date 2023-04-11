@@ -6,6 +6,7 @@
     [Type] NVARCHAR(50) NOT NULL, 
     [Content] TEXT NULL, 
     [FilePath] NVARCHAR(100) NULL, 
+    [FileType] NVARCHAR(10) NULL,
     [CreatedAt] DATETIME2 NOT NULL DEFAULT GETDATE(), 
     [UpdatedAt] DATETIME2 NULL DEFAULT GETDATE(), 
     [DeletedAt] DATETIME2 NULL,

@@ -7,6 +7,11 @@ import { CommonModule } from '@angular/common';
 
 const routes: Routes = [
     {
+      path: '',
+      redirectTo: 'detail',
+      pathMatch: 'full',
+    },
+    {
       path: 'edit',
       component: ProfileEditComponent
     },

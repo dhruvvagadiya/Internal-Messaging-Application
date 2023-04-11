@@ -39,18 +39,26 @@
 
     <!-- Rendering message list -->
     <div class="chat-body" [perfectScrollbar] #scrollContainer>
-        <ul class="messages" *ngFor="let message of messageList;">
+        <ul class="messages" *ngFor="let message of messageList; let i = index">
 
+            <!-- for date -->
+            <li class="text-center" *ngIf="i == 0 || (message.createdAt | date : 'mediumDate') !== (messageList[i-1].createdAt | date : 'mediumDate')">
+                <p class="p-1 d-inline-block text-muted rounded" style="font-size: 0.7rem; background-color: rgba(194, 202, 209, 0.897);">{{message.createdAt | date : 'mediumDate'}}</p>
+            </li>
+
+            <!-- msgs -->
             <li class="message-item" [ngClass]="message.messageFrom === selectedUser.userName ? 'friend' : 'me'">
 
-                <img [src]="getProfile(message.messageFrom == selectedUser.userName ? selectedUser : user)" class="img-xs rounded-circle" alt="avatar">
+                <!-- <img [src]="getProfile(message.messageFrom == selectedUser.userName ? selectedUser : user)" class="img-xs rounded-circle" alt="avatar"> -->
 
                 <div class="content">
                     <div class="message">
 
-                        <div class="bubble" *ngIf="message.repliedTo || message.content" [ngClass]="message.messageFrom == user.userName ? 'mymsg' : ''">
+                        <div class="bubble" (dblclick)="replyMsg(message.id, message.content)" *ngIf="message.repliedTo || message.content" [ngClass]="message.messageFrom == user.userName ? 'mymsg' : ''">
                             <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
                             <p *ngIf="message.content">{{message.content}}</p>
+
+                            <p class="d-flex" style="font-size: 0.5rem;" class="text-right">{{ message.createdAt | date : 'shortTime' }}</p>
                         </div>
 
                         <div *ngIf="message.type !== 'text'">
@@ -72,14 +80,13 @@
                         </div>
 
                         <!-- for text content -->
-                        <div class="d-flex" *ngIf="message.type === 'text'"
-                            [ngClass]="message.messageFrom == user.userName ? 'justify-content-end' : ''">
-                            <span>{{ message.createdAt | date : 'shortTime' }}</span>
+                        <!-- <div class="d-flex" *ngIf="message.type === 'text'" class='text-right'>
+                            
                             <a (click)="replyMsg(message.id, message.content)" class="d-box">
                                 <i class="feather icon-corner-down-left icon-sm text-muted"
                                     ngbTooltip="Reply to message"></i>
                             </a>
-                        </div>
+                        </div> -->
 
                         <div *ngIf="message.type === 'text' && message.messageFrom === user.userName && message.seenByReceiver == 1">
                             <span>Read</span>

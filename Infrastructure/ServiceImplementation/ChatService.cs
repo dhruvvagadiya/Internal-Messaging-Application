@@ -4,12 +4,10 @@ using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Chat;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
 {
@@ -144,6 +142,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             //return chatModel
             var returnObj = new ChatModel()
             {
+                Id = chat.Id,
                 MessageFrom = fromUser,
                 MessageTo = toUser,
                 Content = content,
@@ -214,6 +213,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             var returnObj = new ChatModel()
             {
+                Id = chat.Id,
                 MessageFrom = fromUser,
                 MessageTo = toUser,
                 Content = chat.Content,
@@ -233,7 +233,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         #region Private Methods
         private IEnumerable<ChatModel> ConvertChatToChatModel(IEnumerable<Chat> curList, string from, string to, int fromId, int toId)
         {
-            var returnObj = new List<ChatModel>();
+            IList<ChatModel> returnObj = new List<ChatModel>();
 
             foreach (var chat in curList)
             {

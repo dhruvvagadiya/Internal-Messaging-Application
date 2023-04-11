@@ -6,6 +6,7 @@ import Swal from 'sweetalert2'
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { UserService } from 'src/app/core/service/user-service';
 import { AccountService } from 'src/app/core/service/account-service';
+import { SignalrService } from 'src/app/core/service/signalR-service';
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +23,8 @@ export class NavbarComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private userService : UserService,
-    private accoutService : AccountService
+    private accoutService : AccountService,
+    private signalrService : SignalrService
   ) {
 
   }
@@ -58,6 +60,10 @@ export class NavbarComponent implements OnInit {
           timer: 2000,
           timerProgressBar: true,
         });
+
+        //close hub connection with server
+        this.signalrService.closeConnection(this.loggedInUser.userName);
+
         this.router.navigate(['/auth/login']);
       });
     });

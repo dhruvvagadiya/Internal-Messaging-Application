@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/user/login-model';
 import { AccountService } from 'src/app/core/service/account-service';

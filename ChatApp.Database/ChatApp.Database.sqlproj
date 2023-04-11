@@ -64,6 +64,7 @@
   <ItemGroup>
     <Build Include="Tables\Profiles.sql" />
     <None Include="Tables\Salts.sql" />
+    <None Include="Tables\Connections.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />

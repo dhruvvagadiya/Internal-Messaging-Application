@@ -3,26 +3,26 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Auth;
-using ChatApp.Models.Users;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
 {
     public class ProfileService : IProfileService
     {
+        #region Private fields
         private readonly ChatAppContext context;
+        #endregion
 
+        #region Constructor
         public ProfileService(ChatAppContext context, IWebHostEnvironment hostEnvironment)
         {
             this.context = context;
         }
+        #endregion
+
+        #region Methods
         public Profile CheckPassword(LoginModel model, out string curSalt)
         {
             curSalt = "";
@@ -88,5 +88,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return context.Profiles.Any(x => x.Email.ToLower().Trim() == email.ToLower().Trim() || x.UserName.ToLower().Trim() == userName.ToLower().Trim());
         }
 
+        #endregion
     }
 }

@@ -1,9 +1,5 @@
 ﻿using ChatApp.Context.EntityClasses;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatApp.Context
 {
@@ -19,5 +15,6 @@ namespace ChatApp.Context
         public virtual DbSet<Profile> Profiles { get; set; }
         public virtual DbSet<Chat> Chats { get; set; }
         public virtual DbSet<Salt> Salts { get; set; }
+        public virtual DbSet<Connection> Connections { get; set; }
     }
 }

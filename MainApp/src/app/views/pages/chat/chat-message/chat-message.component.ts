@@ -2,6 +2,7 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from "@angular/core";
@@ -11,6 +12,7 @@ import { MessageModel } from "src/app/core/models/chat/message-model";
 import { ChatService } from "src/app/core/service/chat-service";
 import { UserService } from "src/app/core/service/user-service";
 import { environment } from "src/environments/environment";
+import { SignalrService } from "src/app/core/service/signalR-service";
 
 @Component({
   selector: "app-chat-message",
@@ -18,7 +20,7 @@ import { environment } from "src/environments/environment";
   styleUrls : ["./chat-message.component.scss"]
 })
 
-export class ChatMessageComponent implements OnInit, AfterViewChecked {
+export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
   user: LoggedInUser;
   selectedUser: LoggedInUser;
   thumbnail = "https://via.placeholder.com/80x80";
@@ -34,7 +36,8 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private signalrService : SignalrService
   ) {}
 
   ngOnInit() {
@@ -59,13 +62,32 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
       //get chat
       this.chatService.getChatWithUser(uName).subscribe(
         (res: MessageModel[]) => {
-          this.messageList = res;        },
+          this.messageList = res;        
+        },
         (err) => {
           console.log(err);
         }
       );
     });
 
+      //start connection with hub  (will end on logout)
+      this.signalrService.startConnection(this.user.userName);
+
+      //push message to list
+      this.signalrService.hubConnection.on('receiveMessage', (value : MessageModel) => {
+        
+        //IF USER IS SENDER AND CUR MSG IS READ THEN MAKE ALL PREV MSGS READ
+        if(value.messageFrom == this.user.userName && value.seenByReceiver == 1){
+          this.messageList.forEach(e => {
+            e.seenByReceiver = 1;
+          })  
+        }
+        
+        if(value.messageFrom !== this.user.userName){
+          this.messageList.push(value);
+        }
+        
+      });
   }
 
   //scroll msg after they are rendered on screen
@@ -116,7 +138,15 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
       .sendChat(this.selectedUser.userName, formData)
       .subscribe(
         (res: MessageModel) => {
+
+          // because if user is online bydefault seen will not be true
           this.messageList.push(res);
+
+          //generate event to send msg to receiver
+          if(this.signalrService.hubConnection){
+            this.signalrService.sendMessage(res);
+          }
+
         },
         (err) => {
           console.log(err);
@@ -162,5 +192,9 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
   // back to chat-list for tablet and mobile devices
   backToChatList() {
     document.querySelector(".chat-content").classList.toggle("show");
+  }
+
+  ngOnDestroy(): void {
+    this.signalrService.hubConnection.off("askServerResponse");
   }
 }

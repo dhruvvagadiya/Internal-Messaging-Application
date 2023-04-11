@@ -1,5 +1,4 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Subscription } from 'rxjs';
 
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { UserService } from 'src/app/core/service/user-service';
@@ -23,7 +22,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
       this.loggedInUser = e;
       this.thumbnail = this.userService.getProfileUrl(e);
     });
-
   }
 
   ngAfterViewInit(): void {

@@ -1,5 +1,6 @@
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
+using ChatApp.Hubs;
 using ChatApp.Infrastructure.ServiceImplementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -14,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using System.Text;
+
 namespace ChatApp
 {
     public class Startup
@@ -57,7 +59,11 @@ namespace ChatApp
                  };
              });
 
+
             services.AddControllersWithViews();
+
+            services.AddSignalR(e => e.EnableDetailedErrors = true);
+
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -145,9 +151,16 @@ namespace ChatApp
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
+
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapHub<MessageHub>("/toastr");
+            });
+
+            app.UseEndpoints(endPoints =>
+            {
+                endPoints.MapControllers();
             });
 
             app.UseSwagger();

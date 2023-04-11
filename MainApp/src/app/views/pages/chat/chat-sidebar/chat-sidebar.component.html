@@ -86,20 +86,25 @@
 
                 <li class="chat-item pr-1" *ngFor="let obj of recentChats;">
                   <a [routerLink]="obj.user.userName" class="d-flex align-items-center">
+                    
                     <figure class="mb-0 mr-2">
                       <img [src]="getProfile(obj.user)" class="img-xs rounded-circle" alt="user">
                       <div class="status online"></div>
                     </figure>
+
                     <div class="d-flex justify-content-between flex-grow border-bottom">
+                      
                       <div>
                         <p class="text-body font-weight-bold">{{obj.user.firstName}} {{obj.user.lastName}}</p>
-                        <p class="text-muted tx-13">{{obj.lastMessage ? obj.lastMessage : 'file'}}</p>
+                        <p class="text-muted tx-13">{{getLastMsg(obj.lastMessage)}}</p>
                       </div>
+
                       <div class="d-flex flex-column align-items-end">
-                        <p class="text-muted tx-13 mb-1">{{obj.lastMsgTime ? (obj.lastMsgTime | date : 'shortTime')  : ''}}</p>
+                        <p class="text-muted tx-13 mb-1">{{getTime(obj.lastMsgTime)}}</p>
                         <div class="badge badge-pill badge-primary ml-auto">{{obj.unseenCount > 0 ? obj.unseenCount : ''}}</div>
                       </div>
                     </div>
+
                   </a>
                 </li>
                 

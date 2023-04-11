@@ -53,6 +53,7 @@ export class ChatSideBarComponent implements OnInit {
   //get users on input
   onInput(event) {
     //if no string is entered
+    
     if (event.target.value === null || event.target.value.length === 0) {
       this.userMatched = [];
       clearTimeout(this.timeOutId);
@@ -71,5 +72,47 @@ export class ChatSideBarComponent implements OnInit {
     this.chatService.getRecentUsers().subscribe((res: RecentChatModel[]) => {
       this.recentChats = res;
     });
+  }
+
+  getLastMsg(msg : string){
+    if(!msg) return 'file';
+
+    if(msg.length > 15){
+      return msg.substring(0, 15) + "...";
+    }
+    return msg;
+  }
+
+  //last msg time
+  getTime(str : Date){
+
+    let cur = new Date(str);
+    
+    const yesterday = new Date();
+
+    if(cur.getDate() === yesterday.getDate() &&
+    cur.getMonth() === yesterday.getMonth() &&
+    cur.getFullYear() === yesterday.getFullYear()){
+
+      var hours = cur.getHours();
+      var minutes = '' + cur.getMinutes();
+      var ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = cur.getMinutes() < 10 ? '0' + minutes : minutes;
+
+      return hours + ':' + minutes + ' ' + ampm;
+      
+    }
+
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    if(cur.getDate() === yesterday.getDate() &&
+      cur.getMonth() === yesterday.getMonth() &&
+      cur.getFullYear() === yesterday.getFullYear()){
+        return "Yesterday"
+    }
+
+    return cur.toLocaleDateString();
   }
 }

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { RegistrationModel } from 'src/app/core/models/user/registration-model';
 import { AccountService } from 'src/app/core/service/account-service';
 import { AuthService } from 'src/app/core/service/auth-service';
+import { UserService } from 'src/app/core/service/user-service';
 import Swal from 'sweetalert2'
 
 @Component({
@@ -19,7 +20,8 @@ export class RegisterComponent implements OnInit {
 
   constructor(private router: Router, 
     private accountService: AccountService,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private userService : UserService) { }
 
   ngOnInit(): void {
     this.regModel = {
@@ -55,6 +57,10 @@ export class RegisterComponent implements OnInit {
             timer: 2000,
            timerProgressBar: true,
           });
+
+          //get new user
+          this.userService.getCurrentUserDetails();
+
           setTimeout(() => {
             this.router.navigate(["/"]);
             this.disableRegButtton = false; 
