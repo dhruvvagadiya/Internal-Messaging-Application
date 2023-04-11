@@ -28,7 +28,7 @@ export class SignalrService {
 
                 //create and store connection
                 this.hubConnection.invoke("saveConnection", username).then(value => {
-                    // console.log(value); conn ID
+                    // console.log(value);  //conn ID
                 })
             })
             .catch(err => {
@@ -36,11 +36,18 @@ export class SignalrService {
             });
     }
 
+    //when user sends msg to receiver
     sendMessage(res : MessageModel){
         this.hubConnection.invoke("sendMessage", res)
             .catch(err => console.log(err));
     }
 
+    //mark all msgs seen where msgFrom is sender & msgTo is receiver
+    seenMessages(sender : string, receiver : string) {
+        this.hubConnection.invoke('seenMessages', sender, receiver);
+    }
+
+    //close connection when user logout
     closeConnection (username : string) {
         if(this.hubConnection){
             this.hubConnection.invoke('closeConnection', username)

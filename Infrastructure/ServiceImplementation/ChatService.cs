@@ -34,7 +34,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         public IEnumerable<ChatModel> GetChatList(int userFrom, int userTo, string fromUserName, string toUserName)
         {
 
-            var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).ToList();
+            var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).OrderBy(e => e.CreatedAt).ToList();
 
 
             //make all chats seen when fetched

@@ -2,7 +2,6 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
-  OnDestroy,
   OnInit,
   ViewChild,
 } from "@angular/core";
@@ -20,7 +19,7 @@ import { SignalrService } from "src/app/core/service/signalR-service";
   styleUrls : ["./chat-message.component.scss"]
 })
 
-export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class ChatMessageComponent implements OnInit, AfterViewChecked {
   user: LoggedInUser;
   selectedUser: LoggedInUser;
   thumbnail = "https://via.placeholder.com/80x80";
@@ -49,7 +48,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
 
     //load chat of particular user if route param is changed
     this.route.params.subscribe((data: Params) => {
-
+      
       this.replyMsgId = null;
       this.file = null;
 
@@ -68,26 +67,36 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
           console.log(err);
         }
       );
-    });
+      
+      //NOTIFY SELECTED USER THAT CUR_USER HAS SEEN MESSAGES
+      this.signalrService.seenMessages(uName, this.user.userName);
 
-      //start connection with hub  (will end on logout)
-      this.signalrService.startConnection(this.user.userName);
+    });
 
       //push message to list
       this.signalrService.hubConnection.on('receiveMessage', (value : MessageModel) => {
         
-        //IF USER IS SENDER AND CUR MSG IS READ THEN MAKE ALL PREV MSGS READ
-        if(value.messageFrom == this.user.userName && value.seenByReceiver == 1){
-          this.messageList.forEach(e => {
-            e.seenByReceiver = 1;
-          })  
-        }
-        
-        if(value.messageFrom !== this.user.userName){
+        //CHECK IF USER IS RECEIVER AND ALSO CUR PAGE IS OF SENDER
+        if(value.messageTo === this.user.userName && value.messageFrom === this.selectedUser.userName){
           this.messageList.push(value);
+
+          //SEND SENDER EVENT THAT RECEIVER HAS SEEN MSGS
+          this.signalrService.seenMessages(this.selectedUser.userName, this.user.userName);
         }
         
       });
+
+      //if receiver has seen the msgs
+      this.signalrService.hubConnection.on('seenMessage', () => {
+        
+        //if cur user is sender
+        this.messageList.forEach(e => {
+          if(e.messageFrom == this.user.userName){
+            e.seenByReceiver = 1;
+          }
+        });
+      })
+
   }
 
   //scroll msg after they are rendered on screen
@@ -194,7 +203,4 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked, OnDestroy
     document.querySelector(".chat-content").classList.toggle("show");
   }
 
-  ngOnDestroy(): void {
-    this.signalrService.hubConnection.off("askServerResponse");
-  }
 }

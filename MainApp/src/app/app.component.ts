@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SignalrService } from './core/service/signalR-service';
+import { AuthService } from './core/service/auth-service';
 
 @Component({
   selector: 'app-root',
@@ -9,10 +10,14 @@ import { SignalrService } from './core/service/signalR-service';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'nobleui-angular';
 
-  constructor(private signalrService : SignalrService) {    
+  constructor(private signalrService : SignalrService, private authService : AuthService) {    
   }
 
   ngOnInit(): void {
+    let user = this.authService.getLoggedInUserInfo();
+    
+    //start connection with hub  (will end on logout)
+    this.signalrService.startConnection(user.sub);
   }
 
   ngOnDestroy(): void {

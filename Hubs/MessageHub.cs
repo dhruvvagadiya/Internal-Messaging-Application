@@ -35,7 +35,7 @@ namespace ChatApp.Hubs
 
 
         public async Task sendMessage(ChatModel chat)
-        {
+            {
             //get receiver
             var receiver = await _context.Profiles.FirstOrDefaultAsync(e => e.UserName == chat.MessageTo);
 
@@ -52,30 +52,34 @@ namespace ChatApp.Hubs
             }
             else   //send chat to receiver also
             {
-
-                //make all chats read in db
-                int userFrom = _context.Profiles.FirstOrDefault(e => e.UserName == chat.MessageFrom).Id;
-                int userTo = _context.Profiles.FirstOrDefault(e => e.UserName == chat.MessageTo).Id;
-
-                var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).ToList();
-
-
-                //make all chats seen when fetched
-                foreach (var tmp in chats)
-                {
-                    if (tmp.MessageFrom == userFrom)
-                    {
-                        tmp.SeenByReceiver = 1;
-                    }
-                }
-
-                _context.UpdateRange(chats);
-                _context.SaveChanges();
-
-                chat.SeenByReceiver = 1;
                 await Clients.Clients(rConnection.SignalId, Context.ConnectionId).SendAsync("receiveMessage", chat);
             }
 
+        }
+
+
+        public async Task seenMessages(string fromUser, string ToUser)
+        {
+            int senderId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == fromUser).GetAwaiter().GetResult().Id;
+            int receiverId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == ToUser).GetAwaiter().GetResult().Id;
+
+            //get chats
+            var chats = _context.Chats.Where(e => e.MessageFrom == senderId && e.MessageTo == receiverId);
+            foreach(var tmp in chats)
+            {
+                tmp.SeenByReceiver = 1;
+            }
+
+            _context.UpdateRange(chats);
+            await _context.SaveChangesAsync();
+
+            //notify sender that receiver has seen msgs
+            var sConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == senderId);
+
+            if(sConnection != null)
+            {
+                await Clients.Client(sConnection.SignalId).SendAsync("seenMessage");
+            }
         }
 
         public string saveConnection(string username)
