@@ -15,7 +15,7 @@ export class ChatSideBarComponent implements OnInit {
   openMenu = false;
   timeOutId;
 
-  recentChats: RecentChatModel[];
+  recentChats: RecentChatModel[] = [];
   @Input() user: LoggedInUser;
 
   constructor(
@@ -33,10 +33,9 @@ export class ChatSideBarComponent implements OnInit {
     this.signalrService.hubConnection.on("updateRecentChat", (obj : RecentChatModel) => {
 
       //remove curObj from list if exists
-      this.recentChats = this.recentChats.filter(e => e.user.userName !== obj.user.userName);
+      this.recentChats = this.recentChats.filter(e => e.userName !== obj.userName);
 
-      //add to first position
-      // this.recentChats.unshift(obj);
+      //add cur obj if chat exists
       if(obj.lastMsgTime){
         this.recentChats.push(obj);
 
@@ -86,9 +85,21 @@ export class ChatSideBarComponent implements OnInit {
     this.searchUsers(event);
   }
 
-  //profile Image
-  getProfile(user: LoggedInUser) {
-    return this.userService.getProfileUrl(user);
+  markAsSeen(event : Event, username : string){
+    event.preventDefault();
+    event.stopPropagation();   //avoid routing
+
+    this.signalrService.seenMessages(username, this.user.userName);
+  }
+
+  markAllAsSeen() {
+    this.recentChats.forEach(e => {
+      this.signalrService.seenMessages(e.userName, this.user.userName);
+    })
+  }
+
+  getProfileUrl(url: string) {
+    return this.userService.getProfileUrl(url);
   }
 
   //reload recent chats

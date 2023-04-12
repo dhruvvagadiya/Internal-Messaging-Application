@@ -1,7 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
-import { AuthService } from "src/app/core/service/auth-service";
 import { UserService } from "src/app/core/service/user-service";
 
 @Component({
@@ -14,7 +12,7 @@ import { UserService } from "src/app/core/service/user-service";
 export class ProfileDetailComponent implements OnInit {
 
   user : LoggedInUser;
-  thumbnail : string =  "https://via.placeholder.com/30x30";
+  thumbnail : string;
 
   constructor(private userService : UserService){
     // this.fetchUserDetails();
@@ -24,7 +22,7 @@ export class ProfileDetailComponent implements OnInit {
 
     this.userService.getUserSubject().subscribe(e => {
       this.user = e;
-      this.thumbnail = this.userService.getProfileUrl(e);
+      this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
     });
 
   }

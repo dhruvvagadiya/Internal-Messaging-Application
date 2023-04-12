@@ -4,5 +4,9 @@ export interface RecentChatModel {
     lastMsgTime? : Date,
     unseenCount : number
     lastMessage : string,
-    user : LoggedInUser
+    // user : LoggedInUser,
+    userName : string,
+    firstName : string,
+    lastName : string,
+    imageUrl? : string
 }

@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit {
     
     this.userService.getUserSubject().subscribe(e => {
       this.loggedInUser = e;
-      this.thumbnail = this.userService.getProfileUrl(e);
+      this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
     });
   }
 
@@ -62,7 +62,7 @@ export class NavbarComponent implements OnInit {
         });
 
         //close hub connection with server
-        this.signalrService.closeConnection(this.loggedInUser.userName);
+        this.signalrService.closeConnection(this.loggedInUser?.userName);
 
         this.router.navigate(['/auth/login']);
       });

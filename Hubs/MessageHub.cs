@@ -72,10 +72,14 @@ namespace ChatApp.Hubs
             }
 
             var userObj = new RecentChatModel();
-            userObj.User = ModelMapper.ConvertProfileToDTO(senderProfile);
+            //userObj.User = ModelMapper.ConvertProfileToDTO(senderProfile);
             userObj.LastMessage = lastMsg;
             userObj.LastMsgTime = lastMsgTime;
             userObj.UnseenCount = unseenCnt;
+            userObj.FirstName = senderProfile.FirstName;
+            userObj.LastName = senderProfile.LastName;
+            userObj.UserName = senderProfile.UserName;
+            userObj.ImageUrl = senderProfile.ImageUrl;
 
             //receiver connection if online
             var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == toId);
@@ -89,7 +93,11 @@ namespace ChatApp.Hubs
             //for sender unseencount = 0 rest will be same
 
             userObj.UnseenCount = 0;
-            userObj.User = ModelMapper.ConvertProfileToDTO(receiverProfile);
+            userObj.FirstName = receiverProfile.FirstName;
+            userObj.LastName = receiverProfile.LastName;
+            userObj.UserName = receiverProfile.UserName;
+            userObj.ImageUrl = receiverProfile.ImageUrl;
+            //userObj.User = ModelMapper.ConvertProfileToDTO(receiverProfile);
 
             await Clients.Client(conId).SendAsync("updateRecentChat", userObj);
 
@@ -125,7 +133,7 @@ namespace ChatApp.Hubs
 
             //get chats
             var chats = _context.Chats.Where(e => e.MessageFrom == senderId && e.MessageTo == receiverId);
-            foreach(var tmp in chats)
+            foreach (var tmp in chats)
             {
                 tmp.SeenByReceiver = 1;
             }

@@ -12,3 +12,14 @@ li{
     border-top: 5px solid rgba(18, 187, 74, 0.2) !important;
     border-left: 5px solid rgba(18, 187, 74, 0.2) !important;
 }
+
+.chat-body{
+    height: calc(100vh - 340px);
+}
+
+emoji-mart {
+    position: absolute;
+    z-index: 1;
+    left: 0px;
+    bottom: 45px;
+}

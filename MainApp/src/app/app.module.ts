@@ -28,7 +28,7 @@ import { AuthService } from './core/service/auth-service';
     LayoutModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     AuthGuard,

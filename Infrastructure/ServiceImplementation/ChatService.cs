@@ -37,10 +37,10 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).OrderBy(e => e.CreatedAt).ToList();
 
 
-            //make all chats seen when fetched
+            //make all chats seen when fetched   (changing this in hub already but when hub is not connected this is necessary)
             foreach (var chat in chats)
             {
-                if(chat.MessageTo == userFrom)
+                if (chat.MessageTo == userFrom)
                 {
                     chat.SeenByReceiver = 1;
                 }
@@ -63,7 +63,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             var chats = _context.Chats.Where(e => (e.MessageFrom == userID || e.MessageTo == userID)).Select(e => e.MessageFrom == userID ? e.MessageTo : e.MessageFrom).Distinct();
 
 
-            //convert chats to chatModel..
+            //convert chats to RecentChatModel..
             var returnObj = new List<RecentChatModel>();
 
             foreach (var chat in chats)
@@ -90,10 +90,14 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 }
 
                 var userObj = new RecentChatModel();
-                userObj.User = ModelMapper.ConvertProfileToDTO(profile);
+                //userObj.User = ModelMapper.ConvertProfileToDTO(profile);
                 userObj.LastMessage = lastMsg;
                 userObj.LastMsgTime = lastMsgTime;
                 userObj.UnseenCount = unseenCnt;
+                userObj.FirstName = profile.FirstName;
+                userObj.LastName = profile.LastName;
+                userObj.UserName = profile.UserName;
+                userObj.ImageUrl = profile.ImageUrl;
 
                 returnObj.Add(userObj);
             }

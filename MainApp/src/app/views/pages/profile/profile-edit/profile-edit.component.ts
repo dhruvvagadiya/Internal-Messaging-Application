@@ -16,7 +16,7 @@ export class ProfileEditComponent implements OnInit {
 
   loggedInUser: LoggedInUser
   profileEditForm : FormGroup
-  thumbnail : any =  "https://via.placeholder.com/30x30";
+  thumbnail;
   file : File
 
   constructor(private authService : AuthService, private router : Router, private userService : UserService) { }
@@ -25,7 +25,7 @@ export class ProfileEditComponent implements OnInit {
 
     this.userService.getUserSubject().subscribe(e => {
       this.loggedInUser = e;
-      this.thumbnail = this.userService.getProfileUrl(e);
+      this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
     });
 
     this.loggedInUser = this.authService.getLoggedInUserInfo();

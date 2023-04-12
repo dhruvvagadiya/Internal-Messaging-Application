@@ -20,7 +20,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     this.userService.getUserSubject().subscribe(e => {
       this.loggedInUser = e;
-      this.thumbnail = this.userService.getProfileUrl(e);
+      this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
     });
   }
 

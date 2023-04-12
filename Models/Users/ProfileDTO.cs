@@ -1,6 +1,5 @@
 ﻿using ChatApp.Business.Helpers;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace ChatApp.Models.Users
 {

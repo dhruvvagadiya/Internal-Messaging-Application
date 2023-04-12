@@ -3,6 +3,8 @@ import { RouterModule, Routes } from "@angular/router";
 import { ClickOutsideDirective } from "src/app/core/Directives/click-outside.directive";
 import { NgbDropdownModule, NgbTooltipModule, NgbNavModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+
 
 import { ChatComponent } from "./chat.component";
 import { ChatMessageComponent } from "./chat-message/chat-message.component";
@@ -29,7 +31,8 @@ const routes: Routes = [
       NgbTooltipModule,
       NgbNavModule,
       NgbCollapseModule,
-      PerfectScrollbarModule
+      PerfectScrollbarModule,
+      PickerModule
     ],
     exports : [RouterModule]
   })

@@ -49,9 +49,9 @@ export class UserService implements OnInit {
         return this.userSubject.asObservable();
     }
 
-    getProfileUrl(user : LoggedInUser){
-        if(user && user.imageUrl) {
-            return environment.hostUrl + "/images/" + user.imageUrl
+    getProfileUrl(url : string){
+        if(url) {
+            return environment.hostUrl + "/images/" + url
         }
         return "https://w7.pngwing.com/pngs/754/2/png-transparent-samsung-galaxy-a8-a8-user-login-telephone-avatar-pawn-blue-angle-sphere-thumbnail.png";
     }

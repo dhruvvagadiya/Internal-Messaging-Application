@@ -43,7 +43,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
 
     this.userService.getUserSubject().subscribe(e => {
       this.user = e;
-      this.thumbnail = this.userService.getProfileUrl(e);
+      this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
     });
 
     //load chat of particular user if route param is changed
@@ -61,7 +61,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
       //get chat
       this.chatService.getChatWithUser(uName).subscribe(
         (res: MessageModel[]) => {
-          this.messageList = res;        
+          this.messageList = res;              
         },
         (err) => {
           console.log(err);
@@ -191,7 +191,7 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
 
   //get profile url
   getProfile(user: LoggedInUser) {
-    return this.userService.getProfileUrl(user);
+    return this.userService.getProfileUrl(user.imageUrl);
   }
 
   getMsgUrl(filePath : string){
@@ -203,4 +203,15 @@ export class ChatMessageComponent implements OnInit, AfterViewChecked {
     document.querySelector(".chat-content").classList.toggle("show");
   }
 
+  addEmoji(event, messageInput : HTMLInputElement){
+    const text = messageInput.value + event.emoji.native;
+    messageInput.value = text;
+    this.showEmojiPicker = false;
+  }
+
+  showEmojiPicker = false;
+  toggleEmojiPicker(messageInput : HTMLInputElement){
+    messageInput.focus();
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
 }
