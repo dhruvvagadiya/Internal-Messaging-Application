@@ -16,7 +16,7 @@
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -63,11 +63,14 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Profiles.sql" />
-    <None Include="Tables\Salts.sql" />
-    <None Include="Tables\Connections.sql" />
+    <Build Include="Tables\chats.sql" />
+    <Build Include="Tables\Connections.sql" />
+    <Build Include="Tables\GroupMembers.sql" />
+    <Build Include="Tables\GroupMessages.sql" />
+    <Build Include="Tables\Groups.sql" />
+    <Build Include="Tables\Salts.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />
-    <None Include="Tables\chats.sql" />
   </ItemGroup>
 </Project>

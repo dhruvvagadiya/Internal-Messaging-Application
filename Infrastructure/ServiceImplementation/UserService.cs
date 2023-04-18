@@ -108,6 +108,19 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return list;
         }
 
+        public IEnumerable<ProfileDTO> GetAll()
+        {
+            var ls = context.Profiles.ToList();
+            var returnObj = new List<ProfileDTO>();
+
+            foreach(var obj in ls)
+            {
+                returnObj.Add(ModelMapper.ConvertProfileToDTO(obj));
+            }
+
+            return returnObj;
+        }
+
         //get user by filter
         public Profile GetUser(Expression<Func<Profile, bool>> filter, bool tracked = true)
         {

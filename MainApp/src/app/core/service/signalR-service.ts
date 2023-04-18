@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import * as SignalR from '@aspnet/signalr';
 import { environment } from "src/environments/environment";
 import { MessageModel } from '../models/chat/message-model';
+import { GroupChatModel } from '../models/GroupChat/group-message-model';
+import { Group } from '../models/GroupChat/group';
 
 
 @Injectable({providedIn: 'root'})
@@ -46,6 +48,32 @@ export class SignalrService {
         //FOR SENDER ADD RECEIVER TO RECENT CHAT
         //FOR RECEIVER ADD SENDER TO RECENT CHAT
         this.hubConnection.invoke('GetRecentChat', res.messageFrom, res.messageTo);
+    }
+
+    sendGroupMessage(res : GroupChatModel){
+        //SEND MSG TO GROUP
+        this.hubConnection.invoke("sendGroupMessage", res)
+            .catch(err => console.log(err));        
+    }
+
+    updateRecentGroup(group : Group, chat : GroupChatModel){
+        this.hubConnection.invoke("updateRecentGroup", group ,chat)
+            .catch(err => console.log(err));
+    }
+
+    updateGroup(obj : Group){
+        this.hubConnection.invoke("updateGroup", obj)
+        .catch(err => console.log(err));
+    }
+
+    addMembers(userNames: string [], group : Group){
+        this.hubConnection.invoke("addMembers", userNames , group)
+        .catch(err => console.log(err));
+    }
+
+    leaveFromGroup(groupId : number, username : string){
+        this.hubConnection.invoke("leaveFromGroup", groupId , username)
+        .catch(err => console.log(err));
     }
 
     //mark all msgs seen where msgFrom is sender & msgTo is receiver

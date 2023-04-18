@@ -1,0 +1,52 @@
+<div class="modal-content">
+
+    <!--Header-->
+    <div class="modal-header">
+        <h5 class="modal-title">Update space</h5>
+    </div>
+
+    <form #updateGroupForm="ngForm" (ngSubmit)="updateGroup(); modal.close();">
+
+        <div class="modal-body">
+
+            <div class="row">
+
+                <div class="form-group col-md-4">
+
+                    <img [src]="thumbnail" class="rounded-circle mb-3 mt-2" height="100px" width="100px"
+                        alt="User Profile">
+                    &nbsp;
+                    <a (click)="fileUpload.click()"><i class="feather icon-upload icon-md text-muted"
+                            ngbTooltip="Upload Profile Image"></i></a>
+
+                    <input type="file" class="form-control" #fileUpload id="customFile" (change)="onFileChanged($event)"
+                        hidden accept=".jpg,.png,.jpeg" />
+
+                </div>
+
+                <div class="md-form col-md-6">
+                    <label for="name">Admin : </label>
+                    <input type="text" name="userName" class="form-control" [value]="user.userName" disabled>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name : </label>
+                <input type="text" name="groupName" [(ngModel)]="updateGroupData.name" class="form-control"
+                    placeholder="Space Name" minlength="5" required maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Description : </label>
+                <input class="form-control" name="description" [(ngModel)]="updateGroupData.description"
+                    placeholder="Optional" maxlength="50">
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+            <button type="submit" class="btn btn-primary" [disabled]="updateGroupForm.invalid">Update Space</button>
+        </div>
+    </form>
+</div>

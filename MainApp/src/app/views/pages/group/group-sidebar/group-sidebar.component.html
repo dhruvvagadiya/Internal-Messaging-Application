@@ -1,0 +1,81 @@
+<div class="aside-content">
+  <div class="aside-header">
+    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+      <div class="d-flex align-items-center">
+        <figure class="mr-2 mb-0">
+          <img [src]="getProfile(user)" class="img-sm rounded-circle" alt="profile">
+          <div class="status online"></div>
+        </figure>
+        <div>
+          <h6>{{user.firstName}} {{user.lastName}}</h6>
+          <p class="text-muted tx-13">{{user.status}}</p>
+        </div>
+      </div>
+      <div class="dropdown" ngbDropdown>
+        <button class="btn p-0 no-dropdown-toggle-icon" type="button" id="dropdownMenuButton" ngbDropdownToggle>
+          <i class="feather icon-settings icon-md text-muted pb-3px" ngbTooltip="Settings"></i>
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" ngbDropdownMenu>
+          <a class="dropdown-item d-flex align-items-center" (click)="false" routerLink="../profile/detail"><i
+              class="feather icon-eye icon-xs mr-2"></i> <span class="">View Profile</span></a>
+          <a class="dropdown-item d-flex align-items-center" (click)="false" routerLink="../profile/edit"><i
+              class="feather icon-edit-2 icon-xs mr-2"></i> <span class="">Edit Profile</span></a>
+          <a class="dropdown-item d-flex align-items-center" href="" (click)="false"><i
+              class="feather icon-aperture icon-xs mr-2"></i> <span class="">Add status</span></a>
+          <a class="dropdown-item d-flex align-items-center" href="" (click)="false"><i
+              class="feather icon-settings icon-xs mr-2"></i> <span class="">Settings</span></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="aside-body">
+    <div class="ps" [perfectScrollbar]>
+
+      <div class="d-inline-block py-1">
+        <div class="d-flex flex-grow align-items-center px-2 addGroup" (click)="openModal(CreateGroupModal)">
+          <i class="mdi mdi-plus icon-lg"></i>
+          <span class="mr-2">New Space</span>
+        </div>
+
+        <ng-template #CreateGroupModal let-modal>
+          <app-create-group-modal [modal]="modal" [user]="user"
+            (onGroupCreate)="recentGroups.push($event)"></app-create-group-modal>
+        </ng-template>
+
+      </div>
+
+      <div>
+        <ul class="list-unstyled chat-list px-1" [style]="{ 'list-style' : 'none'}">
+
+          <li class="p-3 m-2" *ngIf="!recentGroups || recentGroups.length == 0">No chats to display</li>
+
+          <li class="pr-1" *ngFor="let obj of recentGroups;">
+
+            <a (click)="SelectGroup(obj.group)" class="d-flex align-items-center">
+
+              <figure class="mb-0 mr-2">
+                <img [src]="getGroupProfile(obj.group.imageUrl)" class="img-xs rounded-circle" alt="user">
+              </figure>
+
+              <div class="d-flex justify-content-between border-bottom flex-grow myDiv">
+
+                <div>
+                  <p class="text-body font-weight-bold">{{obj.group.name}}</p>
+                  <p class="text-muted tx-13">{{obj.firstName}} {{obj.lastName}} - {{getLastMsg(obj.lastMessage)}}</p>
+                </div>
+
+                <div class="d-flex flex-column align-items-end">
+                  <p class="text-muted tx-13 mb-1">{{getTime(obj.lastMsgTime)}}</p>
+                </div>
+              </div>
+
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>

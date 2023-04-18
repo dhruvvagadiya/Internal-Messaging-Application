@@ -10,7 +10,6 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import { NgbDropdownModule, NgbTooltipModule, NgbNavModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { SimplemdeModule, SIMPLEMDE_CONFIG } from 'ng2-simplemde'
 
 import { AppsComponent } from './apps.component';
@@ -90,7 +89,6 @@ const routes: Routes = [
     NgbTooltipModule,
     NgbNavModule,
     NgbCollapseModule,
-    NgSelectModule,
     SimplemdeModule.forRoot({
       provide: SIMPLEMDE_CONFIG,
       useValue: {}

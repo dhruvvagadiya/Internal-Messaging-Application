@@ -1,0 +1,138 @@
+<div class="chat-header border-bottom pb-2">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+            <i (click)="backToChatList()"
+                class="feather icon-corner-up-left icon-md mr-2 ml-n2 text-muted d-lg-none"></i>
+            <figure class="mb-0 mr-2">
+                <img [src]="getGroupProfile(selectedGroup.imageUrl)" class="img-sm rounded-circle" alt="image">
+                <div class="status online"></div>
+            </figure>
+            <div>
+                <p>{{selectedGroup.name}}</p>
+                <p class="text-muted tx-13">{{selectedGroup.description ? selectedGroup.description : '-'}}</p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mr-n1">
+            <a href="" (click)="false">
+                <div class="dropdown" ngbDropdown>
+                    <button class="btn p-0 no-dropdown-toggle-icon" type="button" id="dropdownMenuButton"
+                      ngbDropdownToggle>
+                      <i class="feather icon-more-vertical icon-md text-muted pb-3px" ngbTooltip="Settings"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" ngbDropdownMenu>
+                        <a class="dropdown-item d-flex align-items-center" (click)="openDetailsModal(detailModal)"><i
+                          class="feather icon-info icon-xs mr-2"></i> <span class="">Space Details</span></a>
+
+                        <a class="dropdown-item d-flex align-items-center" (click)="openAddParticipant(AddParicipantModal)"
+                             *ngIf="selectedGroup.createdBy === user.userName"><i
+                            class="mdi mdi-account-multiple-plus icon-xs mr-2"></i> <span class="">Add Members</span></a>
+
+                        <a class="dropdown-item d-flex align-items-center" (click)="openUpdateModal(UpdateGroupModal)"
+                            *ngIf="selectedGroup.createdBy === user.userName"><i
+                           class="mdi mdi-pencil icon-xs mr-2"></i> <span class="">Edit Space Details</span></a>
+
+                        <a class="dropdown-item d-flex align-items-center" (click)="openBasicModal(leaveModal)"><i
+                            class="mdi mdi-exit-to-app icon-xs mr-2"></i> <span class="">Leave from space</span></a>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Leave from group Modal -->
+<ng-template #leaveModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Are you sure??</h5>
+      <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+    </div>
+    <div class="modal-footer d-flex justify-content-start">
+      <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+      <button type="button" class="btn btn-primary" (click)="leaveFromGroup(); modal.close();">Yes, leave from space</button>
+    </div>
+</ng-template>
+
+<!-- Group Details Modal -->
+<ng-template #detailModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Space Details</h5>
+      <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+    </div>
+    <div class="modal-body groupDetails">
+
+        <div class="text-center bg-white mb-2 p-3">
+            <img [src]="getGroupProfile(selectedGroup.imageUrl)" class="rounded-circle mb-3" height="200px" width="200px" alt="User Profile">
+            <h4>{{selectedGroup.name}}</h4>
+            <p class="text-muted tx-10">Created by : @{{selectedGroup.createdBy}}</p>
+        </div>
+
+        <div class="bg-white mb-2 p-2" *ngIf="selectedGroup.description">
+            <h6>Description :</h6>
+            <p class="text-muted">{{selectedGroup.description}}</p>
+        </div>
+
+        <div class="bg-white p-3 mb-2">
+            <p class="text-muted">{{memberList.length}} Participants</p>
+
+            <ul class="list-unstyled px-1" [style]="{ 'list-style' : 'none'}">  
+                <li *ngFor="let obj of memberList;">
+
+                    <div class="d-flex align-items-center">
+                        <figure class="mb-0 mr-2">
+                            <img [src]="getProfile(obj.imageUrl)" class="img-xs rounded-circle" alt="user">
+                        </figure>
+        
+                        <div class="d-flex justify-content-between flex-grow myDiv">
+                            <div>
+                                <p class="text-body font-weight-bold">{{obj.firstName}} {{obj.lastName}}</p>
+                                <p class="text-muted tx-13">@{{obj.userName}}</p>
+                            </div>
+                            <div class="text-right align-self-end">
+                                <p *ngIf="selectedGroup.createdBy === obj.userName" class="text-muted rounded p-1 tx-10 adminTag">Space Admin</p>
+                                <div>
+                                    <i *ngIf="selectedGroup.createdBy === user.userName && user.userName !== obj.userName" class="mdi mdi-account-minus icon-xs text-danger mr-2" 
+                                    (click)="toBeRemoveUser = obj; openDetailsModal(removeUser); modal.close()"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white p-3">
+            <div class="d-flex align-items-center showCursor" (click)="openBasicModal(leaveModal); modal.close()">
+                <i class="mdi mdi-logout icon-lg text-danger mr-2"></i>
+                <span class="text-danger">Exit Space</span>
+            </div>
+            <div class="d-flex align-items-center showCursor">
+                <i class="mdi mdi-thumb-down icon-lg text-danger mr-2"></i>
+                <span class="text-danger">Report Space</span>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<!-- Sure to remove user Modal -->
+<ng-template #removeUser let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to remove {{toBeRemoveUser.firstName}} {{toBeRemoveUser.lastName}}??</h5>
+      <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+    </div>
+    <div class="modal-footer d-flex justify-content-start">
+      <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+      <button type="button" class="btn btn-primary" (click)="removeMember(toBeRemoveUser.userName); modal.close();">Confirm</button>
+    </div>
+</ng-template>
+
+<!-- add member modal -->
+<ng-template #AddParicipantModal let-modal>
+    <app-add-members-modal [modal]="modal" [selectedGroup]="selectedGroup" [memberList]="memberList" [allContacts]="allContacts" (OnAddMembers)="this.memberList = this.memberList.concat($event);"></app-add-members-modal>
+</ng-template>
+
+<!-- update group details modal  -->
+<ng-template #UpdateGroupModal let-modal>
+    <app-update-group-modal [user]="user" [modal]="modal" [selectedGroup]="selectedGroup" (OnGroupUpdate)="selectedGroup=$event"></app-update-group-modal>  
+</ng-template>

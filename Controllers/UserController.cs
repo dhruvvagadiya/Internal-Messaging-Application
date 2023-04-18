@@ -33,6 +33,14 @@ namespace ChatApp.Controllers
 
         #region API End points
 
+        [HttpGet("all")]
+        public IActionResult GetAllUsers()
+        {
+            var usersList = _userService.GetAll();
+
+            return Ok(usersList);
+        }
+
         [HttpPut("{username}")]
         public IActionResult UpdateProfile([FromForm] UpdateModel updateModel, string username)
         {

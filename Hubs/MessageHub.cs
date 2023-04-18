@@ -2,9 +2,12 @@
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Chat;
+using ChatApp.Models.Group;
+using ChatApp.Models.GroupChat;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -126,6 +129,81 @@ namespace ChatApp.Hubs
 
         }
 
+        public async Task sendGroupMessage(GroupChatModel chat)
+        {
+
+            IEnumerable<string> ConnectionIdList = getOnlineUsers(chat.GroupId);
+            //3. send to all
+            await Clients.Clients(ConnectionIdList).SendAsync("receiveMessage", chat);
+        }
+
+        public async Task updateGroup(GroupDTO group)
+        {
+            IEnumerable<string> ConnectionIdList = getOnlineUsers(group.Id);
+            await Clients.Clients(ConnectionIdList).SendAsync("groupUpdated", group);
+        }
+
+        public async Task updateRecentGroup(GroupDTO group, GroupChatModel chat)
+        {
+
+            IEnumerable<string> ConnectionIdList = getOnlineUsers(chat.GroupId);
+
+            var returnObj = new GroupRecentModel()
+            {
+                Group = group,
+                FirstName = chat.FirstName,
+                LastName = chat.LastName,
+                ImageUrl = chat.ImageUrl,
+                LastMsgTime = chat.CreatedAt,
+                LastMessage = chat.FilePath != null ? "file" : chat.Content
+            };
+
+            await Clients.Clients(ConnectionIdList).SendAsync("updateRecentGroup", returnObj);
+
+        }
+
+        public async Task AddMembers(string[] usernames, GroupDTO group)
+        {
+            IList<string> ConnectionIds = new List<string>();
+
+            foreach(string userName in usernames)
+            {
+                var userId = _context.Profiles.FirstOrDefault(e => e.UserName == userName).Id;
+                var conn = _context.Connections.FirstOrDefault(e => e.ProfileId == userId);
+
+                if(conn != null)
+                {
+                    ConnectionIds.Add(conn.SignalId);
+                }
+            }
+
+            var returnObj = new GroupRecentModel()
+            {
+                Group = group,
+                LastMessage="You were added!"
+            };
+
+            await Clients.Clients(ConnectionIds).SendAsync("updateRecentGroup", returnObj);
+        }
+
+        public async Task leaveFromGroup(int groupId, string username)
+        {
+            //get receiver
+            var receiver = await _context.Profiles.FirstOrDefaultAsync(e => e.UserName == username);
+
+            if (receiver == null)
+            {
+                return;
+            }
+
+            //else check if receiver is online
+            var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == receiver.Id);
+            if(rConnection != null)
+            {
+                await Clients.Client(rConnection.SignalId).SendAsync("leaveFromGroup", groupId);
+            }
+        }
+
         public async Task seenMessages(string fromUser, string ToUser)
         {
             int senderId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == fromUser).GetAwaiter().GetResult().Id;
@@ -198,6 +276,27 @@ namespace ChatApp.Hubs
                 _context.Remove(con);
                 _context.SaveChanges();
             }
+        }
+
+        public IEnumerable<string> getOnlineUsers(int GroupId)
+        {
+            //1. get all users of the curgroup
+            var members = _context.GroupMembers.Where(e => e.GroupId == GroupId).Select(e => e.UserId).ToList();
+
+            IList<string> ConnectionIdList = new List<string>();
+
+            //2. now check which users are online (get conn id's of them)
+            foreach (var memberId in members)
+            {
+                var Connection = _context.Connections.FirstOrDefault(e => e.ProfileId == memberId);
+
+                if (Connection != null)
+                {
+                    ConnectionIdList.Add(Connection.SignalId);
+                }
+            }
+
+            return ConnectionIdList;
         }
         #endregion
     }

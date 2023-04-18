@@ -1,4 +1,5 @@
 ﻿using ChatApp.Context.EntityClasses;
+using ChatApp.Context.EntityClasses.Group;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.Context
@@ -16,5 +17,8 @@ namespace ChatApp.Context
         public virtual DbSet<Chat> Chats { get; set; }
         public virtual DbSet<Salt> Salts { get; set; }
         public virtual DbSet<Connection> Connections { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<GroupChat> GroupChats { get; set; }
+        public virtual DbSet<GroupMember> GroupMembers { get; set; }
     }
 }

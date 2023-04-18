@@ -1,4 +1,4 @@
-<div *ngIf="user && selectedUser">
+<div *ngIf="user && selectedUser" [style]="{height : '100%'}">
     
     <!-- user profile details -->
     <div class="chat-header border-bottom pb-2">
@@ -14,14 +14,9 @@
                 <div>
                     <p>{{selectedUser.firstName}} {{selectedUser.lastName}}</p>
                     <p class="text-muted tx-13">{{selectedUser.status}}</p>
-                    <!-- <p class="text-muted tx-13">Last seen at {{selectedUser.lastSeen ? (selectedUser.lastSeen | date :
-                        'shortTime') : '-'}}</p> -->
                 </div>
             </div>
             <div class="d-flex align-items-center mr-n1">
-                <!-- <a (click)="reloadChat()">
-                    <i class="feather icon-refresh-ccw icon-md text-muted mr-3" ngbTooltip="Refresh Content"></i>
-                </a> -->
                 <a href="" (click)="false">
                     <i class="feather icon-video icon-md text-muted mr-3" ngbTooltip="Start video call"></i>
                 </a>
@@ -42,14 +37,13 @@
         <ul class="messages" *ngFor="let message of messageList; let i = index">
 
             <!-- for date -->
-            <li class="text-center" *ngIf="i == 0 || (message.createdAt | date : 'mediumDate') !== (messageList[i-1].createdAt | date : 'mediumDate')">
+            <li class="text-center" *ngIf="i == 0 || (message.createdAt | date : 'mediumDate') !== (messageList[i-1].createdAt | date : 'mediumDate')"
+                [style]="{'margin-bottom':'0.5rem !important'}">
                 <p class="p-1 d-inline-block text-muted rounded" style="font-size: 0.7rem; background-color: rgba(194, 202, 209, 0.897);">{{message.createdAt | date : 'mediumDate'}}</p>
             </li>
 
             <!-- msgs -->
             <li class="message-item" [ngClass]="message.messageFrom === selectedUser.userName ? 'friend' : 'me'">
-
-                <!-- <img [src]="getProfile(message.messageFrom == selectedUser.userName ? selectedUser : user)" class="img-xs rounded-circle" alt="avatar"> -->
 
                 <div class="content">
                     <div class="message">
@@ -58,7 +52,10 @@
                             <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
    
                             <p *ngIf="message.content" class="d-inline-block">{{message.content}}</p>
-                            <p style="font-size: 0.5rem;" class="text-right">{{ message.createdAt | date : 'shortTime' }}</p>
+
+                            <p style="font-size: 0.6rem;" class="text-right text-muted">{{ message.createdAt | date : 'shortTime' }}
+                                <i *ngIf="message.type === 'text' && message.messageFrom === user.userName && message.seenByReceiver == 1" class="mdi mdi-check-all" [style]="{color:'blue'}"></i>
+                            </p>
                         </div>
 
                         <!-- render file -->
@@ -88,10 +85,6 @@
                                     ngbTooltip="Reply to message"></i>
                             </a>
                         </div> -->
-
-                        <div *ngIf="message.type === 'text' && message.messageFrom === user.userName && message.seenByReceiver == 1">
-                            <span>Read</span>
-                        </div>
 
                         <!-- for files -->
                         <div class="mt-2"  *ngIf="message.type !== 'text'">

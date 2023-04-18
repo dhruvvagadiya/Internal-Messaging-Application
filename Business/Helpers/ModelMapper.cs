@@ -8,6 +8,7 @@ namespace ChatApp.Business.Helpers
 
         // to hide password or other securirty fields in response
         public static ProfileDTO ConvertProfileToDTO(Profile user)
+        
         {
             ProfileDTO profileDTO = new ProfileDTO();
 

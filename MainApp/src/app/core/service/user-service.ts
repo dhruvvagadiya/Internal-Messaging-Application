@@ -32,13 +32,17 @@ export class UserService implements OnInit {
         return this.http.get(environment.apiUrl + "/user/getusers/" + name);
     }
 
+    getAll(){
+        return this.http.get(environment.apiUrl + "/user/all");
+    }
+
     getUser(username : string){        
         return this.http.get<LoggedInUser>(environment.apiUrl + "/user/"+ username);
     }
 
     getCurrentUserDetails() {
         const curuser = this.authService.getLoggedInUserInfo();        
-        if(curuser.sub){
+        if(curuser.sub && curuser.exp >= Date.now() / 1000){
             this.getUser(curuser.sub).subscribe(e => { 
                 this.userSubject.next(e);
             });

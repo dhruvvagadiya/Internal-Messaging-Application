@@ -20,6 +20,10 @@ const routes: Routes = [
         loadChildren: () => import('./views/pages/chat/chat.module').then(m => m.ChatModule)
       },
       {
+        path: 'group',
+        loadChildren: () => import('./views/pages/group/group.module').then(m => m.GroupModule)
+      },
+      {
         path: 'profile', loadChildren: () => import('./views/pages/profile/profile.module').then(m => m.ProfileModule)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, 

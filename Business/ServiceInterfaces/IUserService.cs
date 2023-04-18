@@ -14,6 +14,8 @@ namespace ChatApp.Business.ServiceInterfaces
 
         IEnumerable<ProfileDTO> GetAll(string name, string username);
 
+        IEnumerable<ProfileDTO> GetAll();
+
         int GetIdFromUsername(string username);
     }
 }

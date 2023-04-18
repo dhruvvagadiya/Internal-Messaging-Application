@@ -16,6 +16,11 @@ export const MENU: MenuItem[] = [
     link: '/chat'
   },
   {
+    label: 'Spaces',
+    icon: 'users',
+    link: '/group'
+  },
+  {
     label: 'Profile',
     isTitle: true
   },

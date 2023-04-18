@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Add Participants</h5>
+    <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+</div>
+<div class="modal-body" id="modal-body">
+
+    <div id="help">
+        <ng-select [items]="allContacts" [isOpen]="true" [multiple]="true" bindLabel="User Name" bindValue="userName"
+            [(ngModel)]="selectedUsers">
+
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                <span class="ng-value-label"><img [src]="getProfile(item.imageUrl)" width="20px" height="20px">
+                    {{item.userName}}</span>
+                <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">x</span>
+            </ng-template>
+
+            <ng-template ng-option-tmp let-item="item">
+                <img [src]="getProfile(item.imageUrl)" class="rounded-circle" width="30px" height="30px"> &nbsp;
+                {{item.firstName}} {{item.lastName}}
+            </ng-template>
+
+        </ng-select>
+
+        <div class="text-right m-2">
+            <i class="checkBtn p-2 mdi mdi-check icon-lg mr-2" (click)="addUsers(); modal.close();"></i>
+        </div>
+    </div>
+
+</div>

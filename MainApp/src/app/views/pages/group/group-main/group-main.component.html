@@ -1,0 +1,72 @@
+<div *ngIf="user && selectedGroup" [style]="{height : '100%'}">
+    
+    <!-- group profile details -->
+    <group-message-header [user]="user"></group-message-header>
+    <!-- group profile end -->
+
+    <!-- Rendering message list -->
+    <group-message-body [user]="user" [messageList]="messageList" (replyMsgClicked)="replyMsg($event)">    
+    </group-message-body>
+
+    <!-- Chat footer start -->
+    <div class="chat-footer position-relative">
+        
+        <div class="position-absolute" [style]="{bottom:'3rem', width :'95%'}">
+            <div class="ml-4 py-2 bg-light rounded" *ngIf="replyMsgId">
+                <div class="ml-2 mr-2">
+                    <div class="d-flex justify-content-between">
+                        <p class="text-muted">Replying to : </p>
+                        <a (click)="replyMsgId = null"><i class="feather icon-x border rounded icon-sm text-muted" ngbTooltip="Remove reply"></i></a>
+                    </div>
+                    <p> {{replyMsgContent}} </p>
+                </div>
+            </div>
+    
+            <div class="ml-4 py-2 bg-light rounded" *ngIf="file">
+                <div class="ml-2 mr-2">
+                    <div class="d-flex justify-content-between">
+                        <p>Click on send button to send file</p>
+                        <a (click)="file = null"><i class="feather icon-x border rounded icon-sm text-muted" ngbTooltip="Remove File"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Message list end -->
+        <emoji-mart *ngIf="showEmojiPicker" (emojiClick)="addEmoji($event, messageInput)" set = 'apple' emoji="point_up" [showPreview]="false">
+        </emoji-mart>
+
+        <!-- bottom bar -->
+        <div class="d-flex mt-2">
+            <div>
+                <button type="button" class="btn btn-icon mr-2" (click)="toggleEmojiPicker(messageInput)" ngbTooltip="Emoji">
+                    <i class="feather icon-smile text-muted"></i>
+                </button>
+            </div>
+            <div class="d-none d-md-block">
+                <button type="button" (click)="ChatImageUpload.click()" class="btn btn-icon mr-2" ngbTooltip="Attatch files">
+                    <i class="feather icon-paperclip text-muted"></i>
+                </button>
+                <input type="file" #ChatImageUpload (change)="onFileChanged($event)" hidden accept="audio/*,video/*,image/*">
+            </div>
+            <div class="d-none d-md-block">
+                <button type="button" class="btn btn-icon mr-2" ngbTooltip="Record you voice">
+                    <i class="feather icon-mic text-muted"></i>
+                </button>
+            </div>
+            <div class="search-form flex-grow mr-2 input-group">
+                <input type="text" class="form-control rounded-pill" (keydown.enter)="sendMessage(messageInput)"
+                    id="chatForm" placeholder="Type a message" #messageInput>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary btn-icon rounded-circle"
+                    (click)="sendMessage(messageInput)">
+                    <i class="feather icon-send"></i>
+                </button>
+            </div>
+        </div>
+        <!-- bottom bar end -->
+    </div>
+
+</div>

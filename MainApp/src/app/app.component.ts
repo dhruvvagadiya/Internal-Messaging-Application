@@ -16,7 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     let user = this.authService.getLoggedInUserInfo();
     
-    if(user?.sub){  
+    if(user?.sub && user.exp >= Date.now() / 1000){      
       //start connection with hub  (will end on logout)
       this.signalrService.startConnection(user.sub);
     }

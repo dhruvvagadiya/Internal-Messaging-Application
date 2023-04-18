@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { ClickOutsideDirective } from "src/app/core/Directives/click-outside.directive";
 import { NgbDropdownModule, NgbTooltipModule, NgbNavModule, NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
@@ -9,6 +8,7 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { ChatComponent } from "./chat.component";
 import { ChatMessageComponent } from "./chat-message/chat-message.component";
 import { ChatSideBarComponent } from "./chat-sidebar/chat-sidebar.component";
+import { SharedModule } from "../../shared/shared.module";
 
 const routes: Routes = [
     {
@@ -24,7 +24,7 @@ const routes: Routes = [
   ]
 
 @NgModule({
-    declarations: [ChatComponent, ClickOutsideDirective, ChatMessageComponent, ChatSideBarComponent],
+    declarations: [ChatComponent, ChatMessageComponent, ChatSideBarComponent],
     imports: [
       RouterModule.forChild(routes),
       NgbDropdownModule,
@@ -32,7 +32,8 @@ const routes: Routes = [
       NgbNavModule,
       NgbCollapseModule,
       PerfectScrollbarModule,
-      PickerModule
+      PickerModule,
+      SharedModule
     ],
     exports : [RouterModule]
   })

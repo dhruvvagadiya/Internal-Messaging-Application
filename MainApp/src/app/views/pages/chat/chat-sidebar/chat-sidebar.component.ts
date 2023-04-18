@@ -15,6 +15,8 @@ export class ChatSideBarComponent implements OnInit {
   openMenu = false;
   timeOutId;
 
+  isHover = false;
+
   recentChats: RecentChatModel[] = [];
   @Input() user: LoggedInUser;
 
