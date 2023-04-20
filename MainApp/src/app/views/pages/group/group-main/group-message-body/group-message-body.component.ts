@@ -5,7 +5,7 @@ import { UserService } from 'src/app/core/service/user-service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-    selector: 'group-message-body',
+    selector: 'app-group-message-body',
     templateUrl: 'group-message-body.component.html',
     styleUrls : ['group-message-body.component.scss']
 })
@@ -15,11 +15,15 @@ export class GroupMessageBodyComponent implements OnInit, AfterViewChecked {
     constructor(private userService:  UserService) { }
 
     @Input() messageList : GroupChatModel []
-    @Input() user : LoggedInUser;
-    
     @Output() replyMsgClicked = new EventEmitter<{id : number, content : string}>();
+    
+    user : LoggedInUser;
 
-    ngOnInit() { }
+    ngOnInit() {
+        this.userService.getUserSubject().subscribe(e => {
+            this.user = e;
+        });
+    }
 
       //get profile url
     getProfile(url : string) {

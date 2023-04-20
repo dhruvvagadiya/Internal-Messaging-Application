@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Group } from 'src/app/core/models/GroupChat/group';
+import { Group } from 'src/app/core/models/Group/group';
 
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { GroupChatService } from 'src/app/core/service/group-chat-service';

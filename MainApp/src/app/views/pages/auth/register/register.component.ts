@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
     this.signupForm = new FormGroup({
       'fName' : new FormControl(null, [Validators.required]),
       'lName' : new FormControl(null, [Validators.required]),
-      'username' : new FormControl(null, [Validators.required]),
+      'username' : new FormControl(null, [Validators.required, Validators.minLength(6)]),
       'email' : new FormControl(null, [Validators.required, Validators.email]),
       'password' : new FormControl(null, [Validators.required, Validators.minLength(8)])
     });

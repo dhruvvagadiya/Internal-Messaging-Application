@@ -1,0 +1,27 @@
+<div class="border-bottom item p-2 row">
+
+    <div class="icon col-1 mr-1">
+        <i class="mdi myIcon mdi-wechat icon-md" *ngIf="obj.type === 'AddGroup' || obj.type === 'GroupMessage'"></i>
+        <i class="mdi myIcon mdi-snapchat icon-md" *ngIf="obj.type === 'Message'"></i>
+        <i class="mdi myIcon mdi-account-remove icon-md" *ngIf="obj.type === 'Removed'"></i>
+    </div>
+    
+    <div class="content col tx-13">
+    
+        <span *ngIf="obj.type === 'Message'">New message from @<b>{{obj.content}}</b> </span>
+        <span *ngIf="obj.type === 'GroupMessage'">New message in <b>{{obj.content.split("!*!")[0]}}</b> from
+            @<b>{{obj.content.split("!*!")[1]}}</b> </span>
+    
+        <span *ngIf="obj.type === 'Removed'">You were removed from the space <b>{{obj.content}}</b> </span>
+    
+        <span *ngIf="obj.type === 'AddGroup'">You were added in the space <b>{{obj.content.split("!*!")[0]}}</b> by
+            @<b>{{obj.content.split("!*!")[1]}}</b> </span>
+    
+        <div class="d-flex justify-content-between">
+            <span class="sub-text text-muted tx-10">{{obj.createdAt | date : 'shortTime'}}</span>
+            <i class="mdi mdi-check-all icon-xs" *ngIf="obj.isSeen === 1"></i>
+        </div>
+    </div>
+</div>
+
+

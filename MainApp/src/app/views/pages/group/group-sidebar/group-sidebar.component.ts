@@ -3,7 +3,7 @@ import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
 import { GroupChatService } from "src/app/core/service/group-chat-service";
 import { GroupRecentChatModel } from "src/app/core/models/GroupChat/group-recent-chat";
 import { UserService } from "src/app/core/service/user-service";
-import { Group } from "src/app/core/models/GroupChat/group";
+import { Group } from "src/app/core/models/Group/group";
 import { SignalrService } from "src/app/core/service/signalR-service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 
@@ -56,8 +56,10 @@ export class GroupSideBarComponent implements OnInit {
     });
 
     //leave from group -> remove from list
-    this.signalrService.hubConnection.on("leaveFromGroup", (groupId : number) => {
-      this.recentGroups = this.recentGroups.filter(e => e.group.id !== groupId);
+    this.signalrService.hubConnection.on("leaveFromGroup", (groupId : number, userName : string) => {
+      if(this.user.userName === userName){
+        this.recentGroups = this.recentGroups.filter(e => e.group.id !== groupId);
+      }
     });
 
     //update group details

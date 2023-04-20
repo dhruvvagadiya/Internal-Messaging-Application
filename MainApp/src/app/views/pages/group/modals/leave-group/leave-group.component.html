@@ -1,0 +1,8 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Are you sure??</h5>
+    <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+  </div>
+  <div class="modal-footer d-flex justify-content-start">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="leaveFromGroup(); modal.close();">Yes, leave from space</button>
+  </div>

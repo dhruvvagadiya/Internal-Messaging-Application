@@ -23,8 +23,8 @@ export class NavbarComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private userService : UserService,
-    private accoutService : AccountService,
-    private signalrService : SignalrService
+    private accountService : AccountService,
+    private signalrService : SignalrService,
   ) {
 
   }
@@ -51,7 +51,7 @@ export class NavbarComponent implements OnInit {
   onLogout(e) {
     e.preventDefault();
 
-    this.accoutService.logout().subscribe(res => {
+    this.accountService.logout().subscribe(res => {
       this.authService.logout(() => {
         Swal.fire({
           title: 'Success!',

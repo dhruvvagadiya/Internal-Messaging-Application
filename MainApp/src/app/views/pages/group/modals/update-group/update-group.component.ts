@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Group } from 'src/app/core/models/GroupChat/group';
+import { Component, Input, OnInit } from '@angular/core';
+import { Group } from 'src/app/core/models/Group/group';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { GroupChatService } from 'src/app/core/service/group-chat-service';
 import { GroupService } from 'src/app/core/service/group-service';
@@ -16,9 +16,8 @@ export class UpdateGroupModalComponent implements OnInit {
 
   @Input() modal;
   @Input() user : LoggedInUser;
-  @Input() selectedGroup : Group
-  @Output() OnGroupUpdate = new EventEmitter<Group>();
-
+  
+  selectedGroup : Group
   updateGroupData;
 
   constructor(
@@ -29,6 +28,11 @@ export class UpdateGroupModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.groupChatService.groupChanged.subscribe(e => {
+      this.selectedGroup = e
+    });
+    
     this.updateGroupData = {
       name : this.selectedGroup.name,
       description : this.selectedGroup.description
@@ -63,7 +67,6 @@ export class UpdateGroupModalComponent implements OnInit {
     }
 
     this.groupService.updateGroup(formdata).subscribe((res : Group) => {
-        this.OnGroupUpdate.emit(res);
         this.signalrService.updateGroup(res);
     });        
   }

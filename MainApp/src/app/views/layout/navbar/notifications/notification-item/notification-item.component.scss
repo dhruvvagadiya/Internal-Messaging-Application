@@ -1,0 +1,16 @@
+.item {
+    cursor: pointer;
+}
+
+.item:hover{
+    background-color : #e8ebf17d;
+    transition: 2ms;
+    color: rgba(66, 169, 238);
+}
+
+.myIcon{
+    background-color: rgb(255, 51, 54,0.2);
+    padding: 0.1rem;
+    border-radius: 100%;
+    color: rgb(255, 51, 54);
+}

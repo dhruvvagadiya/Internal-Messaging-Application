@@ -19,6 +19,10 @@ export class AccountService {
         return this.http.post(environment.apiUrl + "/account/login", loginModel);
     }
 
+    changePassword(data : {currentPassword : string, password : string}) {
+        return this.http.post(environment.apiUrl + "/account/changePassword", data);
+    }
+
     logout(){
         return this.http.get(environment.apiUrl + "/account/logout");
     }

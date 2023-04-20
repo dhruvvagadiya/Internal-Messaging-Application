@@ -23,12 +23,12 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         #endregion
 
         #region Methods
-        public Profile CheckPassword(LoginModel model, out string curSalt)
+        public Profile CheckPassword(string UserName, out string curSalt)
         {
             curSalt = "";
 
             //get user
-            var user = this.context.Profiles.FirstOrDefault(x => x.Email.ToLower().Trim() == model.EmailAddress.ToLower().Trim() || x.UserName.ToLower().Trim() == model.Username.ToLower().Trim());
+            var user = this.context.Profiles.FirstOrDefault(x => x.Email.ToLower().Trim() == UserName.ToLower().Trim() || x.UserName.ToLower().Trim() == UserName.ToLower().Trim());
 
             if (user == null) return null;
 
@@ -36,6 +36,22 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             curSalt = context.Salts.FirstOrDefault(e => e.UserId == user.Id).UsedSalt;
 
             return user;
+        }
+
+        public void ChangePassword(string salt, string NewPassword, Profile User)
+        {
+            //change password
+            User.Password = NewPassword;
+
+            context.Update(User);
+
+            //update salt from db
+            var saltObj = context.Salts.FirstOrDefault(e => e.UserId == User.Id);
+            saltObj.UsedSalt = salt;
+
+            context.Update(saltObj);
+
+            context.SaveChanges();
         }
 
         //set last seend when user is logged out

@@ -1,29 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { AuthService } from 'src/app/core/service/auth-service';
 import { UserService } from 'src/app/core/service/user-service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-profile-edit',
-  templateUrl: './profile-edit.component.html',
-  styleUrls: ['./profile-edit.component.scss'],
-  preserveWhitespaces: true
+  selector: "app-profile-edit",
+  templateUrl: "./profile-edit.component.html",
+  styleUrls: ["./profile-edit.component.scss"],
+  preserveWhitespaces: true,
 })
 export class ProfileEditComponent implements OnInit {
-
-  loggedInUser: LoggedInUser
-  profileEditForm : FormGroup
+  loggedInUser: LoggedInUser;
+  profileEditForm: FormGroup;
   thumbnail;
-  file : File
+  file: File;
 
-  constructor(private authService : AuthService, private router : Router, private userService : UserService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private userService: UserService,
+    private modalService : NgbModal
+  ) {}
 
   ngOnInit(): void {
-
-    this.userService.getUserSubject().subscribe(e => {
+    this.userService.getUserSubject().subscribe((e) => {
       this.loggedInUser = e;
       this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
     });
@@ -31,21 +35,29 @@ export class ProfileEditComponent implements OnInit {
     this.loggedInUser = this.authService.getLoggedInUserInfo();
 
     this.profileEditForm = new FormGroup({
-      'UserName' : new FormControl(this.loggedInUser.sub, [Validators.required]),
-      'FirstName' : new FormControl(this.loggedInUser.firstName, [Validators.required]),
-      'LastName' : new FormControl(this.loggedInUser.lastName, [Validators.required]),
-      'Status' : new FormControl(this.loggedInUser.status, [Validators.required, Validators.maxLength(50)]),
-      'Email' : new FormControl(this.loggedInUser.email, [Validators.required, Validators.email])
+      UserName: new FormControl(this.loggedInUser.sub, [Validators.required]),
+      FirstName: new FormControl(this.loggedInUser.firstName, [
+        Validators.required,
+      ]),
+      LastName: new FormControl(this.loggedInUser.lastName, [
+        Validators.required,
+      ]),
+      Status: new FormControl(this.loggedInUser.status, [
+        Validators.required,
+        Validators.maxLength(50),
+      ]),
+      Email: new FormControl(this.loggedInUser.email, [
+        Validators.required,
+        Validators.email,
+      ]),
     });
-
   }
 
-  UpdateProfile(){
-
+  UpdateProfile() {
     //formData obj that contains file to be uploaded
     const formData = new FormData();
 
-    formData.append('File', this.file);
+    formData.append("File", this.file);
 
     //add each entry from current form to FormData
     for (const key of Object.keys(this.profileEditForm.value)) {
@@ -54,7 +66,12 @@ export class ProfileEditComponent implements OnInit {
     }
 
     this.userService
-      .updateProfile(formData, this.loggedInUser.userName ? this.loggedInUser.userName : this.loggedInUser.sub)
+      .updateProfile(
+        formData,
+        this.loggedInUser.userName
+          ? this.loggedInUser.userName
+          : this.loggedInUser.sub
+      )
       .subscribe(
         (result: any) => {
           this.authService.login(result.token, () => {
@@ -67,11 +84,10 @@ export class ProfileEditComponent implements OnInit {
             });
 
             this.userService.getCurrentUserDetails();
-            
+
             setTimeout(() => {
               this.router.navigate(["/"]);
             }, 1500);
-
           });
         },
         (err) => {
@@ -91,12 +107,17 @@ export class ProfileEditComponent implements OnInit {
 
       //show sample profile image on screen
       var reader = new FileReader();
-        reader.onload = (e) => {
-            this.thumbnail = e.target.result;
-        };
+      reader.onload = (e) => {
+        this.thumbnail = e.target.result;
+      };
       reader.readAsDataURL(this.file);
-
     }
   }
 
+  openBasicModal(content: TemplateRef<any>) {
+    this.modalService
+      .open(content, {})
+      .result.then((result) => {})
+      .catch((err) => {});
+  }
 }

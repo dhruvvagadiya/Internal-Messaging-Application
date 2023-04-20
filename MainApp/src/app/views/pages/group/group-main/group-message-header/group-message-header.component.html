@@ -1,24 +1,27 @@
 <div class="chat-header border-bottom pb-2">
     <div class="d-flex justify-content-between">
+
         <div class="d-flex align-items-center">
-            <i (click)="backToChatList()"
+            <i (click)="false"
                 class="feather icon-corner-up-left icon-md mr-2 ml-n2 text-muted d-lg-none"></i>
             <figure class="mb-0 mr-2">
                 <img [src]="getGroupProfile(selectedGroup.imageUrl)" class="img-sm rounded-circle" alt="image">
-                <div class="status online"></div>
             </figure>
             <div>
                 <p>{{selectedGroup.name}}</p>
                 <p class="text-muted tx-13">{{selectedGroup.description ? selectedGroup.description : '-'}}</p>
             </div>
         </div>
+
         <div class="d-flex align-items-center mr-n1">
             <a href="" (click)="false">
                 <div class="dropdown" ngbDropdown>
+
                     <button class="btn p-0 no-dropdown-toggle-icon" type="button" id="dropdownMenuButton"
                       ngbDropdownToggle>
                       <i class="feather icon-more-vertical icon-md text-muted pb-3px" ngbTooltip="Settings"></i>
                     </button>
+
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" ngbDropdownMenu>
                         <a class="dropdown-item d-flex align-items-center" (click)="openDetailsModal(detailModal)"><i
                           class="feather icon-info icon-xs mr-2"></i> <span class="">Space Details</span></a>
@@ -27,7 +30,7 @@
                              *ngIf="selectedGroup.createdBy === user.userName"><i
                             class="mdi mdi-account-multiple-plus icon-xs mr-2"></i> <span class="">Add Members</span></a>
 
-                        <a class="dropdown-item d-flex align-items-center" (click)="openUpdateModal(UpdateGroupModal)"
+                        <a class="dropdown-item d-flex align-items-center" (click)="openBasicModal(UpdateGroupModal)"
                             *ngIf="selectedGroup.createdBy === user.userName"><i
                            class="mdi mdi-pencil icon-xs mr-2"></i> <span class="">Edit Space Details</span></a>
 
@@ -37,20 +40,14 @@
                 </div>
             </a>
         </div>
+
     </div>
 </div>
 
 
 <!-- Leave from group Modal -->
 <ng-template #leaveModal let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel">Are you sure??</h5>
-      <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
-    </div>
-    <div class="modal-footer d-flex justify-content-start">
-      <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
-      <button type="button" class="btn btn-primary" (click)="leaveFromGroup(); modal.close();">Yes, leave from space</button>
-    </div>
+    <app-leave-group-modal [modal]="modal"></app-leave-group-modal>
 </ng-template>
 
 <!-- Group Details Modal -->
@@ -117,22 +114,16 @@
 
 <!-- Sure to remove user Modal -->
 <ng-template #removeUser let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to remove {{toBeRemoveUser.firstName}} {{toBeRemoveUser.lastName}}??</h5>
-      <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
-    </div>
-    <div class="modal-footer d-flex justify-content-start">
-      <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
-      <button type="button" class="btn btn-primary" (click)="removeMember(toBeRemoveUser.userName); modal.close();">Confirm</button>
-    </div>
+    <app-remove-user-modal [toBeRemoveUser]="toBeRemoveUser" [modal]="modal">
+    </app-remove-user-modal>
 </ng-template>
 
 <!-- add member modal -->
 <ng-template #AddParicipantModal let-modal>
-    <app-add-members-modal [modal]="modal" [selectedGroup]="selectedGroup" [memberList]="memberList" [allContacts]="allContacts" (OnAddMembers)="this.memberList = this.memberList.concat($event);"></app-add-members-modal>
+    <app-add-members-modal [modal]="modal" [memberList]="memberList" [allContacts]="allContacts"></app-add-members-modal>
 </ng-template>
 
 <!-- update group details modal  -->
 <ng-template #UpdateGroupModal let-modal>
-    <app-update-group-modal [user]="user" [modal]="modal" [selectedGroup]="selectedGroup" (OnGroupUpdate)="selectedGroup=$event"></app-update-group-modal>  
+    <app-update-group-modal [user]="user" [modal]="modal"></app-update-group-modal>  
 </ng-template>

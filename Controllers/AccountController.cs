@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using ChatApp.Business.Helpers;
 using ChatApp.Business.ServiceInterfaces;
+using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,7 @@ namespace ChatApp.Controllers
         public IActionResult Login([FromBody] LoginModel loginModel)
         {
 
-            var user = _profileService.CheckPassword(loginModel, out string curSalt);
+            var user = _profileService.CheckPassword(loginModel.Username, out string curSalt);
 
             if (user != null)
             {
@@ -80,6 +81,37 @@ namespace ChatApp.Controllers
             string username = JwtHelper.GetUsernameFromRequest(Request);
             _profileService.HandleLogout(username);
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("ChangePassword")]
+        public IActionResult ChangePassword(ChangePasswordModel Obj)
+        {
+
+            var userName = JwtHelper.GetUsernameFromRequest(Request);
+            var user = _profileService.CheckPassword(userName, out string curSalt);
+
+            if (user != null)
+            {
+                //check for password
+                if (CompareHashedPasswords(Obj.CurrentPassword, user.Password, curSalt))
+                {
+                    var salt = GenerateSalt();
+
+                    //hash password
+                    var hashedPass = GetHash(Obj.Password, salt);
+
+                    _profileService.ChangePassword(salt, hashedPass, user);
+
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Invalid passeword.");
+                }
+            }
+
+            return Ok("Bad Request!");
         }
         #endregion
 

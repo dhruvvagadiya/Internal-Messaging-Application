@@ -34,7 +34,10 @@
                 <label for="exampleInputUsername1">Username</label>
                 <input type="text" class="form-control" id="exampleInputUsername1" autocomplete="Username"
                   placeholder="Username" [(ngModel)]="regModel.userName" name="username" formControlName="username">
-                <span *ngIf="signupForm.get('username').invalid && signupForm.get('username').touched" class="text-danger">* Username is required</span>
+
+                <span *ngIf="signupForm.get('username').errors?.required && signupForm.get('username').touched" class="text-danger">* Username is required</span>
+
+                <span *ngIf="signupForm.get('username').errors?.minlength && signupForm.get('username').touched" class="text-danger">* Username must be at least 6 characters long</span>
 
               </div>
 

@@ -1,0 +1,17 @@
+.mymsg {
+    background: rgba(18, 187, 74, 0.2) !important;
+}
+.bubble{
+    overflow-wrap: anywhere;
+}
+li{
+    margin-bottom: 0px !important;
+}
+.message-item.me .bubble::before{
+    border-top: 5px solid rgba(18, 187, 74, 0.2) !important;
+    border-left: 5px solid rgba(18, 187, 74, 0.2) !important;
+}
+
+.chat-body{
+    height: 100%;
+}

@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProfileDetailComponent } from './profile-detail/profile-detail.component';
 import { CommonModule } from '@angular/common';
+import { ChangePasswordModalComponent } from './change-password/change-password.component';
 
 const routes: Routes = [
     {
@@ -24,7 +25,7 @@ const routes: Routes = [
 @NgModule({
     imports: [ReactiveFormsModule, RouterModule.forChild(routes), CommonModule],
     exports: [],
-    declarations: [ProfileEditComponent, ProfileDetailComponent],
+    declarations: [ProfileEditComponent, ProfileDetailComponent, ChangePasswordModalComponent],
     providers: [],
 })
 

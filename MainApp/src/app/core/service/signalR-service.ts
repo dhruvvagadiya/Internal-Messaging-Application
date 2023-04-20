@@ -3,7 +3,8 @@ import * as SignalR from '@aspnet/signalr';
 import { environment } from "src/environments/environment";
 import { MessageModel } from '../models/chat/message-model';
 import { GroupChatModel } from '../models/GroupChat/group-message-model';
-import { Group } from '../models/GroupChat/group';
+import { Group } from '../models/Group/group';
+import { GroupMember } from '../models/Group/group-member';
 
 
 @Injectable({providedIn: 'root'})
@@ -28,7 +29,8 @@ export class SignalrService {
         this.hubConnection
             .start()
             .then(() => {
-                console.log("Hub Connection Successful");
+                
+                // console.log("Hub Connection Successful");
 
                 //create and store connection
                 this.hubConnection.invoke("saveConnection", username).then(value => {
@@ -40,6 +42,16 @@ export class SignalrService {
             });
     }
 
+    //close connection when user logout
+    closeConnection (username : string) {
+        if(this.hubConnection){
+            this.hubConnection.invoke('closeConnection', username)
+            .catch(err => console.log(err));
+        }
+    }
+
+    // ------------- simple chat ------------------ 
+
     //when user sends msg to receiver
     sendMessage(res : MessageModel){
         this.hubConnection.invoke("sendMessage", res)
@@ -50,9 +62,19 @@ export class SignalrService {
         this.hubConnection.invoke('GetRecentChat', res.messageFrom, res.messageTo);
     }
 
-    sendGroupMessage(res : GroupChatModel){
+    //mark all msgs seen where msgFrom is sender & msgTo is receiver
+    seenMessages(sender : string, receiver : string) {
+        this.hubConnection.invoke('seenMessages', sender, receiver);
+
+        //FOR SENDER & RECEIVER UPDATE SEEN CNT
+        this.hubConnection.invoke('GetRecentChat', receiver, sender);  //because params are ultaaaa
+    }
+
+    // -------------- for group chat ---------------
+
+    sendGroupMessage(res : GroupChatModel, name : string){
         //SEND MSG TO GROUP
-        this.hubConnection.invoke("sendGroupMessage", res)
+        this.hubConnection.invoke("sendGroupMessage", res, name)
             .catch(err => console.log(err));        
     }
 
@@ -71,30 +93,13 @@ export class SignalrService {
         .catch(err => console.log(err));
     }
 
-    leaveFromGroup(groupId : number, username : string){
-        this.hubConnection.invoke("leaveFromGroup", groupId , username)
+    leaveFromGroup(groupId : number, username : string, removed : boolean, groupName? : string){
+        this.hubConnection.invoke("leaveFromGroup", groupId , username, removed, groupName)
         .catch(err => console.log(err));
     }
 
-    //mark all msgs seen where msgFrom is sender & msgTo is receiver
-    seenMessages(sender : string, receiver : string) {
-        this.hubConnection.invoke('seenMessages', sender, receiver);
-
-        //FOR SENDER & RECEIVER UPDATE SEEN CNT
-        this.hubConnection.invoke('GetRecentChat', receiver, sender);  //because params are ultaaaa
+    updateMemberList(groupId : number, newMembers : GroupMember[]){
+        this.hubConnection.invoke("UpdateMemberList", groupId , newMembers)
+        .catch(err => console.log(err));
     }
-
-    //close connection when user logout
-    closeConnection (username : string) {
-        if(this.hubConnection){
-            this.hubConnection.invoke('closeConnection', username)
-            .catch(err => console.log(err));
-        }
-    }
-
-    // askServerListener() {
-    //     this.hubConnection.on("askServerResponse", (res)=> {
-    //         console.log(res);
-    //     })
-    // }
 }

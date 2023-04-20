@@ -18,13 +18,15 @@ namespace ChatApp.Infrastructure.ServiceImplementation
     {
         #region Fields
         private readonly ChatAppContext _context;
+        private readonly INotificationService _notificationService;
         private readonly IWebHostEnvironment _hostEnvironment;
         #endregion
 
         #region Constructor
-        public GroupService(ChatAppContext context, IWebHostEnvironment webHost)
+        public GroupService(ChatAppContext context, IWebHostEnvironment webHost, INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
             _hostEnvironment = webHost;
         }
         #endregion

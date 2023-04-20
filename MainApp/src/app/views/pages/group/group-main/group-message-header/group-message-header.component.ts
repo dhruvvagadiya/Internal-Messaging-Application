@@ -1,15 +1,15 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GroupMember } from 'src/app/core/models/Group/group-member';
-import { Group } from 'src/app/core/models/GroupChat/group';
+import { Group } from 'src/app/core/models/Group/group';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { GroupChatService } from 'src/app/core/service/group-chat-service';
 import { GroupService } from 'src/app/core/service/group-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
 import { UserService } from 'src/app/core/service/user-service';
+import { SignalrService } from 'src/app/core/service/signalR-service';
 
 @Component({
-    selector: 'group-message-header',
+    selector: 'app-group-message-header',
     templateUrl: 'group-message-header.component.html',
     styleUrls : ['group-message-header.component.scss']
 })
@@ -19,8 +19,8 @@ export class GroupMessageHeaderComponent implements OnInit {
         private groupChatService : GroupChatService,
         private groupService : GroupService,
         private modalService: NgbModal,
-        private signalrService : SignalrService,
         private userService : UserService,
+        private signalrService : SignalrService
         ) { }
 
     selectedGroup : Group
@@ -29,10 +29,14 @@ export class GroupMessageHeaderComponent implements OnInit {
     allContacts : LoggedInUser [];
 
     toBeRemoveUser : GroupMember;
-
-    @Input() user : LoggedInUser;
+    user : LoggedInUser;
 
     ngOnInit() {
+
+        this.userService.getUserSubject().subscribe(e => {
+            this.user = e;
+        });
+
         this.groupChatService.groupChanged.subscribe(e => {
             this.selectedGroup = e;
 
@@ -44,30 +48,30 @@ export class GroupMessageHeaderComponent implements OnInit {
                 this.allContacts = e;
             });    
         });
+
+        //member is removed or left from group -> remove from member list
+        this.signalrService.hubConnection.on("leaveFromGroup", (groupId : number, userName : string) => {
+            if(this.selectedGroup?.id === groupId){
+                this.memberList = this.memberList.filter(e => e.userName !== userName);
+
+                if(this.user.userName === userName){
+                    this.groupChatService.groupChanged.next(null);
+                }
+            }
+        });
+
+        //if new members are added then modify list
+        this.signalrService.hubConnection.on("updateMemberList", (groupId : number, newMembers : GroupMember[]) => {
+            if(this.selectedGroup?.id === groupId){
+                this.memberList = this.memberList.concat(newMembers);
+            }
+        });
     }
 
     getMembers(){
         this.groupService.getMembers(this.selectedGroup.id).subscribe((res : GroupMember []) => {
             this.memberList = res;
         });
-    }
-
-    leaveFromGroup(){
-        this.groupService.leaveFromGroup({groupId : this.selectedGroup.id, userName : this.user.userName}).subscribe(() =>{});
-        
-        this.signalrService.leaveFromGroup(this.selectedGroup.id, this.user.userName);
-        this.groupChatService.groupChanged.next(null);
-    }
-
-    removeMember(userName : string){
-        this.groupService.removeMember(userName, this.selectedGroup.id).subscribe(e => {});
-        this.memberList = this.memberList.filter(e => e.userName !== userName);
-        this.signalrService.leaveFromGroup(this.selectedGroup.id, userName);
-    }
-
-    // back to chat-list for tablet and mobile devices
-    backToChatList() {
-        document.querySelector(".chat-content").classList.toggle("show");
     }
 
     getGroupProfile(url: string) {
@@ -84,13 +88,12 @@ export class GroupMessageHeaderComponent implements OnInit {
             if(this.memberList.some(e => e.userName === element.userName)){
                 element['disabled'] = true;
             }
+            else{
+                element['disabled'] = false;
+            }
         });
 
         this.modalService.open(content, {centered: true}).result.then((result) => {}).catch((err) => {});      
-    }
-
-    openUpdateModal(content: TemplateRef<any>) {        
-        this.modalService.open(content, {}).result.then((result) => {}).catch((err) => {});
     }
 
     openBasicModal(content: TemplateRef<any>) {

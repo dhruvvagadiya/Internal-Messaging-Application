@@ -69,8 +69,12 @@
     <Build Include="Tables\GroupMessages.sql" />
     <Build Include="Tables\Groups.sql" />
     <Build Include="Tables\Salts.sql" />
+    <Build Include="Tables\Notifications.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="ChatApp.Database.refactorlog" />
   </ItemGroup>
 </Project>

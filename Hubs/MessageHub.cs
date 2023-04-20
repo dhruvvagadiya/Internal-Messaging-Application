@@ -4,6 +4,8 @@ using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Chat;
 using ChatApp.Models.Group;
 using ChatApp.Models.GroupChat;
+using ChatApp.Models.Notification;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -116,6 +118,19 @@ namespace ChatApp.Hubs
                 return;
             }
 
+            //send notifications as well
+            var notification = new Notification()
+            {
+                Content = chat.MessageFrom,
+                Type = "Message",
+                CreatedAt = DateTime.Now,
+                IsSeen = 0,
+                UserId = receiver.Id
+            };
+
+            _context.Notifications.Add(notification);
+            _context.SaveChanges();
+
             //else check if receiver is online
             var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == receiver.Id);
             if(rConnection == null)
@@ -125,14 +140,59 @@ namespace ChatApp.Hubs
             else   //send chat to receiver also
             {
                 await Clients.Clients(rConnection.SignalId, Context.ConnectionId).SendAsync("receiveMessage", chat);
+
+                var notificationDto = ModelMapper.NotificationToDTO(notification);
+                await Clients.Client(rConnection.SignalId).SendAsync("addNotification", notificationDto);
             }
 
         }
 
-        public async Task sendGroupMessage(GroupChatModel chat)
+        public async Task sendGroupMessage(GroupChatModel chat, string groupName)
         {
 
-            IEnumerable<string> ConnectionIdList = getOnlineUsers(chat.GroupId);
+            //1. get all users of the curgroup
+            var members = _context.GroupMembers.Where(e => e.GroupId == chat.GroupId).Select(e => e.UserId).ToList();
+
+            IList<string> ConnectionIdList = new List<string>();
+
+            //2. now check which users are online (get conn id's of them)
+            foreach (var memberId in members)
+            {
+                var Connection = _context.Connections.FirstOrDefault(e => e.ProfileId == memberId);
+
+                //3. save notification for all except sender
+                var notification = new Notification()
+                {
+                    Content = groupName + "!*!" + chat.MessageFrom,
+                    Type = "GroupMessage",
+                    CreatedAt = DateTime.Now,
+                    IsSeen = 0,
+                    UserId = memberId
+                };
+
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+
+                if (Connection != null)
+                {
+                    ConnectionIdList.Add(Connection.SignalId);
+
+                    //it's sender
+                    if(Connection.SignalId == Context.ConnectionId)
+                    {
+                        _context.Remove(notification);
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        var notificationDto = ModelMapper.NotificationToDTO(notification);
+                        await Clients.Client(Connection.SignalId).SendAsync("addNotification", notificationDto);
+                    }
+
+                }
+            }
+
+
             //3. send to all
             await Clients.Clients(ConnectionIdList).SendAsync("receiveMessage", chat);
         }
@@ -162,6 +222,7 @@ namespace ChatApp.Hubs
 
         }
 
+        //add group in the recent sidebar of new members
         public async Task AddMembers(string[] usernames, GroupDTO group)
         {
             IList<string> ConnectionIds = new List<string>();
@@ -171,37 +232,79 @@ namespace ChatApp.Hubs
                 var userId = _context.Profiles.FirstOrDefault(e => e.UserName == userName).Id;
                 var conn = _context.Connections.FirstOrDefault(e => e.ProfileId == userId);
 
-                if(conn != null)
+                //send notifications as well
+                var notification = new Notification()
+                {
+                    Content = group.Name + "!*!" + group.CreatedBy,
+                    Type = "AddGroup",
+                    CreatedAt = DateTime.Now,
+                    IsSeen = 0,
+                    UserId = userId
+                };
+
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+
+                if (conn != null)
                 {
                     ConnectionIds.Add(conn.SignalId);
+
+                    var notificationDto = ModelMapper.NotificationToDTO(notification);
+                    await Clients.Client(conn.SignalId).SendAsync("addNotification", notificationDto);
                 }
             }
 
             var returnObj = new GroupRecentModel()
             {
                 Group = group,
-                LastMessage="You were added!"
+                LastMessage = "You were added!",
+                LastMsgTime = DateTime.Now
             };
+
 
             await Clients.Clients(ConnectionIds).SendAsync("updateRecentGroup", returnObj);
         }
 
-        public async Task leaveFromGroup(int groupId, string username)
+        //add this added members in the memberList
+        public async Task UpdateMemberList(int groupId, GroupMemberDTO[] newMembers)
         {
-            //get receiver
-            var receiver = await _context.Profiles.FirstOrDefaultAsync(e => e.UserName == username);
+            IEnumerable<string> ConnectionIdList = getOnlineUsers(groupId);
+            await Clients.Clients(ConnectionIdList).SendAsync("updateMemberList", groupId, newMembers);
+        }
 
-            if (receiver == null)
+        public async Task leaveFromGroup(int groupId, string username, bool removed, string? groupName)
+        {
+
+            //send notification if user was removed
+            if (removed)
             {
-                return;
+                var User = _context.Profiles.FirstOrDefault(e => e.UserName == username);
+
+                Notification notification = new Notification()
+                {
+                    Content = groupName,
+                    Type = "Removed",
+                    CreatedAt = DateTime.Now,
+                    IsSeen = 0,
+                    UserId = User.Id
+                };
+
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+
+                var rConnection = _context.Connections.FirstOrDefault(e => e.ProfileId == User.Id);
+                if (rConnection != null)
+                {
+                    var notificationDto = ModelMapper.NotificationToDTO(notification);
+                    await Clients.Client(rConnection.SignalId).SendAsync("addNotification", notificationDto);
+                }
             }
 
-            //else check if receiver is online
-            var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == receiver.Id);
-            if(rConnection != null)
-            {
-                await Clients.Client(rConnection.SignalId).SendAsync("leaveFromGroup", groupId);
-            }
+
+            //remove user from memberList of all users also
+            IEnumerable<string> ConnectionIdList = getOnlineUsers(groupId);
+
+            await Clients.Clients(ConnectionIdList).SendAsync("leaveFromGroup", groupId, username);
         }
 
         public async Task seenMessages(string fromUser, string ToUser)
@@ -225,6 +328,31 @@ namespace ChatApp.Hubs
             if(sConnection != null)
             {
                 await Clients.Client(sConnection.SignalId).SendAsync("seenMessage");
+            }
+        }
+
+        public async Task SendNotification(string UserName, NotificationDTO NotificationDto)
+        {
+            var user = _context.Profiles.FirstOrDefault(e => e.UserName == UserName);
+
+            //send notifications as well
+            var notification = new Notification()
+            {
+                Content = NotificationDto.Content,
+                Type = NotificationDto.Type,
+                CreatedAt = DateTime.Now,
+                IsSeen = 0,
+                UserId = user.Id
+            };
+
+            _context.Notifications.Add(notification);
+            _context.SaveChanges();
+
+            var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == user.Id);
+            if (rConnection != null)
+            {
+                var notificationDto = ModelMapper.NotificationToDTO(notification);
+                await Clients.Caller.SendAsync("addNotification", notificationDto); ;
             }
         }
 

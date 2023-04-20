@@ -1,4 +1,5 @@
 ﻿using ChatApp.Context.EntityClasses;
+using ChatApp.Models.Notification;
 using ChatApp.Models.Users;
 
 namespace ChatApp.Business.Helpers
@@ -27,6 +28,20 @@ namespace ChatApp.Business.Helpers
             profileDTO.Status = user.Status;
 
             return profileDTO;
+        }
+
+        public static NotificationDTO NotificationToDTO(Notification obj)
+        {
+            NotificationDTO returnObj = new()
+            {
+                Id = obj.Id,
+                Content = obj.Content,
+                Type = obj.Type,
+                IsSeen = obj.IsSeen,
+                CreatedAt = obj.CreatedAt
+            };
+
+            return returnObj;
         }
 
         //public static IEnumerable<ChatModel> ConvertChatToChatModel(IEnumerable<Chat> curList, string from, string to, int fromId, int toId)

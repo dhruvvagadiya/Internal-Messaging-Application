@@ -1,0 +1,71 @@
+<div class="chat-body" [perfectScrollbar] #scrollContainer>
+    <ul class="messages" *ngFor="let message of messageList; let i = index">
+
+        <!-- for date -->
+        <li class="text-center"
+            *ngIf="i == 0 || (message.createdAt | date : 'mediumDate') !== (messageList[i-1].createdAt | date : 'mediumDate')"
+            [style]="{'margin-bottom':'0.5rem !important'}">
+            <p class="p-1 d-inline-block text-muted rounded"
+                style="font-size: 0.7rem; background-color: rgba(194, 202, 209, 0.897);">{{message.createdAt | date :
+                'mediumDate'}}</p>
+        </li>
+
+        <!-- msgs -->
+        <li class="message-item" [ngClass]="message.messageFrom === selectedUser.userName ? 'friend' : 'me'">
+
+            <div class="content">
+                <div class="message">
+
+                    <div class="bubble" (dblclick)="replyMsg(message.id, message.content)"
+                        *ngIf="message.repliedTo || message.content"
+                        [ngClass]="message.messageFrom == user.userName ? 'mymsg' : ''">
+                        <p *ngIf="message.repliedTo !== null" class="text-muted"> <u>{{message.repliedTo}}</u> </p>
+
+                        <p *ngIf="message.content" class="d-inline-block">{{message.content}}</p>
+
+                        <p style="font-size: 0.6rem;" class="text-right text-muted">{{ message.createdAt | date :
+                            'shortTime' }}
+                            <i *ngIf="message.type === 'text' && message.messageFrom === user.userName && message.seenByReceiver == 1"
+                                class="mdi mdi-check-all" [style]="{color:'blue'}"></i>
+                        </p>
+                    </div>
+
+                    <!-- render file -->
+                    <div *ngIf="message.type !== 'text'">
+
+                        <img *ngIf="message.type === 'image'" [src]="getMsgUrl(message.filePath)" class="img-md"
+                            height="200px" width="200px" alt="avatar">
+
+                        <video width="320" height="240" controls *ngIf="message.type === 'video'">
+                            <source [src]="getMsgUrl(message.filePath)" type="video/mp4">
+                            <source [src]="getMsgUrl(message.filePath)" type="video/ogg">
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <audio controls *ngIf="message.type === 'audio'">
+                            <source [src]="getMsgUrl(message.filePath)" type="audio/ogg">
+                            <source [src]="getMsgUrl(message.filePath)" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+
+                    </div>
+
+                    <!-- for text content -->
+                    <!-- <div class="d-flex" *ngIf="message.type === 'text'" class='text-right'>
+                        
+                        <a (click)="replyMsg(message.id, message.content)" class="d-box">
+                            <i class="feather icon-corner-down-left icon-sm text-muted"
+                                ngbTooltip="Reply to message"></i>
+                        </a>
+                    </div> -->
+
+                    <!-- for files -->
+                    <div class="mt-2" *ngIf="message.type !== 'text'">
+                        <span class="d-box">{{ message.createdAt | date : 'shortTime' }}</span>
+                        <span *ngIf="message.messageFrom === user.userName && message.seenByReceiver == 1">Read</span>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Group } from '../models/GroupChat/group';
+import { Group } from '../models/Group/group';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({providedIn: 'root'})

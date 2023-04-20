@@ -1,0 +1,67 @@
+<li class="nav-item nav-notifications" ngbDropdown>
+    <a class="nav-link" ngbDropdownToggle id="notificationDropdown">
+        <i class="link-icon feather icon-bell"></i>
+        <div class="indicator" *ngIf="hasUnseen()">
+            <div class="circle"></div>
+        </div>
+    </a>
+    <div ngbDropdownMenu aria-labelledby="notificationDropdown">
+        <div class="dropdown-header d-flex align-items-center justify-content-between">
+            <p class="mb-0 font-weight-medium">{{notificationList.length}} Notifications</p>
+            <a (click)="clearAll()" class="text-muted">Clear all</a>
+        </div>
+        <div class="dropdown-body">
+
+            <p *ngIf="notificationList.length == 0" class="content">You're up to date</p>
+
+            <div (click)="markAsSeen(obj)" class="dropdown-item" *ngFor="let obj of notificationList| slice:0:3">
+                <div class="icon">
+                    <i class="mdi mdi-wechat icon-md" *ngIf="obj.type === 'AddGroup' || obj.type === 'GroupMessage'"></i>
+                    <i class="mdi mdi-snapchat icon-md" *ngIf="obj.type === 'Message'"></i>
+                    <i class="mdi mdi-account-remove icon-md" *ngIf="obj.type === 'Removed'"></i>
+                </div>
+                
+                <div class="content">
+                
+                    <span *ngIf="obj.type === 'Message'">New message from @<b>{{obj.content}}</b> </span>
+                    <span *ngIf="obj.type === 'GroupMessage'">New message in <b>{{obj.content.split("!*!")[0]}}</b> from
+                        @<b>{{obj.content.split("!*!")[1]}}</b> </span>
+                
+                    <span *ngIf="obj.type === 'Removed'">You were removed from the space <b>{{obj.content}}</b> </span>
+                
+                    <span *ngIf="obj.type === 'AddGroup'">You were added in the space <b>{{obj.content.split("!*!")[0]}}</b> by
+                        @<b>{{obj.content.split("!*!")[1]}}</b> </span>
+                
+                    <div class="d-flex justify-content-between">
+                        <p class="sub-text text-muted">{{obj.createdAt | date : 'shortTime'}}</p>
+                        <i class="mdi mdi-check-all icon-xs" *ngIf="obj.isSeen === 1"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="dropdown-footer d-flex align-items-center justify-content-center">
+            <a (click)="openDetailsModal(detailModal)">View all</a>
+        </div>
+    </div>
+</li>
+
+
+
+<!-- View All Notifications -->
+<ng-template #detailModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">All Notifications</h5>
+      <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+    </div>
+    <div class="modal-body">
+        <div class="dropdown-body nav-item nav-notifications">
+            <app-notification-item-component *ngFor="let obj of notificationList" [obj]="obj" (click)="markAsSeen(obj)">
+            </app-notification-item-component>
+        </div>
+    </div>
+
+    <div class="modal-footer d-flex justify-content-end">
+        <a (click)="viewAll(); modal.close()" class="btn btn-success">Mark all as read</a>
+    </div>
+</ng-template>

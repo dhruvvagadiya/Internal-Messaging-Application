@@ -1,8 +1,10 @@
 ﻿using ChatApp.Business.Helpers;
 using ChatApp.Business.ServiceInterfaces;
+using ChatApp.Hubs;
 using ChatApp.Models.Chat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ChatApp.Controllers
 {
@@ -14,6 +16,7 @@ namespace ChatApp.Controllers
         #region Fields
         private readonly IUserService _userService;
         private readonly IChatService _chatService;
+
         #endregion
 
         #region Constructor
