@@ -10,7 +10,10 @@ import { Label, Color, SingleDataSet } from 'ng2-charts';
 
 // Progressbar.js
 import ProgressBar from 'progressbar.js';
-import { SampleService } from 'src/app/core/service/sample-service';
+import { AuthService } from 'src/app/core/service/auth-service';
+import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
+import { ChatService } from 'src/app/core/service/chat-service';
+import { GroupChatService } from 'src/app/core/service/group-chat-service';
 
 export type apexChartOptions = {
   series: ApexAxisChartSeries;
@@ -40,8 +43,136 @@ export type apexChartOptions = {
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private sampleService: SampleService) { }
+  user : LoggedInUser
+
+  public series: ApexAxisChartSeries;
+  public chart: ApexChart;
+  public dataLabels: ApexDataLabels;
+  public markers: ApexMarkers;
+  public title: ApexTitleSubtitle;
+  public fill: ApexFill;
+  public yaxis: ApexYAxis;
+  public xaxis: ApexXAxis;
+  public tooltip: ApexTooltip;
+  public legend: ApexLegend;
+  public stroke: ApexStroke;
+  
+
+  constructor(private authService : AuthService, private chatService : ChatService, private groupChatService : GroupChatService) { }
+
+  dataSeries = [      {
+    date: "2014-01-01",
+    value: 0
+  }];
+
+  groupDataSeries = [      {
+    date: "2014-01-01",
+    value: 0
+  }];
+
   ngOnInit(): void {
+    this.user = this.authService.getLoggedInUserInfo();
+    this.getChatData();
+    this.GetGroupChatData();
+    this.initChartData();
   }
 
+  getChatData(){
+    this.chatService.getChatData(this.user.sub).subscribe(
+      (e : []) => {
+        this.dataSeries = e;           
+        this.initChartData();
+      }
+    )
+  }
+
+  GetGroupChatData(){
+    this.groupChatService.getChatData(this.user.sub).subscribe(
+      (e : []) => {
+        this.groupDataSeries = e;
+        this.initChartData();
+      }
+    )
+  }
+
+  public initChartData(): void {
+    
+    let dates = [];
+    for (let i = 0; i < this.dataSeries.length; i++) {
+      dates.push([this.dataSeries[i].date, this.dataSeries[i].value]);
+    }
+
+    let dates2 = [];
+    for (let i = 0; i < this.groupDataSeries.length; i++) {
+      dates2.push([this.groupDataSeries[i].date, this.groupDataSeries[i].value]);
+    }
+
+    this.series = [
+      {
+        name: "Messages",
+        data: dates
+      },
+      {
+        name: "Group Messages",
+        data: dates2
+      }
+    ];
+
+    this.chart = {
+      type: "line",
+      height: 350
+    };
+
+    this.dataLabels = {
+      enabled: false
+    };
+
+    this.title = {
+      text: "All Chat Data",
+      align: "left"
+    };
+
+    this.legend = {
+      tooltipHoverFormatter: function(val, opts) {
+        return (
+          val +
+          " - <strong>" +
+          opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] +
+          "</strong>"
+        );
+      }
+    };
+    
+    this.markers = {
+      size: 0,
+      hover : {sizeOffset : 6}
+    };
+
+    this.tooltip = {
+      y: [
+        {
+          title: {
+            formatter: function(val) {
+              return val;
+            }
+          }
+        },
+        {
+          title: {
+            formatter: function(val) {
+              return val;
+            }
+          }
+        }
+      ]
+    },
+
+    this.xaxis = {
+      labels : {
+        trim : false
+      },
+      type: "datetime"
+    };
+
+  }
 }

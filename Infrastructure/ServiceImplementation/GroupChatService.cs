@@ -228,6 +228,34 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         }
 
 
+        //for dashBoard
+        public IEnumerable<ChatDataModel> GetGroupChatData(int UserId)
+        {
+            //1. Get Id of Groups of which user is part of
+            IEnumerable<ChatDataModel> list = new List<ChatDataModel>();
+
+            var Ids = _context.GroupMembers.Where(e => e.UserId == UserId).Select(e => e.GroupId).Distinct().ToList();
+
+            foreach(int GroupId in Ids)
+            {
+                //group by and then count
+                var ChatList = _context.GroupChats.Where(e => e.GroupId == GroupId).GroupBy(e => e.CreatedAt.Date).Select(
+                    e => new ChatDataModel() { Date = e.Key.ToString("yyyy-MM-dd"), Value = e.Count() }).ToList();
+
+
+                list = list.Concat(ChatList);
+
+                list = list.GroupBy(e => e.Date).Select(e => new ChatDataModel()
+                {
+                    Date = e.Key,
+                    Value = e.Sum(el => el.Value)
+                }).OrderBy(e => e.Date);
+            }
+
+            return list;
+        }
+
+
         //check whether user is part of the group
         public bool IsaMemberOf(int UserId, int GroupId)
         {

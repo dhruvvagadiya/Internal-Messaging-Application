@@ -83,7 +83,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 string lastMsg = "";
                 DateTime? lastMsgTime = null;
 
-                if(lastMsgObj != null)
+                if (lastMsgObj != null)
                 {
                     lastMsg = lastMsgObj.Content;
                     lastMsgTime = lastMsgObj.CreatedAt;
@@ -103,7 +103,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             }
 
             //order list by last msg time :)
-            returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList();;
+            returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList(); ;
 
             return returnObj;
         }
@@ -124,7 +124,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             chat.Type = "text";
             chat.SeenByReceiver = 0;
 
-            if(RepliedTo != null)
+            if (RepliedTo != null)
             {
                 chat.RepliedTo = RepliedTo;
             }
@@ -138,7 +138,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             _context.SaveChanges();
 
             string ReplyMsg = "";
-            if(RepliedTo != null)
+            if (RepliedTo != null)
             {
                 ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == RepliedTo).Content;
             }
@@ -232,6 +232,14 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return returnObj;
         }
 
+        public IEnumerable<ChatDataModel> GetChatData(int UserId)
+        {
+            //group by and then coubt
+            var ChatList = _context.Chats.Where(e => e.MessageFrom == UserId || e.MessageTo == UserId).GroupBy(e => e.CreatedAt.Date).Select(
+                e => new ChatDataModel() { Date = e.Key.ToString("yyyy-MM-dd"), Value = e.Count() }) ;
+
+            return ChatList;
+        }
         #endregion
 
         #region Private Methods

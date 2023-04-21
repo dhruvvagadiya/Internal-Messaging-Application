@@ -116,6 +116,18 @@ namespace ChatApp.Controllers
             return BadRequest("Bad Request !");
         }
 
+        [HttpGet("data/{UserName}")]
+        public IActionResult GetChatData(string UserName)
+        {
+            var UserId = _userService.GetIdFromUsername(UserName);
+
+            if (UserId == -1) return BadRequest();
+
+            var List = _chatService.GetChatData(UserId);
+
+            return Ok(List);
+        }
+
         #endregion
     }
 }

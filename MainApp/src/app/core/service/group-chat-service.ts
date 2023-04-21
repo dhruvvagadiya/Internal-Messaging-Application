@@ -21,6 +21,10 @@ export class GroupChatService {
         return this.http.post(environment.apiUrl + "/groupchat/" + groupId, data);
     }
 
+    getChatData(username: string){
+        return this.http.get(environment.apiUrl + "/groupchat/data/" + username);
+    }
+
     getChatOfGroup(groupId : number) {
         return this.http.get(environment.apiUrl + "/groupchat/" + groupId);
     }

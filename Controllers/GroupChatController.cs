@@ -104,7 +104,23 @@ namespace ChatApp.Controllers
             
             return Ok(chatList);
         }
-        
+
+
+        [HttpGet("data/{UserName}")]
+        public IActionResult GetGroupChatData(string UserName)
+        {
+
+            int UserId = _userService.GetIdFromUsername(UserName);
+
+            if(UserId == -1)
+            {
+                return BadRequest();
+            }
+
+            var List = _groupChatService.GetGroupChatData(UserId);
+
+            return Ok(List);
+        }
         #endregion
     }
 }

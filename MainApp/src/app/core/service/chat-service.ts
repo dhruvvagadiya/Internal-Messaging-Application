@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { SendMessage } from '../models/chat/send-message';
 
 @Injectable({providedIn: 'root'})
 export class ChatService {
-
+    
     constructor(private http : HttpClient) { }
     
     getRecentUsers() {
@@ -18,5 +17,9 @@ export class ChatService {
 
     getChatWithUser(username : string) {
         return this.http.get(environment.apiUrl + "/chat/" + username);
+    }
+
+    getChatData(username : string){
+        return this.http.get(environment.apiUrl + "/chat/data/" + username)
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ChatApp.Context.EntityClasses;
+using ChatApp.Models.Chat;
 using ChatApp.Models.GroupChat;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,5 +18,7 @@ namespace ChatApp.Business.ServiceInterfaces
         bool IsaMemberOf(int UserId, int GroupId);
 
         bool Exists(int GroupId);
+
+        IEnumerable<ChatDataModel> GetGroupChatData(int UserId);
     }
 }

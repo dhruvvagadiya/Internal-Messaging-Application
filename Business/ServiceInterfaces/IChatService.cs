@@ -12,5 +12,7 @@ namespace ChatApp.Business.ServiceInterfaces
         IEnumerable<RecentChatModel> GetRecentList(int userID);
 
         ChatModel SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat);
+
+        IEnumerable<ChatDataModel> GetChatData(int UserId);
     }
 }

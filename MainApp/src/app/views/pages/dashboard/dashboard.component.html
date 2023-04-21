@@ -1,6 +1,25 @@
-<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-  <div>
-    <h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4>
-  </div>
-  
+<div class="mb-4">
+  <h4>Welcome to Dashboard</h4>
+</div>
+
+<!-- <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+
+</div> -->
+
+<div id="chart">
+
+  <apx-chart
+  [series]="series"
+  [chart]="chart"
+  [xaxis]="xaxis"
+  [dataLabels]="dataLabels"
+  [markers]="markers"
+  [title]="title"
+  [fill]="fill"
+  [tooltip]="tooltip"
+  [legend]="legend"
+  [autoUpdateSeries]="true"
+></apx-chart>
+
+
 </div>
