@@ -3,13 +3,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using ChatApp.Business.Helpers;
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
+using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,20 +26,22 @@ namespace ChatApp.Controllers
         #region Private fields
         private readonly IConfiguration _config;
         private readonly IProfileService _profileService;
+        private readonly IHubContext<MessageHub> _hub;
         #endregion
 
         #region Constructor
-        public AccountController(IConfiguration config, IProfileService profileService)
+        public AccountController(IConfiguration config, IProfileService profileService, IHubContext<MessageHub> hub)
         {
             _config = config;
             _profileService = profileService;
+            _hub = hub;
         }
         #endregion
 
         #region Endpoints
 
         [HttpPost("Login")]
-        public IActionResult Login([FromBody] LoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
 
             var user = _profileService.CheckPassword(loginModel.Username, out string curSalt);
@@ -46,6 +51,9 @@ namespace ChatApp.Controllers
                 //check for password
                 if (CompareHashedPasswords(loginModel.Password, user.Password, curSalt))
                 {
+
+                    await _hub.Clients.All.SendAsync("updateProfileStatus", "available", user.UserName);
+
                     var tokenString = GenerateJSONWebToken(user);
                     return Ok(new { token = tokenString });
                 }
@@ -126,7 +134,7 @@ namespace ChatApp.Controllers
                     new Claim(JwtRegisteredClaimNames.Email, profileInfo.Email),
                     new Claim(ClaimsConstant.FirstNameClaim, profileInfo.FirstName),
                     new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
-                    new Claim(ClaimsConstant.StatusClaim, profileInfo.Status),
+                    new Claim(ClaimsConstant.DesignationClaim, profileInfo.Designation),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 

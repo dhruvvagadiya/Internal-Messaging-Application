@@ -13,5 +13,7 @@
         [LastUpdatedAt] DATETIME2 NULL, 
         [LastUpdatedBy] INT NULL, 
         [LastSeen] DATETIME2 NULL DEFAULT GETDATE(), 
-        [Status] NVARCHAR(50) DEFAULT 'Employee'
+        [Designation] NVARCHAR(50) DEFAULT 'Employee', 
+        [StatusId] INT NULL,
+        CONSTRAINT [FK_Profiles_UerStatus_To_Status] FOREIGN KEY ([StatusId]) REFERENCES dbo.Status(Id),
     )

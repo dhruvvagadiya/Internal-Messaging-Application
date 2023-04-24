@@ -16,7 +16,6 @@ namespace ChatApp.Business.Helpers
             profileDTO.UserName = user.UserName;
             profileDTO.FirstName = user.FirstName;
             profileDTO.LastName = user.LastName;
-            //profileDTO.Id = user.Id;
             profileDTO.Email = user.Email;
             profileDTO.ImageUrl = user.ImageUrl;
             profileDTO.CreatedAt = user.CreatedAt;
@@ -25,7 +24,11 @@ namespace ChatApp.Business.Helpers
             profileDTO.LastUpdatedAt = user.LastUpdatedAt;
             profileDTO.ProfileType = user.ProfileType;
             profileDTO.LastSeen = user.LastSeen;
-            profileDTO.Status = user.Status;
+            profileDTO.Designation = user.Designation;
+            if(user.UserStatus != null)
+            {
+                profileDTO.ProfileStatus = user.UserStatus.Content;
+            }
 
             return profileDTO;
         }

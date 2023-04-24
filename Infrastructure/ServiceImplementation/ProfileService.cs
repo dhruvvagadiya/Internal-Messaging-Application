@@ -2,10 +2,13 @@
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
+using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
 {
@@ -34,6 +37,9 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             //if user exists then get salt
             curSalt = context.Salts.FirstOrDefault(e => e.UserId == user.Id).UsedSalt;
+
+            user.StatusId = 1;
+            context.SaveChanges();
 
             return user;
         }
@@ -79,7 +85,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Email = regModel.Email,
                     CreatedAt = DateTime.UtcNow,
                     ProfileType = ProfileType.User,
-                    Status = "Employee"
+                    Designation = "Employee"
                 };
 
                 newUser.LastUpdatedAt = DateTime.Now;

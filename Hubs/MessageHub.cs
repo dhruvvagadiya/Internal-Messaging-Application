@@ -44,6 +44,7 @@ namespace ChatApp.Hubs
             return Task.CompletedTask;
         }
 
+        #region Chat 
         public async Task GetRecentChat(string from, string to)
         {
             var conId = Context.ConnectionId;
@@ -147,6 +148,38 @@ namespace ChatApp.Hubs
 
         }
 
+        public async Task seenMessages(string fromUser, string ToUser)
+        {
+            int senderId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == fromUser).GetAwaiter().GetResult().Id;
+            int receiverId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == ToUser).GetAwaiter().GetResult().Id;
+
+            //get chats
+            var chats = _context.Chats.Where(e => e.MessageFrom == senderId && e.MessageTo == receiverId);
+            foreach (var tmp in chats)
+            {
+                tmp.SeenByReceiver = 1;
+            }
+
+            _context.UpdateRange(chats);
+            await _context.SaveChangesAsync();
+
+            //notify sender that receiver has seen msgs
+            var sConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == senderId);
+
+            if (sConnection != null)
+            {
+                await Clients.Client(sConnection.SignalId).SendAsync("seenMessage");
+            }
+        }
+
+        public async Task UpdateProfileStatus(string status, string username)
+        {
+            await Clients.Others.SendAsync("updateProfileStatus", status, username);
+        }
+
+        #endregion
+
+        #region Group Chat
         public async Task sendGroupMessage(GroupChatModel chat, string groupName)
         {
 
@@ -307,30 +340,9 @@ namespace ChatApp.Hubs
             await Clients.Clients(ConnectionIdList).SendAsync("leaveFromGroup", groupId, username);
         }
 
-        public async Task seenMessages(string fromUser, string ToUser)
-        {
-            int senderId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == fromUser).GetAwaiter().GetResult().Id;
-            int receiverId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == ToUser).GetAwaiter().GetResult().Id;
+        #endregion
 
-            //get chats
-            var chats = _context.Chats.Where(e => e.MessageFrom == senderId && e.MessageTo == receiverId);
-            foreach (var tmp in chats)
-            {
-                tmp.SeenByReceiver = 1;
-            }
-
-            _context.UpdateRange(chats);
-            await _context.SaveChangesAsync();
-
-            //notify sender that receiver has seen msgs
-            var sConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == senderId);
-
-            if(sConnection != null)
-            {
-                await Clients.Client(sConnection.SignalId).SendAsync("seenMessage");
-            }
-        }
-
+        #region Common
         public async Task SendNotification(string UserName, NotificationDTO NotificationDto)
         {
             var user = _context.Profiles.FirstOrDefault(e => e.UserName == UserName);
@@ -355,6 +367,8 @@ namespace ChatApp.Hubs
                 await Clients.Caller.SendAsync("addNotification", notificationDto); ;
             }
         }
+
+        #endregion
 
         #region Methods
         public string saveConnection(string username)

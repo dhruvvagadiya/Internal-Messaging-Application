@@ -5,16 +5,38 @@
             <i class="feather icon-corner-up-left icon-md mr-2 ml-n2 text-muted d-lg-none"></i>
             <figure class="mb-0 mr-2">
                 <img [src]="getProfile(selectedUser)" class="img-sm rounded-circle" alt="image">
-                <div class="status online"></div>
-                <div class="status online"></div>
+                <!-- <div class="status online"></div> -->
             </figure>
             <div>
                 <p>{{selectedUser.firstName}} {{selectedUser.lastName}}</p>
-                <p class="text-muted tx-13">{{selectedUser.status}}</p>
+                <p class="text-muted tx-13" *ngIf="selectedUser.profileStatus.toLowerCase() === 'available'">
+                    <i class="mdi mdi-brightness-1 active"></i>
+                    <span class="ml-1">Available</span>
+                </p>
+                <p class="text-muted tx-13" *ngIf="selectedUser.profileStatus.toLowerCase() === 'dnd'">
+                    <i class="mdi mdi-minus-circle dnd"></i>
+                    <span class="ml-1">Do not disturb</span>
+                </p>
+                <p class="text-muted tx-13" *ngIf="selectedUser.profileStatus.toLowerCase() === 'busy'">
+                    <i class="mdi mdi-brightness-1 busy"></i>
+                    <span class="ml-1">Busy</span>
+                </p>
+                <p class="text-muted tx-13" *ngIf="selectedUser.profileStatus.toLowerCase() === 'rightback'">
+                    <i class="mdi mdi-clock-fast beBack"></i>
+                    <span class="ml-1">Be right back</span>
+                </p>
+                <p class="text-muted tx-13" *ngIf="selectedUser.profileStatus.toLowerCase() === 'away'">
+                    <i class="mdi mdi-clock beBack"></i>
+                    <span class="ml-1">Away</span>
+                </p>
+                <p class="text-muted tx-13" *ngIf="selectedUser.profileStatus.toLowerCase() === 'offline'">
+                    <i class="mdi mdi-close-circle-outline"></i>
+                    <span class="ml-1">Offline</span>
+                </p>
+
             </div>
         </div>
         <div class="d-flex align-items-center mr-n1">
-            
             <a href="" (click)="false">
                 <i class="feather icon-video icon-md text-muted mr-3" ngbTooltip="Start video call"></i>
             </a>

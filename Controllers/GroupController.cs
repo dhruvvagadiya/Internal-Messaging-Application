@@ -103,7 +103,6 @@ namespace ChatApp.Controllers
                     LastName = obj.User.LastName,
                     UserName = obj.User.UserName,
                     ImageUrl = obj.User.ImageUrl,
-                    Status = obj.User.Status,
                     AddedAt = obj.AddedAt
                 };
 
@@ -144,7 +143,6 @@ namespace ChatApp.Controllers
                     LastName = obj.User.LastName,
                     UserName = obj.User.UserName,
                     ImageUrl = obj.User.ImageUrl,
-                    Status = obj.User.Status,
                     AddedAt = obj.AddedAt
                 };
 

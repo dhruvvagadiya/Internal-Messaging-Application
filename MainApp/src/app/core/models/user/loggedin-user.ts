@@ -11,8 +11,9 @@ export interface LoggedInUser
     lastUpdatedAt? : Date,
     lastUpdatedBy? : number,
     lastSeen? : Date,
-    status? : string,
+    designation? : string,
     exp? : number 
     sub : string
+    profileStatus? : string
 }
     

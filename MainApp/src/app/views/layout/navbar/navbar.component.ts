@@ -51,6 +51,10 @@ export class NavbarComponent implements OnInit {
   onLogout(e) {
     e.preventDefault();
 
+    this.userService.updateProfileStatus('offline', this.loggedInUser.userName).subscribe(e => {
+      this.signalrService.updateProfileStatus('offline', this.loggedInUser.userName);
+    });
+
     this.accountService.logout().subscribe(res => {
       this.authService.logout(() => {
         Swal.fire({

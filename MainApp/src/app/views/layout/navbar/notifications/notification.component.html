@@ -6,13 +6,13 @@
         </div>
     </a>
     <div ngbDropdownMenu aria-labelledby="notificationDropdown">
-        <div class="dropdown-header d-flex align-items-center justify-content-between">
-            <p class="mb-0 font-weight-medium">{{notificationList.length}} Notifications</p>
+        <div class="dropdown-header d-flex align-items-center justify-content-between" *ngIf="notificationList.length > 0">
+            <p class="mb-0 font-weight-medium" >{{notificationList.length}} Notifications</p>
             <a (click)="clearAll()" class="text-muted">Clear all</a>
         </div>
         <div class="dropdown-body">
 
-            <p *ngIf="notificationList.length == 0" class="content">You're up to date</p>
+            <div *ngIf="notificationList.length == 0" class="dropdown-item">You're up to date</div>
 
             <div (click)="markAsSeen(obj)" class="dropdown-item" *ngFor="let obj of notificationList| slice:0:3">
                 <div class="icon">

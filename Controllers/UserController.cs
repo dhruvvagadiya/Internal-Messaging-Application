@@ -78,6 +78,25 @@ namespace ChatApp.Controllers
             return Ok(new { data = userList });
         }
 
+        [HttpPost("profileStatus")]
+        public IActionResult UpdateProfileStatus([FromBody] UpdateProfileStatus Obj)
+        {
+            var User = _userService.GetUser(e => e.UserName.Equals(Obj.UserName));
+            if (User == null)
+            {
+                return BadRequest("User does not exists.");
+            }
+
+            var status = _userService.UpdateProfileStatus(Obj.Status, User);
+
+            if (status.Length == 0)
+            {
+                return BadRequest("Invalid Status");
+            }
+
+            return Ok(new { status });
+        }
+
         #endregion
 
         #region Methods
@@ -91,7 +110,7 @@ namespace ChatApp.Controllers
                     new Claim(JwtRegisteredClaimNames.Email, profileInfo.Email),
                     new Claim(ClaimsConstant.FirstNameClaim, profileInfo.FirstName),
                     new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
-                    new Claim(ClaimsConstant.StatusClaim, profileInfo.Status),
+                    new Claim(ClaimsConstant.DesignationClaim, profileInfo.Designation),
                     //new Claim(ClaimsConstant.ImageUrlClaim, profileInfo.ImageUrl),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };

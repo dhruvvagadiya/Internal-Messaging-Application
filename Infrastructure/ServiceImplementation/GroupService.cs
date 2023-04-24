@@ -247,7 +247,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     FirstName = e.User.FirstName,
                     LastName = e.User.LastName,
                     ImageUrl = e.User.ImageUrl,
-                    Status = e.User.Status,
                     AddedAt = e.AddedAt
                 }
             ).ToList();

@@ -42,7 +42,7 @@ export class ProfileEditComponent implements OnInit {
       LastName: new FormControl(this.loggedInUser.lastName, [
         Validators.required,
       ]),
-      Status: new FormControl(this.loggedInUser.status, [
+      Status: new FormControl(this.loggedInUser.designation, [
         Validators.required,
         Validators.maxLength(50),
       ]),

@@ -1,0 +1,77 @@
+<li class="nav-item statusDropdown" ngbDropdown *ngIf="user">
+
+    <a class="border p-2 statusContent" ngbDropdownToggle>
+
+        <span *ngIf="user.profileStatus.toLowerCase() === 'available'">
+            <i class="mdi mdi-brightness-1 active"></i>
+            <span class="ml-1">Available</span>
+        </span>
+
+        <span *ngIf="user.profileStatus.toLowerCase() === 'dnd'">
+            <i class="mdi mdi-minus-circle dnd"></i>
+            <span class="ml-1">Do not disturb</span>
+        </span>
+
+        <span *ngIf="user.profileStatus.toLowerCase() === 'busy'">
+            <i class="mdi mdi-brightness-1 busy"></i>
+            <span class="ml-1">Busy</span>
+        </span>
+
+        <span *ngIf="user.profileStatus.toLowerCase() === 'rightback'">
+            <i class="mdi mdi-clock-fast beBack"></i>
+            <span class="ml-1">Be right back</span>
+        </span>
+
+        <span *ngIf="user.profileStatus.toLowerCase() === 'away'">
+            <i class="mdi mdi-clock beBack"></i>
+            <span class="ml-1">Away</span>
+        </span>
+
+        <span *ngIf="user.profileStatus.toLowerCase() === 'offline'">
+            <i class="mdi mdi-close-circle-outline"></i>
+            <span class="ml-1">Offline</span>
+        </span>
+
+    </a>
+
+    <div ngbDropdownMenu aria-labelledby="statusDropdown">
+
+        <div class="dropdown-body">
+
+            <ul class="p-0">
+
+                <li class="dropdown-item" *ngIf="user.profileStatus.toLowerCase() !== 'available'" (click)="updateStatus('available')">
+                    <i class="mdi mdi-brightness-1 active"></i>
+                    <span class="ml-2">Available</span>
+                </li>
+
+                <li class="dropdown-item" *ngIf="user.profileStatus.toLowerCase() !== 'dnd'" (click)="updateStatus('dnd')">
+                    <i class="mdi mdi-minus-circle dnd"></i>
+                    <span class="ml-2">Do not disturb</span>
+                </li>
+
+                <li class="dropdown-item" *ngIf="user.profileStatus.toLowerCase() !== 'busy'" (click)="updateStatus('busy')">
+                    <i class="mdi mdi-brightness-1 busy"></i>
+                    <span class="ml-2">Busy</span>
+                </li>
+
+                <li class="dropdown-item" *ngIf="user.profileStatus.toLowerCase() !== 'rightback'" (click)="updateStatus('rightback')">
+                    <i class="mdi mdi-clock-fast beBack"></i>
+                    <span class="ml-2">Be right back</span>
+                </li>
+
+                <li class="dropdown-item" *ngIf="user.profileStatus.toLowerCase() !== 'away'" (click)="updateStatus('away')">
+                    <i class="mdi mdi-clock beBack"></i>
+                    <span class="ml-2">Appear away</span>
+                </li>
+
+                <li class="dropdown-item" *ngIf="user.profileStatus.toLowerCase() !== 'offline'" (click)="updateStatus('offline')">
+                    <i class="mdi mdi-close-circle-outline"></i>
+                    <span class="ml-2">Appear offline</span>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</li>

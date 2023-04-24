@@ -102,4 +102,11 @@ export class SignalrService {
         this.hubConnection.invoke("UpdateMemberList", groupId , newMembers)
         .catch(err => console.log(err));
     }
+
+
+    // --------- for profile status ---------
+    updateProfileStatus(status : string, username : string){
+        this.hubConnection.invoke("UpdateProfileStatus", status , username)
+        .catch(err => console.log(err));
+    }  
 }

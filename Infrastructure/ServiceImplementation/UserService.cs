@@ -81,7 +81,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             user.FirstName = updateModel.FirstName;
             user.LastName = updateModel.LastName;
-            user.Status = updateModel.Status;
+            user.Designation = updateModel.Designation;
             user.LastUpdatedAt = DateTime.Now;
 
             context.Profiles.Update(user);
@@ -121,17 +121,34 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return returnObj;
         }
 
+
+        public string UpdateProfileStatus(string Status, Profile User)
+        {
+
+            var StatusObj = context.Status.FirstOrDefault(e => e.Content.Equals(Status.ToLower()));
+
+            if(StatusObj == null)
+            {
+                return "";
+            }
+
+            User.StatusId = StatusObj.Id;
+            context.SaveChanges();
+
+            return StatusObj.Content;
+        }
+
         //get user by filter
         public Profile GetUser(Expression<Func<Profile, bool>> filter, bool tracked = true)
         {
             Profile user;
             if (tracked)
             {
-                user = context.Profiles.FirstOrDefault(filter);
+                user = context.Profiles.Include("UserStatus").FirstOrDefault(filter);
             }
             else
             {
-                user = context.Profiles.AsNoTracking().FirstOrDefault(filter);
+                user = context.Profiles.Include("UserStatus").AsNoTracking().FirstOrDefault(filter);
             }
 
             return user;

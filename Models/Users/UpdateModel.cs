@@ -17,7 +17,7 @@ namespace ChatApp.Models.Users
 
         [Required]
         [MaxLength(50, ErrorMessage ="Status must be less than 50 characters")]
-        public string Status { get; set; }
+        public string Designation { get; set; }
         public IFormFile File { get; set; }
     }
 }

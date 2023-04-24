@@ -22,6 +22,7 @@ import { PERFECT_SCROLLBAR_CONFIG } from "ngx-perfect-scrollbar";
 import { PerfectScrollbarConfigInterface } from "ngx-perfect-scrollbar";
 import { NotificationComponent } from "./navbar/notifications/notification.component";
 import { NotificationItemComponent } from "./navbar/notifications/notification-item/notification-item.component";
+import { StatusComponent } from "./navbar/status/status.component";
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -35,7 +36,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     FooterComponent,
     ContentAnimateDirective,
     NotificationComponent,
-    NotificationItemComponent
+    NotificationItemComponent,
+    StatusComponent
   ],
   imports: [
     CommonModule,

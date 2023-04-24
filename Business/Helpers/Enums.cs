@@ -6,7 +6,7 @@ namespace ChatApp.Business.Helpers
         public const string FirstNameClaim = "firstName";
         public const string LastNameClaim = "lastName";
         public const string ImageUrlClaim = "imageUrl";
-        public const string StatusClaim = "status";
+        public const string DesignationClaim = "designation";
     }
     public enum ProfileType
     {

@@ -24,6 +24,10 @@ export class UserService implements OnInit {
         return this.http.put(environment.apiUrl + "/user/" + username, formData);
     }
 
+    updateProfileStatus(status : string, userName : string){
+        return this.http.post(environment.apiUrl + "/user/profileStatus" , {status, userName});
+    }
+
     // getImage(){
     //     return this.http.get(environment.apiUrl + "/account/getimage", { responseType: 'blob' });
     // }

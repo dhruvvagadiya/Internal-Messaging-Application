@@ -37,17 +37,17 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).OrderBy(e => e.CreatedAt).ToList();
 
 
-            //make all chats seen when fetched   (changing this in hub already but when hub is not connected this is necessary)
-            foreach (var chat in chats)
-            {
-                if (chat.MessageTo == userFrom)
-                {
-                    chat.SeenByReceiver = 1;
-                }
-            }
+            //make all chats seen when fetched   (changing this in hub already)
+            //foreach (var chat in chats)
+            //{
+            //    if (chat.MessageTo == userFrom)
+            //    {
+            //        chat.SeenByReceiver = 1;
+            //    }
+            //}
 
-            _context.UpdateRange(chats);
-            _context.SaveChanges();
+            //_context.UpdateRange(chats);
+            //_context.SaveChanges();
 
             var returnChat = chats;
 
