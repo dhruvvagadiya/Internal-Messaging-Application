@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DesignationModel } from 'src/app/core/models/user/designation';
 import { RegistrationModel } from 'src/app/core/models/user/registration-model';
 import { AccountService } from 'src/app/core/service/account-service';
 import { AuthService } from 'src/app/core/service/auth-service';
@@ -18,7 +19,8 @@ export class RegisterComponent implements OnInit {
   regModel: RegistrationModel;
   disableRegButtton: boolean = false;
   signupForm : FormGroup
-
+  designationList : DesignationModel [] = [];
+  
   constructor(private router: Router, 
     private accountService: AccountService,
     private authService: AuthService,
@@ -32,6 +34,7 @@ export class RegisterComponent implements OnInit {
       userName: '',
       email: '',
       password: '',
+      designationId : 1
     }
 
     this.signupForm = new FormGroup({
@@ -39,8 +42,13 @@ export class RegisterComponent implements OnInit {
       'lName' : new FormControl(null, [Validators.required]),
       'username' : new FormControl(null, [Validators.required, Validators.minLength(6)]),
       'email' : new FormControl(null, [Validators.required, Validators.email]),
+      'designation' : new FormControl(1, [Validators.required]),
       'password' : new FormControl(null, [Validators.required, Validators.minLength(8)])
     });
+
+    this.accountService.getDesignations().subscribe((e : DesignationModel []) => {
+      this.designationList = e;
+    })
 
   }
 

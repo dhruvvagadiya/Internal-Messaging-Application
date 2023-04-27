@@ -1,5 +1,6 @@
 ﻿using ChatApp.Models.Chat;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ChatApp.Business.ServiceInterfaces
 {
@@ -7,11 +8,11 @@ namespace ChatApp.Business.ServiceInterfaces
     {
         IEnumerable<ChatModel> GetChatList (int userFrom, int userTo, string fromUserName, string toUserName);
 
-        ChatModel SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo);
+        Task<ChatModel> SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo);
 
         IEnumerable<RecentChatModel> GetRecentList(int userID);
 
-        ChatModel SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat);
+        Task<ChatModel> SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat);
 
         IEnumerable<ChatDataModel> GetChatData(int UserId);
     }

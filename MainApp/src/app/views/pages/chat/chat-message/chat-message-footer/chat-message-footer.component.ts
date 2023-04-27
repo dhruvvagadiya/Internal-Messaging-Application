@@ -57,14 +57,8 @@ export class ChatMessageFooterComponent implements OnInit {
     }
 
     this.chatService.sendChat(this.selectedUser.userName, formData).subscribe(
-      (res: MessageModel) => {
-        //   // because if user is online bydefault seen will not be true
-        //   this.messageList.push(res);
-
-        //generate event to send msg to receiver
-        if (this.signalrService.hubConnection) {
-          this.signalrService.sendMessage(res);
-        }
+      () => {
+        this.signalrService.hubConnection.invoke('GetRecentChat', this.user.userName, this.selectedUser.userName);
       },
       (err) => {
         console.log(err);

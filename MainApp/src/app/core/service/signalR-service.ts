@@ -52,16 +52,6 @@ export class SignalrService {
 
     // ------------- simple chat ------------------ 
 
-    //when user sends msg to receiver
-    sendMessage(res : MessageModel){
-        this.hubConnection.invoke("sendMessage", res)
-            .catch(err => console.log(err));
-        
-        //FOR SENDER ADD RECEIVER TO RECENT CHAT
-        //FOR RECEIVER ADD SENDER TO RECENT CHAT
-        this.hubConnection.invoke('GetRecentChat', res.messageFrom, res.messageTo);
-    }
-
     //mark all msgs seen where msgFrom is sender & msgTo is receiver
     seenMessages(sender : string, receiver : string) {
         this.hubConnection.invoke('seenMessages', sender, receiver);

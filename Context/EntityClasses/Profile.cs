@@ -17,10 +17,13 @@ namespace ChatApp.Context.EntityClasses
         public string Email { get; set; }
         public string ImageUrl { get; set; }
         public string Password { get; set; }
-        public string Designation { get; set; }
+
+        [ForeignKey("UserDesignation")]
+        public int DesignationId { get; set; }
+        public virtual Designation UserDesignation { get; set; }
 
         [ForeignKey("UserStatus")]
-        public int StatusId { get; set; }
+        public int StatusId { get; set; } = 1;
         public virtual Status UserStatus { get; set; }
 
         public ProfileType ProfileType { get; set; }

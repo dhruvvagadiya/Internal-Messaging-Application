@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -16,6 +16,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TokenInterceptor } from './core/helper/token-interceptor';
 import { AuthService } from './core/service/auth-service';
 
+import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
+import {
+  GoogleLoginProvider,
+} from 'angularx-social-login';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,6 +34,7 @@ import { AuthService } from './core/service/auth-service';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    SocialLoginModule
   ],
   providers: [
     AuthGuard,
@@ -48,8 +54,26 @@ import { AuthService } from './core/service/auth-service';
       useClass: TokenInterceptor,
       multi: true,
       deps: [AuthService],
+    },
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '673641779020-f19onebut126rjpp605nfl7qtmdsh9bd.apps.googleusercontent.com'
+            )
+          }
+        ],
+        onError: (err) => {
+          console.error(err);
+        }
+      } as SocialAuthServiceConfig,
     }
   ],
   bootstrap: [AppComponent]
+  // schemas : [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

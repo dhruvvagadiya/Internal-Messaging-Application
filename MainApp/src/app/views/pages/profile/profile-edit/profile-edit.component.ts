@@ -2,7 +2,9 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DesignationModel } from 'src/app/core/models/user/designation';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
+import { AccountService } from 'src/app/core/service/account-service';
 import { AuthService } from 'src/app/core/service/auth-service';
 import { UserService } from 'src/app/core/service/user-service';
 import Swal from 'sweetalert2';
@@ -19,11 +21,15 @@ export class ProfileEditComponent implements OnInit {
   thumbnail;
   file: File;
 
+  designationList : DesignationModel [] = [];
+  curDesignation = 1;
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private userService: UserService,
-    private modalService : NgbModal
+    private modalService : NgbModal,
+    private accountService : AccountService
   ) {}
 
   ngOnInit(): void {
@@ -41,10 +47,6 @@ export class ProfileEditComponent implements OnInit {
       ]),
       LastName: new FormControl(this.loggedInUser.lastName, [
         Validators.required,
-      ]),
-      Status: new FormControl(this.loggedInUser.designation, [
-        Validators.required,
-        Validators.maxLength(50),
       ]),
       Email: new FormControl(this.loggedInUser.email, [
         Validators.required,

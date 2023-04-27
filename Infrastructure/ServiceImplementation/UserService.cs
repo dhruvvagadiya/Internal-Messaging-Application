@@ -81,7 +81,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             user.FirstName = updateModel.FirstName;
             user.LastName = updateModel.LastName;
-            user.Designation = updateModel.Designation;
             user.LastUpdatedAt = DateTime.Now;
 
             context.Profiles.Update(user);
@@ -110,7 +109,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
         public IEnumerable<ProfileDTO> GetAll()
         {
-            var ls = context.Profiles.ToList();
+            var ls = context.Profiles.Include("UserDesignation").ToList();
             var returnObj = new List<ProfileDTO>();
 
             foreach(var obj in ls)
@@ -144,11 +143,11 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             Profile user;
             if (tracked)
             {
-                user = context.Profiles.Include("UserStatus").FirstOrDefault(filter);
+                user = context.Profiles.Include("UserStatus").Include("UserDesignation").FirstOrDefault(filter);
             }
             else
             {
-                user = context.Profiles.Include("UserStatus").AsNoTracking().FirstOrDefault(filter);
+                user = context.Profiles.Include("UserStatus").Include("UserDesignation").AsNoTracking().FirstOrDefault(filter);
             }
 
             return user;

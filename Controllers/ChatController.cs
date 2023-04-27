@@ -5,6 +5,7 @@ using ChatApp.Models.Chat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace ChatApp.Controllers
 {
@@ -83,7 +84,7 @@ namespace ChatApp.Controllers
         //add message to DB
         [HttpPost]
         [Route("{toUser}")]
-        public IActionResult SendMessage(string toUser, [FromForm] ChatSendModel SendChat)
+        public async Task<IActionResult> SendMessage(string toUser, [FromForm] ChatSendModel SendChat)
         {
             string fromUser = JwtHelper.GetUsernameFromRequest(Request);
             //string fromUser = "dhruvPatel";
@@ -104,13 +105,13 @@ namespace ChatApp.Controllers
 
             if (SendChat.Type == "text" && SendChat.Content != null)
             {
-                var sentMessage = _chatService.SendTextMessage(fromUser, toUser, SendChat.Content, SendChat.RepliedTo);
+                var sentMessage = await _chatService.SendTextMessage(fromUser, toUser, SendChat.Content, SendChat.RepliedTo);
                 return Ok(sentMessage);
             }
             else if(SendChat.Type == "file" && SendChat.File != null)
             {
-                var sentMessage = _chatService.SendFileMessage(fromUser, toUser, SendChat);
-                return Ok(sentMessage);
+                var sentMessage = await _chatService.SendFileMessage(fromUser, toUser, SendChat);
+                return Ok();
             }
 
             return BadRequest("Bad Request !");

@@ -18,5 +18,8 @@ namespace ChatApp.Models.Auth
         [Required]
         [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
         public string Password { get; set; }
+
+        [Required]
+        public int DesignationId { get; set; }
     }
 }

@@ -4,5 +4,6 @@ export interface RegistrationModel
     lastName: string,
     email: string,
     userName: string,
+    designationId : number,
     password:string
 }

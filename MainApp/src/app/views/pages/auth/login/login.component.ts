@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
     private accountService: AccountService,
     private userService: UserService,
     private authService: AuthService,
-    private signalrService : SignalrService) { }
+    private signalrService : SignalrService) { }    
 
   ngOnInit(): void {
     // get return url from route parameters or default to '/'

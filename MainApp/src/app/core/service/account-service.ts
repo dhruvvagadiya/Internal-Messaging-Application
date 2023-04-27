@@ -26,5 +26,9 @@ export class AccountService {
     logout(){
         return this.http.get(environment.apiUrl + "/account/logout");
     }
+
+    getDesignations(){
+        return this.http.get(environment.apiUrl + "/designation/getall");
+    }
     
 }

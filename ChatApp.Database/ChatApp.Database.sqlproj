@@ -72,6 +72,7 @@
     <Build Include="Tables\Notifications.sql" />
     <Build Include="Tables\Admin.sql" />
     <Build Include="Tables\Status.sql" />
+    <Build Include="Tables\Designations.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />

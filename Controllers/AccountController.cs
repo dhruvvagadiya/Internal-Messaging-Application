@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,6 +12,7 @@ using ChatApp.Context.EntityClasses;
 using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -78,11 +80,33 @@ namespace ChatApp.Controllers
             if (user != null)
             {
                 var tokenString = GenerateJSONWebToken(user);
-                return Ok(new { token = tokenString, user = user });
+                return Ok(new { token = tokenString, user = ModelMapper.ConvertProfileToDTO(user) });
             }
 
             return BadRequest(new { Message = "User Already Exists. Please use different email and UserName." });
         }
+
+        [HttpPost("googleLogin")]
+        public IActionResult GoogleLogin([FromHeader] string Authorization)
+        {
+
+            //token
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(Authorization);
+
+
+            var user = _profileService.GoogleLogin(token.Claims);
+            
+            if(user == null)
+            {
+                return BadRequest("Invalid data. Try again");
+            }
+
+            var tokenString = GenerateJSONWebToken(user);
+
+            return Ok(new {user = ModelMapper.ConvertProfileToDTO(user), token = tokenString});
+        }
+
         [HttpGet("Logout")]
         public IActionResult LogOut()
         {
@@ -90,6 +114,8 @@ namespace ChatApp.Controllers
             _profileService.HandleLogout(username);
             return Ok();
         }
+
+
 
         [Authorize]
         [HttpPost("ChangePassword")]
@@ -134,7 +160,7 @@ namespace ChatApp.Controllers
                     new Claim(JwtRegisteredClaimNames.Email, profileInfo.Email),
                     new Claim(ClaimsConstant.FirstNameClaim, profileInfo.FirstName),
                     new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
-                    new Claim(ClaimsConstant.DesignationClaim, profileInfo.Designation),
+                    new Claim(ClaimsConstant.DesignationClaim, profileInfo.UserDesignation.Role),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 

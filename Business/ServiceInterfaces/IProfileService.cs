@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ChatApp.Business.ServiceInterfaces
@@ -16,6 +17,8 @@ namespace ChatApp.Business.ServiceInterfaces
         Profile RegisterUser(RegisterModel regModel, string salt);
 
         void ChangePassword(string salt, string NewPassword, Profile User);
+
+        Profile GoogleLogin(IEnumerable<Claim> claims);
 
         void HandleLogout(string username);
     }

@@ -6,8 +6,11 @@ using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
@@ -31,7 +34,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             curSalt = "";
 
             //get user
-            var user = this.context.Profiles.FirstOrDefault(x => x.Email.ToLower().Trim() == UserName.ToLower().Trim() || x.UserName.ToLower().Trim() == UserName.ToLower().Trim());
+            var user = this.context.Profiles.Include("UserDesignation").Include("UserStatus").FirstOrDefault(x => x.Email.ToLower().Trim() == UserName.ToLower().Trim() || x.UserName.ToLower().Trim() == UserName.ToLower().Trim());
 
             if (user == null) return null;
 
@@ -60,6 +63,36 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             context.SaveChanges();
         }
 
+        public Profile GoogleLogin(IEnumerable<Claim> claims)
+        {
+            string email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+            //check if already registered
+            var User = context.Profiles.FirstOrDefault(e => e.UserName.Equals(email));
+
+            if (User.Password != null) return null;
+            if (User != null) return User;
+
+            //register user
+            var profile = new Profile()
+            {
+                Email = email,
+                UserName = email,
+                FirstName = claims.FirstOrDefault(c => c.Type == "given_name")?.Value,
+                LastName = claims.FirstOrDefault(c => c.Type == "family_name")?.Value,
+                DesignationId = 1,
+                StatusId = 1,
+                ProfileType = ProfileType.User,
+                CreatedAt = DateTime.UtcNow
+            };
+            profile.LastUpdatedAt = profile.CreatedAt;
+
+            context.Profiles.Add(profile);
+            context.SaveChanges();
+
+            return profile;
+        }
+
         //set last seend when user is logged out
         public void HandleLogout(string username)
         {
@@ -85,7 +118,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Email = regModel.Email,
                     CreatedAt = DateTime.UtcNow,
                     ProfileType = ProfileType.User,
-                    Designation = "Employee"
+                    StatusId = 1,
+                    DesignationId = regModel.DesignationId
                 };
 
                 newUser.LastUpdatedAt = DateTime.Now;
@@ -101,6 +135,9 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     UserId = newUser.Id
                 });
                 context.SaveChanges();
+
+                //add designation obj
+                newUser.UserDesignation = context.Designations.First(e => e.Id == newUser.DesignationId);
             }
             return newUser;
         }

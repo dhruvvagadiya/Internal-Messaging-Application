@@ -4,5 +4,5 @@
     [Content] NVARCHAR(20) NOT NULL DEFAULT 'Available'
 )
 
-/* INSERT INTO Status(Content) values ('Available'), ('Do not disturb'), ('Appear away'), ('Busy'), ('Be right back'), ('Appear offline');*/
+/* INSERT INTO Status(Content) values ('available'), ('dnd'), ('away'), ('busy'), ('rightback'), ('offline');*/
 

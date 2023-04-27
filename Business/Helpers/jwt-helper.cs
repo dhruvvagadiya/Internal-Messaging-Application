@@ -26,11 +26,5 @@ namespace ChatApp.Business.Helpers
 
             return username;
         }
-
-        //public static JwtSecurityToken GetToken(string auth)
-        //{
-        //    var jwt = new JwtSecurityTokenHandler().ReadJwtToken(auth);
-        //    return jwt;
-        //}
     }
 }

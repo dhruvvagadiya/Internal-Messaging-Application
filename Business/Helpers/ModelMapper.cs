@@ -9,7 +9,7 @@ namespace ChatApp.Business.Helpers
 
         // to hide password or other securirty fields in response
         public static ProfileDTO ConvertProfileToDTO(Profile user)
-        
+
         {
             ProfileDTO profileDTO = new ProfileDTO();
 
@@ -24,7 +24,11 @@ namespace ChatApp.Business.Helpers
             profileDTO.LastUpdatedAt = user.LastUpdatedAt;
             profileDTO.ProfileType = user.ProfileType;
             profileDTO.LastSeen = user.LastSeen;
-            profileDTO.Designation = user.Designation;
+
+            if (user.UserDesignation != null)
+            {
+                profileDTO.Designation = user.UserDesignation.Role;
+            }
             if(user.UserStatus != null)
             {
                 profileDTO.ProfileStatus = user.UserStatus.Content;

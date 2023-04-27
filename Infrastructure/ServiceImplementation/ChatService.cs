@@ -2,12 +2,17 @@
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
+using ChatApp.Hubs;
 using ChatApp.Models.Chat;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
 {
@@ -16,14 +21,16 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         #region Private Fields
         private readonly ChatAppContext _context;
         private readonly IUserService _userService;
+        private readonly IHubContext<MessageHub> _hubContext;
         private readonly IWebHostEnvironment _hostEnvironment;
         #endregion
 
         #region Constructor
-        public ChatService(ChatAppContext context, IUserService userService, IWebHostEnvironment hostEnvironment)
+        public ChatService(ChatAppContext context, IUserService userService, IWebHostEnvironment hostEnvironment, IHubContext<MessageHub> hubContext)
         {
             _context = context;
             _userService = userService;
+            _hubContext = hubContext;
             _hostEnvironment = hostEnvironment;
         }
         #endregion
@@ -109,7 +116,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         }
 
         //send message
-        public ChatModel SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo)
+        public async Task<ChatModel> SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo)
         {
             int fromId = _userService.GetIdFromUsername(fromUser);
             int toId = _userService.GetIdFromUsername(toUser);
@@ -156,11 +163,13 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 RepliedTo = ReplyMsg
             };
 
+            await SendChatNotification(returnObj, toId, fromId);
+
             return returnObj;
         }
 
         //send files
-        public ChatModel SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat)
+        public async Task<ChatModel> SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat)
         {
             //var tmp = SendChat.File.ContentType;
             //save file
@@ -228,6 +237,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 FilePath = fileName + extension,
             };
 
+            await SendChatNotification(returnObj, toId, fromId);
+
             //return chatModel
             return returnObj;
         }
@@ -272,6 +283,42 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             }
 
             return returnObj;
+        }
+
+        private string GetConnectionId(int UserId)
+        {
+            var conn = _context.Connections.FirstOrDefault(e => e.ProfileId == UserId);
+            if (conn == null) return "";
+            return conn.SignalId;
+        }
+
+        private async Task SendChatNotification(ChatModel returnObj, int toId, int fromId)
+        {
+            //add notifications
+            var notification = new Notification()
+            {
+                Content = returnObj.MessageFrom,
+                Type = "Message",
+                CreatedAt = DateTime.Now,
+                IsSeen = 0,
+                UserId = toId
+            };
+
+            _context.Notifications.Add(notification);
+            _context.SaveChanges();
+
+
+            //send chat & notification to receiver
+            var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == toId);
+            var sConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == fromId);
+
+            if (rConnection != null)
+            {
+                await _hubContext.Clients.Clients(rConnection.SignalId, sConnection?.SignalId).SendAsync("receiveMessage", returnObj);
+
+                var notificationDto = ModelMapper.NotificationToDTO(notification);
+                await _hubContext.Clients.Client(rConnection.SignalId).SendAsync("addNotification", notificationDto);
+            }
         }
 
         #endregion
