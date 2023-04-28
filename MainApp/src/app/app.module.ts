@@ -1,5 +1,4 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -15,11 +14,13 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TokenInterceptor } from './core/helper/token-interceptor';
 import { AuthService } from './core/service/auth-service';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
-import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
+import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import {
   GoogleLoginProvider,
-} from 'angularx-social-login';
+  FacebookLoginProvider
+} from '@abacritt/angularx-social-login';
 
 @NgModule({
   declarations: [
@@ -34,9 +35,21 @@ import {
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    SocialLoginModule
+    // SocialLoginModule
   ],
   providers: [
+    // {
+    //   provide: 'SocialAuthServiceConfig',
+    //   useValue: {
+    //     autoLogin: false,
+    //     providers: [
+    //       {
+    //         id: GoogleLoginProvider.PROVIDER_ID,
+    //         provider: new GoogleLoginProvider('673641779020-f19onebut126rjpp605nfl7qtmdsh9bd.apps.googleusercontent.com'),
+    //       },
+    //     ],
+    //   } as SocialAuthServiceConfig,
+    // },
     AuthGuard,
     {
       provide: HIGHLIGHT_OPTIONS, // https://www.npmjs.com/package/ngx-highlightjs
@@ -54,26 +67,9 @@ import {
       useClass: TokenInterceptor,
       multi: true,
       deps: [AuthService],
-    },
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              '673641779020-f19onebut126rjpp605nfl7qtmdsh9bd.apps.googleusercontent.com'
-            )
-          }
-        ],
-        onError: (err) => {
-          console.error(err);
-        }
-      } as SocialAuthServiceConfig,
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
   // schemas : [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

@@ -25,6 +25,8 @@ namespace ChatApp.Business.Helpers
             profileDTO.ProfileType = user.ProfileType;
             profileDTO.LastSeen = user.LastSeen;
 
+            if (user.Password == null) profileDTO.IsGoogleUser = true;
+
             if (user.UserDesignation != null)
             {
                 profileDTO.Designation = user.UserDesignation.Role;

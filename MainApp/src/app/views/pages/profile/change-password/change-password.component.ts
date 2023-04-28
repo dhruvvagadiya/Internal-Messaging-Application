@@ -40,12 +40,12 @@ export class ChangePasswordModalComponent implements OnInit {
         }
         
         this.changePasswordForm = new FormGroup({
-            'currentPassword': new FormControl(null, [Validators.required]),
+            'currentPassword': new FormControl(null, []),
             'password' : new FormControl(null, [Validators.required, Validators.minLength(8)]),
             'confirmPassword' : new FormControl(null, [Validators.required, Validators.minLength(8)]),
         },
         {
-            validators : this.passwordChecker
+            validators : [this.passwordMatcher, this.passwordChecker]
         }
         );
     }
@@ -69,6 +69,8 @@ export class ChangePasswordModalComponent implements OnInit {
           
                   this.router.navigate(['/auth/login']);
                 });
+                
+                this.userService.getCurrentUserDetails();
             })
         },
         err => {
@@ -83,9 +85,15 @@ export class ChangePasswordModalComponent implements OnInit {
         })
     }
 
-    passwordChecker: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    passwordMatcher: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
         const password = control.get('password');
         const confirmPassword = control.get('confirmPassword');      
         return password.value !== confirmPassword.value ? { 'passwordMatched': true } : null;
+    };
+
+    passwordChecker : ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+        const password = control.get('currentPassword');  
+        //not google user and password is not entered then error        
+        return !this.user.isGoogleUser && !password.value ? {'passwordRequired' : true} : null;
     };
 }

@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-import MetisMenu from 'metismenujs/dist/metismenujs';
-
 import { MENU } from './menu';
 import { MenuItem } from './menu.model';
 import { Router, NavigationEnd } from '@angular/router';
@@ -52,7 +50,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     // activate menu item
-    new MetisMenu(this.sidebarMenu.nativeElement);
     
     this._activateMenuDropdown();
   }

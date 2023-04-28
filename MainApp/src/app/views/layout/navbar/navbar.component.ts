@@ -69,6 +69,11 @@ export class NavbarComponent implements OnInit {
         this.signalrService.closeConnection(this.loggedInUser?.userName);
 
         this.router.navigate(['/auth/login']);
+
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 2000);
+
       });
     });
   }

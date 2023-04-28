@@ -13,6 +13,8 @@ namespace ChatApp.Models.Users
         public string ImageUrl { get; set; }
         public string Designation { get; set; }
 
+        public Boolean IsGoogleUser { get; set; } = false;
+
         public string ProfileStatus { get; set; }
         public ProfileType ProfileType { get; set; }
         public DateTime? CreatedAt { get; set; }

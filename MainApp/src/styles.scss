@@ -1,8 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~@ctrl/ngx-emoji-mart/picker';
-@import "~@ng-select/ng-select/themes/default.theme.css";
+@import '../node_modules/@ctrl/ngx-emoji-mart/picker';
+@import "../node_modules/@ng-select/ng-select/themes/default.theme.css";
 
 
 .myCustomModalClass .modal-dialog {
    max-width: 25%;
 }
+
+.modal-backdrop {
+   z-index: 1000 !important;;
+ }

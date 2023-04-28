@@ -1,12 +1,6 @@
 ﻿using ChatApp.Context.EntityClasses;
 using ChatApp.Models.Auth;
-using ChatApp.Models.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using Google.Apis.Auth;
 
 namespace ChatApp.Business.ServiceInterfaces
 {
@@ -18,8 +12,12 @@ namespace ChatApp.Business.ServiceInterfaces
 
         void ChangePassword(string salt, string NewPassword, Profile User);
 
-        Profile GoogleLogin(IEnumerable<Claim> claims);
+        Profile GoogleLogin(GoogleJsonWebSignature.Payload Payload);
 
         void HandleLogout(string username);
+
+        Profile GetUserByUsername(string UserName);
+
+        string GetSalt(int UserId);
     }
 }

@@ -12,11 +12,12 @@ using ChatApp.Context.EntityClasses;
 using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Google.Apis.Auth;
+using System.Linq;
 
 namespace ChatApp.Controllers
 {
@@ -45,107 +46,163 @@ namespace ChatApp.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-
-            var user = _profileService.CheckPassword(loginModel.Username, out string curSalt);
-
-            if (user != null)
+            try
             {
-                //check for password
-                if (CompareHashedPasswords(loginModel.Password, user.Password, curSalt))
+                var user = _profileService.CheckPassword(loginModel.Username, out string curSalt);
+
+                if (user != null)
                 {
+                    //check for password
+                    if (CompareHashedPasswords(loginModel.Password, user.Password, curSalt))
+                    {
 
-                    await _hub.Clients.All.SendAsync("updateProfileStatus", "available", user.UserName);
+                        await _hub.Clients.All.SendAsync("updateProfileStatus", "available", user.UserName);
 
-                    var tokenString = GenerateJSONWebToken(user);
-                    return Ok(new { token = tokenString });
+                        var tokenString = GenerateJSONWebToken(user);
+                        return Ok(new { token = tokenString });
+                    }
                 }
-            }
 
-            return Unauthorized(new { Message = "Invalid Credentials." });
+                return Unauthorized(new { Message = "Invalid Credentials." });
+            }
+            catch (Exception)
+            {
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost("Register")]
         public IActionResult Register([FromBody] RegisterModel registerModel)
         {
-
-            var salt = GenerateSalt();
-
-            //hash password
-            var hashedPass = GetHash(registerModel.Password, salt);
-
-            //change password with new hashed password
-            registerModel.Password = hashedPass;
-
-            var user = _profileService.RegisterUser(registerModel, salt);
-            if (user != null)
+            try
             {
-                var tokenString = GenerateJSONWebToken(user);
-                return Ok(new { token = tokenString, user = ModelMapper.ConvertProfileToDTO(user) });
-            }
+                var salt = GenerateSalt();
 
-            return BadRequest(new { Message = "User Already Exists. Please use different email and UserName." });
+                //hash password
+                var hashedPass = GetHash(registerModel.Password, salt);
+
+                //change password with new hashed password
+                registerModel.Password = hashedPass;
+
+                var user = _profileService.RegisterUser(registerModel, salt);
+                if (user != null)
+                {
+                    var tokenString = GenerateJSONWebToken(user);
+                    return Ok(new { token = tokenString, user = ModelMapper.ConvertProfileToDTO(user) });
+                }
+
+                return BadRequest(new { Message = "User Already Exists. Please use different email and UserName." });
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost("googleLogin")]
-        public IActionResult GoogleLogin([FromHeader] string Authorization)
+        public async Task<IActionResult> GoogleLogin([FromHeader] string Authorization)
         {
+            try
+            {
+                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(Authorization);
 
-            //token
-            var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(Authorization);
+                var user = _profileService.GoogleLogin(payload);
 
+                if (user == null)
+                {
+                    return BadRequest("User is already Registered!");
+                }
 
-            var user = _profileService.GoogleLogin(token.Claims);
-            
-            if(user == null)
+                var tokenString = GenerateJSONWebToken(user);
+
+                return Ok(new { user = ModelMapper.ConvertProfileToDTO(user), token = tokenString });
+            }
+            catch (Exception e)
             {
                 return BadRequest("Invalid data. Try again");
             }
-
-            var tokenString = GenerateJSONWebToken(user);
-
-            return Ok(new {user = ModelMapper.ConvertProfileToDTO(user), token = tokenString});
         }
 
         [HttpGet("Logout")]
         public IActionResult LogOut()
         {
-            string username = JwtHelper.GetUsernameFromRequest(Request);
-            _profileService.HandleLogout(username);
-            return Ok();
+            try
+            {
+                string username = JwtHelper.GetUsernameFromRequest(Request);
+                _profileService.HandleLogout(username);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
         }
-
-
 
         [Authorize]
         [HttpPost("ChangePassword")]
         public IActionResult ChangePassword(ChangePasswordModel Obj)
         {
-
-            var userName = JwtHelper.GetUsernameFromRequest(Request);
-            var user = _profileService.CheckPassword(userName, out string curSalt);
-
-            if (user != null)
+            try
             {
-                //check for password
-                if (CompareHashedPasswords(Obj.CurrentPassword, user.Password, curSalt))
+                var userName = JwtHelper.GetUsernameFromRequest(Request);
+                var user = _profileService.GetUserByUsername(userName);
+
+                if (user != null)
                 {
-                    var salt = GenerateSalt();
 
-                    //hash password
-                    var hashedPass = GetHash(Obj.Password, salt);
+                    //if google user and password is provided
+                    if(user.Password == null && (Obj.CurrentPassword != null && Obj.CurrentPassword.Count() != 0))
+                    {
+                        return BadRequest();
+                    }
 
-                    _profileService.ChangePassword(salt, hashedPass, user);
+                    //if not google user and password is not provided
+                    if(user.Password != null && (Obj.CurrentPassword == null || Obj.CurrentPassword.Count() == 0))
+                    {
+                        return BadRequest();
+                    }
 
-                    return Ok();
+                    //if google user update password directly
+                    if(user.Password == null)
+                    {
+                        var salt = GenerateSalt();
+
+                        //hash password
+                        var hashedPass = GetHash(Obj.Password, salt);
+
+                        _profileService.ChangePassword(salt, hashedPass, user);
+
+                        return Ok();
+                    }
+
+                    var curSalt = _profileService.GetSalt(user.Id);
+                    //check for password
+                    if (CompareHashedPasswords(Obj.CurrentPassword, user.Password, curSalt))
+                    {
+                        var salt = GenerateSalt();
+
+                        //hash password
+                        var hashedPass = GetHash(Obj.Password, salt);
+
+                        _profileService.ChangePassword(salt, hashedPass, user);
+
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest("Invalid passeword.");
+                    }
                 }
-                else
-                {
-                    return BadRequest("Invalid passeword.");
-                }
+
+                return Ok("Bad Request!");
+
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
 
-            return Ok("Bad Request!");
         }
         #endregion
 

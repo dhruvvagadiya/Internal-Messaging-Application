@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SignalrService } from './core/service/signalR-service';
 import { AuthService } from './core/service/auth-service';
-import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
+import { UserService } from './core/service/user-service';
+// import { GoogleLoginProvider, SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ export class AppComponent implements OnInit, OnDestroy  {
   hasUser = false;             
 
 
-  constructor(private signalrService : SignalrService, private authService : AuthService) {    
+  constructor(private signalrService : SignalrService, private authService : AuthService, private userService : UserService) {    
   }
 
   ngOnInit(): void {
@@ -27,13 +28,13 @@ export class AppComponent implements OnInit, OnDestroy  {
     else{
       this.hasUser = false; 
     }
+
+
+    // this.socialAuthService.authState.subscribe((user) => {
+    //   console.log(user);
+    // });
   }
 
   ngOnDestroy(): void {
   }
-
-  // signInWithGoogle(): void {
-  //   console.log("called");
-  //   this.gauthService.signIn(GoogleLoginProvider.PROVIDER_ID).then(x => console.log(x));;
-  // }
 }

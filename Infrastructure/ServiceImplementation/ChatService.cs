@@ -319,6 +319,10 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 var notificationDto = ModelMapper.NotificationToDTO(notification);
                 await _hubContext.Clients.Client(rConnection.SignalId).SendAsync("addNotification", notificationDto);
             }
+            else
+            {
+                await _hubContext.Clients.Clients(sConnection?.SignalId).SendAsync("receiveMessage", returnObj);
+            }
         }
 
         #endregion

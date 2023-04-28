@@ -12,6 +12,7 @@ export interface LoggedInUser
     lastUpdatedBy? : number,
     lastSeen? : Date,
     designation? : string,
+    isGoogleUser? : boolean
     exp? : number 
     sub : string
     profileStatus? : string
