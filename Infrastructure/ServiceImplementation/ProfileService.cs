@@ -2,17 +2,12 @@
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
-using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace ChatApp.Infrastructure.ServiceImplementation
 {
@@ -36,7 +31,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             {
                 curSalt = "";
                 //get user
-                var user = this.context.Profiles.Include("UserDesignation").Include("UserStatus").FirstOrDefault(x => x.Email.ToLower().Trim() == UserName.ToLower().Trim() || x.UserName.ToLower().Trim() == UserName.ToLower().Trim());
+                var user = this.context.Profiles.Include("UserDesignation").Include("UserStatus").FirstOrDefault(x => (x.Email.ToLower().Trim() == UserName.ToLower().Trim() || x.UserName.ToLower().Trim() == UserName.ToLower().Trim()) && x.IsDeleted == 0);
 
                 if (user == null) return null;
 
@@ -104,8 +99,12 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
                 //if user has registered with custom email and password
                 if (User != null && User.Password != null) return null;
-                if (User != null) return User;
-
+                if (User != null)
+                {
+                    User.StatusId = 1;  //online
+                    context.SaveChanges();
+                    return User;
+                }
                 //register user
                 var profile = new Profile()
                 {
@@ -113,12 +112,13 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     UserName = email,
                     FirstName = Payload.GivenName,
                     LastName = Payload.FamilyName,
-                    DesignationId = 1,
+                    DesignationId = 3,
                     StatusId = 1,
-                    ProfileType = ProfileType.User,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = (int)ProfileType.User
                 };
                 profile.LastUpdatedAt = profile.CreatedAt;
+                profile.LastUpdatedBy = (int) ProfileType.User;
 
                 context.Profiles.Add(profile);
                 context.SaveChanges();
@@ -126,24 +126,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 profile = GetUserByUsername(profile.UserName);
 
                 return profile;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        //set last send when user is logged out
-        public void HandleLogout(string username)
-        {
-            try
-            {
-                var user = context.Profiles.FirstOrDefault(e => e.UserName == username);
-                if (user == null) return;
-
-                user.LastSeen = DateTime.Now;
-                context.Update(user);
-                context.SaveChanges();
             }
             catch (Exception)
             {
@@ -166,7 +148,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                         UserName = regModel.UserName,
                         Email = regModel.Email,
                         CreatedAt = DateTime.UtcNow,
-                        ProfileType = ProfileType.User,
+                        CreatedBy = 1,
+                        LastUpdatedBy = 1,
                         StatusId = 1,
                         DesignationId = regModel.DesignationId
                     };
@@ -199,12 +182,15 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
         private bool CheckEmailOrUserNameExists(string userName, string email)
         {
-            return context.Profiles.Any(x => x.Email.ToLower().Trim() == email.ToLower().Trim() || x.UserName.ToLower().Trim() == userName.ToLower().Trim());
+            return context.Profiles.Any(
+                x => x.IsDeleted == 0 &&
+                (x.Email.ToLower().Trim() == email.ToLower().Trim() || x.UserName.ToLower().Trim() == userName.ToLower().Trim())
+                );
         }
 
         public Profile GetUserByUsername(string UserName)
         {
-            return this.context.Profiles.Include("UserDesignation").Include("UserStatus").FirstOrDefault(e => e.UserName == UserName);
+            return this.context.Profiles.Include("UserDesignation").Include("UserStatus").FirstOrDefault(e => e.UserName == UserName && e.IsDeleted == 0);
         }
 
         public string GetSalt(int UserId)

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from "src/environments/environment";
 import { RegistrationModel } from "../models/user/registration-model";
 import { LoginModel } from "../models/user/login-model";
@@ -19,16 +19,21 @@ export class AccountService {
         return this.http.post(environment.apiUrl + "/account/login", loginModel);
     }
 
-    changePassword(data : {currentPassword : string, password : string}) {
-        return this.http.post(environment.apiUrl + "/account/changePassword", data);
+    googleLogin(token : string){
+        var temp = new HttpHeaders();
+        temp = temp.append('gtoken', token);
+
+        return this.http.post(environment.apiUrl + "/account/googleLogin", {}, {
+            headers : temp
+        });
     }
 
-    logout(){
-        return this.http.get(environment.apiUrl + "/account/logout");
+    changePassword(data : {currentPassword : string, password : string}) {
+        return this.http.post(environment.apiUrl + "/account/changePassword", data);
     }
 
     getDesignations(){
         return this.http.get(environment.apiUrl + "/designation/getall");
     }
-    
+
 }

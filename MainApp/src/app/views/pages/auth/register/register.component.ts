@@ -34,15 +34,15 @@ export class RegisterComponent implements OnInit {
       userName: '',
       email: '',
       password: '',
-      designationId : 1
+      designationId : 3
     }
 
     this.signupForm = new FormGroup({
       'fName' : new FormControl(null, [Validators.required]),
       'lName' : new FormControl(null, [Validators.required]),
-      'username' : new FormControl(null, [Validators.required, Validators.minLength(6)]),
+      'username' : new FormControl(null, [Validators.required, Validators.pattern("^[A-Za-z][A-Za-z0-9_]{6,20}$")]),
       'email' : new FormControl(null, [Validators.required, Validators.email]),
-      'designation' : new FormControl(1, [Validators.required]),
+      'designation' : new FormControl(3, [Validators.required]),
       'password' : new FormControl(null, [Validators.required, Validators.minLength(8)])
     });
 
@@ -54,7 +54,6 @@ export class RegisterComponent implements OnInit {
 
   onRegister(e) {
     e.preventDefault();
-    // console.log(this.regModel);
     
     this.disableRegButtton = true; 
     this.accountService.register(this.regModel)

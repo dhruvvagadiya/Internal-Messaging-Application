@@ -16,7 +16,6 @@ namespace ChatApp.Models.Users
         public Boolean IsGoogleUser { get; set; } = false;
 
         public string ProfileStatus { get; set; }
-        public ProfileType ProfileType { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? LastUpdatedAt { get; set; }

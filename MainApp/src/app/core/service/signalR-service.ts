@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as SignalR from '@aspnet/signalr';
+import * as SignalR from '@microsoft/signalr';
 import { environment } from "src/environments/environment";
-import { MessageModel } from '../models/chat/message-model';
 import { GroupChatModel } from '../models/GroupChat/group-message-model';
 import { Group } from '../models/Group/group';
 import { GroupMember } from '../models/Group/group-member';
@@ -30,11 +29,8 @@ export class SignalrService {
             .start()
             .then(() => {
                 
-                // console.log("Hub Connection Successful");
-
                 //create and store connection
                 this.hubConnection.invoke("saveConnection", username).then(value => {
-                    // console.log(value);  //conn ID
                 })
             })
             .catch(err => {

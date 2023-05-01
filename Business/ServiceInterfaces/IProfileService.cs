@@ -14,8 +14,6 @@ namespace ChatApp.Business.ServiceInterfaces
 
         Profile GoogleLogin(GoogleJsonWebSignature.Payload Payload);
 
-        void HandleLogout(string username);
-
         Profile GetUserByUsername(string UserName);
 
         string GetSalt(int UserId);

@@ -42,7 +42,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             //check if other user with this mail already exists
             var user2 = GetUser(e => e.Email == updateModel.Email, tracked: false);
 
-            if (user2.UserName != user.UserName)
+            if (user2 != null && user2.UserName != user.UserName)
             {
                 return new Profile();
             }
@@ -79,9 +79,11 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
             }
 
+            user.Email = updateModel.Email;
             user.FirstName = updateModel.FirstName;
             user.LastName = updateModel.LastName;
             user.LastUpdatedAt = DateTime.Now;
+            user.LastUpdatedBy = (int)ProfileType.User;
 
             context.Profiles.Update(user);
             context.SaveChanges();
@@ -91,9 +93,9 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
         public IEnumerable<ProfileDTO> GetAll(string name, string username)
         {
-            IQueryable<Profile> query = context.Set<Profile>();
+            IQueryable<Profile> query = context.Set<Profile>().Where(e => e.IsDeleted == 0);
 
-            query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).StartsWith(name));
+            query = query.Where(e => (e.FirstName.ToUpper() + " " + e.LastName.ToUpper()).Contains(name));
 
             //remove current user from the list
             query = query.Where(e => e.UserName != username);
@@ -109,7 +111,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
         public IEnumerable<ProfileDTO> GetAll()
         {
-            var ls = context.Profiles.Include("UserDesignation").ToList();
+            var ls = context.Profiles.Where(e => e.IsDeleted == 0).Include("UserDesignation").ToList();
             var returnObj = new List<ProfileDTO>();
 
             foreach(var obj in ls)
@@ -150,12 +152,13 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 user = context.Profiles.Include("UserStatus").Include("UserDesignation").AsNoTracking().FirstOrDefault(filter);
             }
 
+            if (user.IsDeleted == 1) { return null; }
             return user;
         }
 
         public int GetIdFromUsername(string username)
         {
-            var user = GetUser(e => e.UserName == username);
+            var user = GetUser(e => e.UserName == username && e.IsDeleted == 0);
             if(user == null)
             {
                 return -1;

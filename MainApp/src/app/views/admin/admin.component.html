@@ -1,0 +1,65 @@
+<p-table [value]="employees"
+    #dt1
+    [paginator]="true"
+    [rows]="8"
+    [tableStyle]="{'min-width': '60rem'}"
+    [globalFilterFields]="['firstName', 'lastName']"
+>
+
+    <ng-template pTemplate="caption">
+        <div class="d-flex">
+            <div class="my-auto btn btn-outline-primary" (click)="openAddModal(addEmployeeModal)">
+                <i class="mdi mdi-plus"></i> Add Employee
+            </div>
+
+            <div class="p-input-icon-left ml-auto">
+                <input class="form-control" type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" />
+            </div>
+        </div>
+
+    </ng-template>
+
+    <ng-template pTemplate="header">
+        <tr>
+            <th>#</th>
+            <th pSortableColumn="firstName">Name  <p-sortIcon field="firstName"></p-sortIcon></th>
+            <th pSortableColumn="userName">Username  <p-sortIcon field="userName"></p-sortIcon></th>
+            <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="designation">Type <p-sortIcon field="designation"></p-sortIcon></th>
+            <th *ngIf="isAdmin">Manage</th>
+            <th>Chat</th>
+        </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-employee>
+        <tr>
+            <td>
+                <img [src]="GetProfileUrl(employee.imageUrl)" class="border" [height]="40" [width]="40" alt="profile-image">
+            </td>
+            <td>{{ employee.firstName }} {{ employee.lastName }}</td>
+            <td>{{ employee.userName }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.designation }}</td>
+            <td *ngIf="isAdmin">
+                <i class="mdi mdi-pencil-circle editIcon" *ngIf="employee.designation !== 'CEO' && employee.designation !== 'CTO'" 
+                    (click)="openBasicModal(editEmployeeModal, employee)">
+                </i>
+                <i class="mdi mdi-delete-circle" style="color:red; font-size: 2rem;" (click)="deleteEmployee(employee.userName)" 
+                    *ngIf="employee.designation !== 'CEO' && employee.designation !== 'CTO' && user.userName !== employee.userName">
+                </i>
+            </td>
+            <td>
+                <i class="mdi mdi-message chatIcon" *ngIf="user.userName !== employee.userName" routerLink="../chat/{{employee.userName}}"></i>
+            </td>
+        </tr>
+    </ng-template>
+
+</p-table>
+
+<ng-template #editEmployeeModal let-modal>
+    <app-edit-employee-modal [modal]="modal" [designationList]="designationList" [Employee]="Employee" (onEmployeeUpdate)="editEmployee($event)"></app-edit-employee-modal>
+</ng-template>
+
+<ng-template #addEmployeeModal let-modal>
+    <app-add-employee-modal [modal]="modal" [designationList]="designationList" (onEmployeeUpdate)="editEmployee($event)"></app-add-employee-modal>
+</ng-template>

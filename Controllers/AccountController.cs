@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ChatApp.Business.Helpers;
 using ChatApp.Business.ServiceInterfaces;
-using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using ChatApp.Hubs;
 using ChatApp.Models.Auth;
@@ -100,11 +99,11 @@ namespace ChatApp.Controllers
         }
 
         [HttpPost("googleLogin")]
-        public async Task<IActionResult> GoogleLogin([FromHeader] string Authorization)
+        public async Task<IActionResult> GoogleLogin([FromHeader] string GToken)
         {
             try
             {
-                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(Authorization);
+                GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(GToken);
 
                 var user = _profileService.GoogleLogin(payload);
 
@@ -121,22 +120,6 @@ namespace ChatApp.Controllers
             {
                 return BadRequest("Invalid data. Try again");
             }
-        }
-
-        [HttpGet("Logout")]
-        public IActionResult LogOut()
-        {
-            try
-            {
-                string username = JwtHelper.GetUsernameFromRequest(Request);
-                _profileService.HandleLogout(username);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
-
         }
 
         [Authorize]
@@ -219,7 +202,7 @@ namespace ChatApp.Controllers
                     new Claim(ClaimsConstant.LastNameClaim, profileInfo.LastName),
                     new Claim(ClaimsConstant.DesignationClaim, profileInfo.UserDesignation.Role),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
+            };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
@@ -237,7 +220,7 @@ namespace ChatApp.Controllers
             return Convert.ToBase64String(salt);
         }
 
-        private string GetHash(string plainPassword,  string salt)
+        private string GetHash(string plainPassword, string salt)
         {
             byte[] byteArray = Encoding.Unicode.GetBytes(string.Concat(plainPassword, salt));
             SHA256Managed sha256 = new();

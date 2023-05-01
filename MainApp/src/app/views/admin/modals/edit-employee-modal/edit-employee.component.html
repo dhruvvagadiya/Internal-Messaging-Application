@@ -1,0 +1,63 @@
+<div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+        <h5 class="modal-title">Update Employee Details</h5>
+        <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+    </div>
+
+    <form [formGroup]="editEmployeeForm" (ngSubmit)="editEmployeeDetails(); modal.close()">    
+        <div class="modal-body">
+    
+            <div class="text-center">
+                <img [src]="GetProfileUrl(Employee.imageUrl)" alt="profileImage" width="180" height="180" class="img-fluid rounded-circle">
+            </div>
+
+            <div class="form-group">
+                <label for="name">First Name: </label>
+                <input type="text" [(ngModel)]="Employee.firstName" formControlName="fName" class="form-control" placeholder="First Name">
+
+                <span *ngIf="editEmployeeForm.get('fName').invalid && editEmployeeForm.get('fName').touched" class="text-danger">* First Name is required</span>
+
+                <span *ngIf="editEmployeeForm.get('fName').errors && editEmployeeForm.get('fName').errors?.maxlength" class="text-danger">* Must be less than 50 characters</span>
+
+            </div>
+    
+            <div class="form-group">
+                <label for="name">Last Name: </label>
+                <input type="text" formControlName="lName" [(ngModel)]="Employee.lastName" class="form-control" placeholder="Last Name">
+
+                <span *ngIf="editEmployeeForm.get('lName').invalid && editEmployeeForm.get('lName').touched" class="text-danger">* Last Name is required</span>
+
+                <span *ngIf="editEmployeeForm.get('lName').errors && editEmployeeForm.get('lName').errors?.maxlength" class="text-danger">* Must be less than 50 characters</span>
+            </div>
+    
+            <div class="form-group">
+                <label for="name">Email: </label>
+                <input type="text" formControlName="email" [(ngModel)]="Employee.email" class="form-control" placeholder="example@email.com">
+
+                <span *ngIf="editEmployeeForm.get('email').invalid && editEmployeeForm.get('email').touched" class="text-danger">* Please enter valid email address</span>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Designation: </label>
+                <ng-select [items]="designationList"
+                    [searchable]="false"
+                    bindLabel="role"
+                    bindValue="id"
+                    [(ngModel)]="Employee.designationId"
+                    formControlName = "designation"
+                >
+                </ng-select>
+
+                <span *ngIf="editEmployeeForm.get('designation').invalid && editEmployeeForm.get('designation').touched" class="text-danger">* Please select a designation</span>
+            </div>
+    
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="submit" [disabled]="editEmployeeForm.invalid || !editEmployeeForm.dirty">Save</button>
+            <button class="btn btn-danger" type="button" (click)="modal.close()">Cancel</button>
+        </div>
+    </form>
+
+</div>

@@ -61,17 +61,14 @@ export class ChangePasswordModalComponent implements OnInit {
             });
             this.modal.close();
 
-            this.accountService.logout().subscribe(res => {
-                this.authService.logout(() => {
+        this.authService.logout(() => {
+            //close hub connection with server
+            this.signalrService.closeConnection(this.user.userName);
 
-                  //close hub connection with server
-                  this.signalrService.closeConnection(this.user.userName);
-          
-                  this.router.navigate(['/auth/login']);
-                });
-                
-                this.userService.getCurrentUserDetails();
-            })
+            this.router.navigate(['/auth/login']);
+        });
+        
+        this.userService.getCurrentUserDetails();
         },
         err => {
             Swal.fire({

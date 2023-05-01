@@ -55,26 +55,23 @@ export class NavbarComponent implements OnInit {
       this.signalrService.updateProfileStatus('offline', this.loggedInUser.userName);
     });
 
-    this.accountService.logout().subscribe(res => {
-      this.authService.logout(() => {
-        Swal.fire({
-          title: 'Success!',
-          text: 'User has been logged out.',
-          icon: 'success',
-          timer: 2000,
-          timerProgressBar: true,
-        });
-
-        //close hub connection with server
-        this.signalrService.closeConnection(this.loggedInUser?.userName);
-
-        this.router.navigate(['/auth/login']);
-
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 2000);
-
+    this.authService.logout(() => {
+      Swal.fire({
+        title: 'Success!',
+        text: 'User has been logged out.',
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
       });
+
+      //close hub connection with server
+      this.signalrService.closeConnection(this.loggedInUser?.userName);
+
+      setTimeout(() => {
+        window.location.reload();
+        this.router.navigate(['/auth/login']);
+      }, 2000);
+
     });
   }
 

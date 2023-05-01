@@ -1,0 +1,78 @@
+<div class="modal-content">
+  
+  <!--Header-->
+  <div class="modal-header">
+    <h5 class="modal-title">Add Employee</h5>
+    <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
+  </div>
+
+  <form (ngSubmit)="AddEmployee(); modal.close()" [formGroup]="AddEmployeeForm">
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="exampleInputFirstName">First Name</label>
+        <input type="text" class="form-control" id="exampleInputFirstName" placeholder="First Name"
+          [(ngModel)]="regModel.firstName" formControlName="fName">
+        <span *ngIf="AddEmployeeForm.get('fName').invalid && AddEmployeeForm.get('fName').touched" class="text-danger">*
+          First Name is required</span>
+
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputLastName">Last Name</label>
+        <input type="text" class="form-control" id="exampleInputLastName" placeholder="Last Name"
+          [(ngModel)]="regModel.lastName" formControlName="lName">
+        <span *ngIf="AddEmployeeForm.get('lName').invalid && AddEmployeeForm.get('lName').touched" class="text-danger">*
+          Last Name is required</span>
+
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputUsername1">Username</label>
+        <input type="text" class="form-control" placeholder="Username" [(ngModel)]="regModel.userName"
+          formControlName="username">
+
+        <span *ngIf="AddEmployeeForm.get('username').errors?.required && AddEmployeeForm.get('username').touched"
+          class="text-danger d-block">* Username is required</span>
+
+        <span *ngIf="AddEmployeeForm.get('username').errors?.pattern && AddEmployeeForm.get('username').touched"
+          class="text-danger d-block">* Username can contain 6 to 20 characters</span>
+
+        <span *ngIf="AddEmployeeForm.get('username').errors?.pattern && AddEmployeeForm.get('username').touched"
+          class="text-danger d-block">* Username can contain characters and _ only</span>
+
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" placeholder="Email" [(ngModel)]="regModel.email"
+          formControlName="email">
+        <span *ngIf="AddEmployeeForm.get('email').invalid && AddEmployeeForm.get('email').touched" class="text-danger">*
+          Please enter valid email
+          address</span>
+
+      </div>
+
+      <div class="form-group">
+        <label for="exampleInputEmail1">Designation</label>
+
+        <ng-select [items]="designationList" [searchable]="false" bindLabel="role" bindValue="id"
+          [(ngModel)]="regModel.designationId" formControlName="designation">
+        </ng-select>
+
+        <span *ngIf="AddEmployeeForm.get('designation').invalid && AddEmployeeForm.get('designation').touched"
+          class="text-danger">* Please select a
+          designation</span>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" type="submit"
+        [disabled]="AddEmployeeForm.invalid || !AddEmployeeForm.dirty">Save</button>
+      <button class="btn btn-danger" (click)="modal.close()">Cancel</button>
+    </div>
+  </form>
+
+
+</div>

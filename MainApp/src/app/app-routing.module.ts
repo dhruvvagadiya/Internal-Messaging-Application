@@ -24,7 +24,12 @@ const routes: Routes = [
         loadChildren: () => import('./views/pages/group/group.module').then(m => m.GroupModule)
       },
       {
-        path: 'profile', loadChildren: () => import('./views/pages/profile/profile.module').then(m => m.ProfileModule)
+        path: 'profile',
+        loadChildren: () => import('./views/pages/profile/profile.module').then(m => m.ProfileModule)
+      },
+      {
+        path: 'admin',
+        loadChildren: () => import('./views/admin/admin.module').then(m => m.AdminModule)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, 
     ]

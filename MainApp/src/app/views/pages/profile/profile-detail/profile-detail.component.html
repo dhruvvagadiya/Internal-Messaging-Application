@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <td>Created By:</td>
-                    <td>{{ user.createdBy ? (user.createdBy) : "Self"}} </td>
+                    <td>{{ user.createdBy === 1 ? "Self" : "Admin"}} </td>
                 </tr>
                 <tr>
                     <td>Last Updated At:</td>
@@ -38,7 +38,7 @@
                 </tr>
                 <tr>
                     <td>Last Updated By:</td>
-                    <td>{{ user.lastUpdatedBy ? user.lastUpdatedBy : "Self" }} </td>
+                    <td>{{ user.lastUpdatedBy === 1 ? "Self" : "Admin" }} </td>
                 </tr>
                 
             </table>

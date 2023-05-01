@@ -38,6 +38,7 @@
         <div class="form-group">
           <label class="form-label">Designation</label>
           <input type="text" class="form-control" [value]="loggedInUser.designation" disabled>
+          <span class="form-text text-muted tx-10" *ngIf="loggedInUser.designation !== 'CEO'&& loggedInUser.designation !== 'CTO'">* Contact higher authorities to change designation</span>
         </div>
 
       </div>

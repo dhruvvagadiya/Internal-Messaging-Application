@@ -26,14 +26,4 @@ export class ProfileDetailComponent implements OnInit {
     });
 
   }
-
-  // private fetchUserDetails() {
-  //   this.userService.getLoggedInUser().subscribe((result) => {
-  //     this.user = result;
-  //     // console.log(result);
-  //   },
-  //   (err) => {
-  //     console.log(err);
-  //   });
-  // }
 }

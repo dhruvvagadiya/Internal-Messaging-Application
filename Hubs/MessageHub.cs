@@ -109,45 +109,6 @@ namespace ChatApp.Hubs
 
         }
 
-        public async Task sendMessage(ChatModel chat)
-            {
-            //get receiver
-            var receiver = await _context.Profiles.FirstOrDefaultAsync(e => e.UserName == chat.MessageTo);
-
-            if(receiver == null)
-            {
-                return;
-            }
-
-            //send notifications as well
-            var notification = new Notification()
-            {
-                Content = chat.MessageFrom,
-                Type = "Message",
-                CreatedAt = DateTime.Now,
-                IsSeen = 0,
-                UserId = receiver.Id
-            };
-
-            _context.Notifications.Add(notification);
-            _context.SaveChanges();
-
-            //else check if receiver is online
-            var rConnection = await _context.Connections.FirstOrDefaultAsync(e => e.ProfileId == receiver.Id);
-            if(rConnection == null)
-            {
-                await Clients.Caller.SendAsync("receiveMessage", chat); ;
-            }
-            else   //send chat to receiver also
-            {
-                await Clients.Clients(rConnection.SignalId, Context.ConnectionId).SendAsync("receiveMessage", chat);
-
-                var notificationDto = ModelMapper.NotificationToDTO(notification);
-                await Clients.Client(rConnection.SignalId).SendAsync("addNotification", notificationDto);
-            }
-
-        }
-
         public async Task seenMessages(string fromUser, string ToUser)
         {
             int senderId = _context.Profiles.FirstOrDefaultAsync(e => e.UserName == fromUser).GetAwaiter().GetResult().Id;

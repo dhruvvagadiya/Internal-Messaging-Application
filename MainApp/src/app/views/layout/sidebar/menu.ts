@@ -33,6 +33,15 @@ export const MENU: MenuItem[] = [
     label: 'View Profile',
     icon: 'user',
     link: 'profile/detail'
+  },
+  {
+    label: 'Contact',
+    isTitle: true
+  },
+  {
+    label: 'Employees',
+    icon: 'shield',
+    link: 'admin'
   }
   // {
   //   label: 'Calendar',

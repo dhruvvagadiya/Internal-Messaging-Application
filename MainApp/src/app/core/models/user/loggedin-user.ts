@@ -4,13 +4,11 @@ export interface LoggedInUser
     lastName?: string,
     email?:string,
     userName?: string
-    imageUrl? : string,
-    profileType? : number,
+    imageUrl? : string,s
     createdAt? : Date,
     createdBy? : number,
     lastUpdatedAt? : Date,
     lastUpdatedBy? : number,
-    lastSeen? : Date,
     designation? : string,
     isGoogleUser? : boolean
     exp? : number 

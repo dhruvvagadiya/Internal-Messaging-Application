@@ -2,6 +2,7 @@ import {
   AfterViewChecked,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from "@angular/core";
@@ -19,7 +20,7 @@ import { SignalrService } from "src/app/core/service/signalR-service";
   styleUrls : ["./chat-message.component.scss"]
 })
 
-export class ChatMessageComponent implements OnInit {
+export class ChatMessageComponent implements OnInit, OnDestroy {
   user: LoggedInUser;
   selectedUser: LoggedInUser;
   thumbnail = "https://via.placeholder.com/80x80";
@@ -111,4 +112,8 @@ export class ChatMessageComponent implements OnInit {
     this.replyMsgId = event.id;
     this.replyMsgContent = event.content;
   }  
+
+  ngOnDestroy(): void {
+    this.selectedUser = null; 
+  }
 }

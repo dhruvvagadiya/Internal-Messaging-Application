@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />
+    <None Include="Tables\DbScript.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ChatApp.Database.refactorlog" />

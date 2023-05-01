@@ -8,10 +8,10 @@ namespace ChatApp.Business.Helpers
         public const string ImageUrlClaim = "imageUrl";
         public const string DesignationClaim = "designation";
     }
-    public enum ProfileType
+    public static class ProfileType
     {
-        User = 1,
-        Administrator = 2
+        public static int User = 1;
+        public static int Administrator = 2;
     }
 
     

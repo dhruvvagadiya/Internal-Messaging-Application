@@ -16,55 +16,6 @@ License: You must have a valid license purchased only from the above link or htt
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-  <script>
-
-    function handleCredentialResponse(response) {
-
-      $.ajax({
-        url: "https://localhost:44382/api/Account/googleLogin",
-        headers: {
-          authorization : response.credential
-        },
-        method : 'POST',
-      })
-      .done((res) => {
-        console.log(res);
-
-        localStorage.setItem('isLoggedin', 'true');
-        localStorage.setItem('USERTOKEN', res.token);
-
-        window.location.href = "http://localhost:4200/dashboard";  
-      })
-      .fail(function(jqXHR, textStatus, errorThrown){
-
-        if (jqXHR.status === 400) {
-          alert("User is already registered!");
-        } else {
-          alert("Error occurred: " + errorThrown);
-        }
-
-      });
-  
-
-      // console.log("Encoded JWT ID token: " + response.credential);
-      // //   Split the token into header, payload, and signature
-      //   const parts = response.credential.split('.');
-      //   const header = parts[0];
-      //   const payload = parts[1];
-      //   const signature = parts[2];
-  
-      // //   Decode the payload from base64
-      //   const decodedPayload = atob(payload);
-  
-      // //   Parse the decoded payload as JSON
-      //   const jsonPayload = JSON.parse(decodedPayload);
-      //   console.log(jsonPayload);
-  }
-</script>
-
 </head>
 <body>
   <app-root>

@@ -14,12 +14,11 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TokenInterceptor } from './core/helper/token-interceptor';
 import { AuthService } from './core/service/auth-service';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 import {
-  GoogleLoginProvider,
-  FacebookLoginProvider
+  GoogleLoginProvider
 } from '@abacritt/angularx-social-login';
 
 @NgModule({
@@ -35,21 +34,21 @@ import {
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    // SocialLoginModule
+    SocialLoginModule 
   ],
   providers: [
-    // {
-    //   provide: 'SocialAuthServiceConfig',
-    //   useValue: {
-    //     autoLogin: false,
-    //     providers: [
-    //       {
-    //         id: GoogleLoginProvider.PROVIDER_ID,
-    //         provider: new GoogleLoginProvider('673641779020-f19onebut126rjpp605nfl7qtmdsh9bd.apps.googleusercontent.com'),
-    //       },
-    //     ],
-    //   } as SocialAuthServiceConfig,
-    // },
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider('673641779020-f19onebut126rjpp605nfl7qtmdsh9bd.apps.googleusercontent.com'),
+          },
+        ],
+      } as SocialAuthServiceConfig,
+    },
     AuthGuard,
     {
       provide: HIGHLIGHT_OPTIONS, // https://www.npmjs.com/package/ngx-highlightjs
@@ -70,6 +69,5 @@ import {
     }
   ],
   bootstrap: [AppComponent],
-  // schemas : [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

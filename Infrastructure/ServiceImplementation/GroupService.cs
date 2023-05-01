@@ -1,6 +1,5 @@
 ﻿using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
-using ChatApp.Context.EntityClasses;
 using ChatApp.Context.EntityClasses.Group;
 using ChatApp.Models.Group;
 using Microsoft.AspNetCore.Hosting;

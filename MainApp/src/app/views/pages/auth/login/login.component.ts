@@ -1,3 +1,4 @@
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/user/login-model';
@@ -22,6 +23,7 @@ export class LoginComponent implements OnInit {
     private accountService: AccountService,
     private userService: UserService,
     private authService: AuthService,
+    private socialAuthService : SocialAuthService,
     private signalrService : SignalrService) { }    
 
   ngOnInit(): void {
@@ -32,6 +34,19 @@ export class LoginComponent implements OnInit {
       password: '',
       userName: ''
     }
+
+    this.socialAuthService.authState.subscribe((user) => {
+      this.accountService.googleLogin(user.idToken).subscribe((result : any) => {
+        this.updateUser(result);
+      }, (err) => {
+        Swal.fire({
+          title: 'Error!',
+          text: "User is already registered",
+          icon: 'error',
+        });
+      })
+    });
+
   }
 
   @ViewChild('loginForm') loginForm;
@@ -43,38 +58,41 @@ export class LoginComponent implements OnInit {
 
     // Implementation of API.
     this.accountService.login(this.loginModel).subscribe((result: any) => {
-      this.authService.login(result.token, () => {
-        Swal.fire({
-          title: 'Success!',
-          text: 'User loggedin successfully.',
-          icon: 'success',
-          timer: 1500,
-         timerProgressBar: true,
-        });
-
-        //get new user
-        this.userService.getCurrentUserDetails();
-
-        let user = this.authService.getLoggedInUserInfo();
-    
-        if(user?.sub){  
-          //start connection with hub  (will end on logout)
-          this.signalrService.startConnection(user.sub);
-        }
-
-        setTimeout(() => {
-          this.router.navigate(["/"]);
-        }, (1500));
-        this.router.navigate([this.returnUrl]);
-      });
+      this.updateUser(result);
     }, (err) => {
       Swal.fire({
         title: 'Error!',
-        text: err.error.message,
+        text: err.error.message ? err.error.message : "User is not registered!",
         icon: 'error',
       });
     });
 
   }
 
+  updateUser(result){
+    this.authService.login(result.token, () => {
+      Swal.fire({
+        title: 'Success!',
+        text: 'User loggedin successfully.',
+        icon: 'success',
+        timer: 1500,
+       timerProgressBar: true,
+      });
+
+      //get new user
+      this.userService.getCurrentUserDetails();
+
+      let user = this.authService.getLoggedInUserInfo();
+  
+      if(user?.sub){  
+        //start connection with hub  (will end on logout)
+        this.signalrService.startConnection(user.sub);
+      }
+
+      setTimeout(() => {
+        this.router.navigate(["/"]);
+      }, (1500));
+      this.router.navigate([this.returnUrl]);
+    });
+  }
 }

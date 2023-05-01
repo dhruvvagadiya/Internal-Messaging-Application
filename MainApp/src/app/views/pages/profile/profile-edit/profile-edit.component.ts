@@ -77,19 +77,22 @@ export class ProfileEditComponent implements OnInit {
       .subscribe(
         (result: any) => {
           this.authService.login(result.token, () => {
-            Swal.fire({
-              title: "Success!",
-              text: "Profile Updated Successfully.",
-              icon: "success",
-              timer: 1500,
+
+            const Toast = Swal.mixin({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 2000,
               timerProgressBar: true,
-            });
+            })
+            
+            Toast.fire({
+              icon: 'success',
+              title: 'Details Updated Successfully'
+            })
 
             this.userService.getCurrentUserDetails();
 
-            setTimeout(() => {
-              this.router.navigate(["/"]);
-            }, 1500);
           });
         },
         (err) => {

@@ -82,7 +82,7 @@ namespace ChatApp.Controllers
 
             if(UserId == -1 || CurGroup == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             var CurUserName = JwtHelper.GetUsernameFromRequest(Request);
@@ -118,7 +118,7 @@ namespace ChatApp.Controllers
             var CurGroup = _groupService.GetGroup(e => e.Id == GroupId);
             if(CurGroup == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             var CurUserName = JwtHelper.GetUsernameFromRequest(Request);
@@ -160,7 +160,7 @@ namespace ChatApp.Controllers
 
             if (UserId == -1 || CurGroup == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             var CurUserName = JwtHelper.GetUsernameFromRequest(Request);
@@ -225,7 +225,7 @@ namespace ChatApp.Controllers
             var CurGroup = _groupService.GetGroup(e => e.Id == Id);
             if (UserId == -1 || CurGroup == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             var CurUserName = JwtHelper.GetUsernameFromRequest(Request);

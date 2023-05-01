@@ -1,11 +1,7 @@
 ﻿using ChatApp.Business.Helpers;
 using ChatApp.Business.ServiceInterfaces;
-using ChatApp.Context;
-using ChatApp.Infrastructure.ServiceImplementation;
-using ChatApp.Models.Chat;
 using ChatApp.Models.GroupChat;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatApp.Controllers

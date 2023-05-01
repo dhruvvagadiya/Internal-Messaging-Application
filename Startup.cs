@@ -1,3 +1,4 @@
+using ChatApp.Business.Helpers;
 using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Context;
 using ChatApp.Hubs;
@@ -59,6 +60,19 @@ namespace ChatApp
                  };
              });
 
+            //add new policy
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", Policy =>
+                {
+                    Policy.RequireClaim(ClaimsConstant.DesignationClaim, new string[] { "CEO", "CTO" });
+                });
+                options.AddPolicy("CEO", Policy =>
+                {
+                    Policy.RequireClaim(ClaimsConstant.DesignationClaim, "CEO");
+                });
+            });
+
 
             services.AddControllersWithViews();
 
@@ -106,6 +120,7 @@ namespace ChatApp
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IGroupChatService, GroupChatService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IAdminService, AdminService>();
 
 
             // In production, the Angular files will be served from this directory

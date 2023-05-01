@@ -21,13 +21,11 @@ namespace ChatApp.Context.EntityClasses
         [ForeignKey("UserStatus")]
         public int StatusId { get; set; } = 1;
         public virtual Status UserStatus { get; set; }
-
-        public ProfileType ProfileType { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? LastUpdatedAt { get; set; }
         public int? LastUpdatedBy { get; set; }
-        public DateTime? LastSeen { get; set; }
+        public int IsDeleted { get; set; }
 
     }
 }
