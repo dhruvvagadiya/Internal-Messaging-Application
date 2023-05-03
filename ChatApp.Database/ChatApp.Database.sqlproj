@@ -76,7 +76,7 @@
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />
     <PostDeploy Include="Tables\DbScript.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>DoNotCopy</CopyToOutputDirectory>
       <QuotedIdentifier>ProjectDefault</QuotedIdentifier>
     </PostDeploy>
   </ItemGroup>
