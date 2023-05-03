@@ -8,11 +8,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { EditEmployeeModal } from './modals/edit-employee-modal/edit-employee.component';
 import { AddEmployeeModal } from './modals/add-employee-modal/add-employee.component';
+import { AdminGuard } from 'src/app/core/guard/admin.guard';
 
 const routes: Routes = [
     {
       path: "",
-      component: AdminComponent
+      component: AdminComponent,
+      canActivate : [AdminGuard]
     },
   ];
 
@@ -28,6 +30,6 @@ const routes: Routes = [
     ],
     exports: [RouterModule],
     declarations: [AdminComponent, EditEmployeeModal, AddEmployeeModal],
-    providers: [],
+    providers: [ AdminGuard ],
 })
 export class AdminModule { }

@@ -4,6 +4,8 @@ import { DOCUMENT } from '@angular/common';
 import { MENU } from './menu';
 import { MenuItem } from './menu.model';
 import { Router, NavigationEnd } from '@angular/router';
+import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
+import { UserService } from 'src/app/core/service/user.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,7 +19,8 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   menuItems = [];
   @ViewChild('sidebarMenu') sidebarMenu: ElementRef;
 
-  constructor(@Inject(DOCUMENT) private document: Document, router: Router) { 
+  constructor(@Inject(DOCUMENT) private document: Document, router: Router, private userService : UserService) {
+  
     router.events.forEach((event) => {
       if (event instanceof NavigationEnd) {
 
@@ -39,6 +42,15 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.menuItems = MENU;
+
+    this.userService.getUserSubject().subscribe(e => {
+
+      if(e && e.designation.toLowerCase() === 'probationer'){
+        this.menuItems.pop();
+        this.menuItems.pop();
+      }
+    });
+
 
     /**
      * Sidebar-folded on desktop (min-width:992px and max-width: 1199px)

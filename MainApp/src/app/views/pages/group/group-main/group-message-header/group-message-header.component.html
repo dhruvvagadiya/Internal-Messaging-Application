@@ -88,7 +88,7 @@
                             <div class="text-right align-self-end">
                                 <p *ngIf="selectedGroup.createdBy === obj.userName" class="text-muted rounded p-1 tx-10 adminTag">Space Admin</p>
                                 <div>
-                                    <i *ngIf="selectedGroup.createdBy === user.userName && user.userName !== obj.userName" class="mdi mdi-account-minus icon-xs text-danger mr-2" 
+                                    <i *ngIf="selectedGroup.createdBy === user.userName && user.userName !== obj.userName" class="mdi mdi-account-minus icon-xs text-danger mr-2 showCursor" 
                                     (click)="toBeRemoveUser = obj; openDetailsModal(removeUser); modal.close()"></i>
                                 </div>
                             </div>

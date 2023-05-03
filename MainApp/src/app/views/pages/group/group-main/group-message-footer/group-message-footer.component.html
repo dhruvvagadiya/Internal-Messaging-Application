@@ -19,6 +19,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="ml-4 py-2 bg-light rounded" *ngIf="isRecording || blobUrl">
+            <div class="ml-2 mr-2">
+
+                <div class="d-flex justify-content-between">
+                    <!-- recording started -->
+                    <p *ngIf="isRecording">Audio Recording is started <span *ngIf="isRecording && !blobUrl"> {{recordedTime}} </span></p>
+                    <a *ngIf="isRecording && !blobUrl" (click)="stopRecording(); openBasicModal(sendRecordModal)">
+                        <i class="mdi mdi-stop" ngbTooltip="Stop Recording"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
 
@@ -40,7 +55,7 @@
             <input type="file" #ChatImageUpload (change)="onFileChanged($event)" hidden accept="audio/*,video/*,image/*">
         </div>
         <div class="d-none d-md-block">
-            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Record you voice">
+            <button type="button" class="btn btn-icon mr-2" ngbTooltip="Record you voice" (dblclick)="startRecording()">
                 <i class="feather icon-mic text-muted"></i>
             </button>
         </div>
@@ -57,3 +72,21 @@
     </div>
     <!-- bottom bar end -->
 </div>
+
+
+<!-- Send audio modal -->
+<ng-template #sendRecordModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Are you sure??</h5>
+        <i (click)="modal.close(); clearRecordedData()" class="feather icon-x icon-xs mr-2"></i>
+    </div>
+    <div class="modal-body">
+        <audio *ngIf="!isRecording && blobUrl" controls>
+            <source [src]="blobUrl" type="audio/webm">
+        </audio>
+    </div>
+    <div class="modal-footer d-flex justify-content-start">
+        <button type="button" class="btn btn-secondary" (click)="modal.close(); clearRecordedData()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="sendRecordedAudio(); modal.close();">Send Audio</button>
+    </div>
+</ng-template>

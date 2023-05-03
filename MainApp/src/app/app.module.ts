@@ -13,7 +13,7 @@ import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TokenInterceptor } from './core/helper/token-interceptor';
-import { AuthService } from './core/service/auth-service';
+import { AuthService } from './core/service/auth.service';
 import { NgModule } from '@angular/core';
 
 import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
@@ -66,7 +66,7 @@ import {
       useClass: TokenInterceptor,
       multi: true,
       deps: [AuthService],
-    }
+    },
   ],
   bootstrap: [AppComponent],
 })

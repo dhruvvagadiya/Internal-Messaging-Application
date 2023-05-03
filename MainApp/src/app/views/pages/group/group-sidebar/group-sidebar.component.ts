@@ -1,10 +1,10 @@
 import { Component, OnInit, TemplateRef } from "@angular/core";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
-import { GroupChatService } from "src/app/core/service/group-chat-service";
+import { GroupChatService } from "src/app/core/service/group-chat.service";
 import { GroupRecentChatModel } from "src/app/core/models/GroupChat/group-recent-chat";
-import { UserService } from "src/app/core/service/user-service";
+import { UserService } from "src/app/core/service/user.service";
 import { Group } from "src/app/core/models/Group/group";
-import { SignalrService } from "src/app/core/service/signalR-service";
+import { SignalrService } from "src/app/core/service/signalR.service";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({

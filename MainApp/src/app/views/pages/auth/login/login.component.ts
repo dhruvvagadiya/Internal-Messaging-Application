@@ -2,10 +2,10 @@ import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/user/login-model';
-import { AccountService } from 'src/app/core/service/account-service';
-import { AuthService } from 'src/app/core/service/auth-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { AccountService } from 'src/app/core/service/account.service';
+import { AuthService } from 'src/app/core/service/auth.service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
+import { UserService } from 'src/app/core/service/user.service';
 import Swal from 'sweetalert2'
 
 @Component({
@@ -17,6 +17,14 @@ export class LoginComponent implements OnInit {
 
   returnUrl: any;
   loginModel: LoginModel
+
+  Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 1500,
+    timerProgressBar: true,
+  })
 
   constructor(private router: Router,
     private route: ActivatedRoute,
@@ -38,12 +46,11 @@ export class LoginComponent implements OnInit {
     this.socialAuthService.authState.subscribe((user) => {
       this.accountService.googleLogin(user.idToken).subscribe((result : any) => {
         this.updateUser(result);
-      }, (err) => {
-        Swal.fire({
-          title: 'Error!',
-          text: "User is already registered",
+      }, (err) => {        
+        this.Toast.fire({
           icon: 'error',
-        });
+          title : err.error.message ? err.error.message : "User is not registered!"
+        })
       })
     });
 
@@ -53,31 +60,27 @@ export class LoginComponent implements OnInit {
 
   onLoggedin(e) {
     e.preventDefault();
-    // console.log(this.loginModel);
-    // console.log(this.loginForm);
 
     // Implementation of API.
     this.accountService.login(this.loginModel).subscribe((result: any) => {
       this.updateUser(result);
     }, (err) => {
-      Swal.fire({
-        title: 'Error!',
-        text: err.error.message ? err.error.message : "User is not registered!",
+      
+      this.Toast.fire({
         icon: 'error',
-      });
+        title : err.error.message ? err.error.message : "User is not registered!"
+      })
     });
 
   }
 
   updateUser(result){
     this.authService.login(result.token, () => {
-      Swal.fire({
-        title: 'Success!',
-        text: 'User loggedin successfully.',
+
+      this.Toast.fire({
         icon: 'success',
-        timer: 1500,
-       timerProgressBar: true,
-      });
+        title: 'Logged In Successfully'
+      })
 
       //get new user
       this.userService.getCurrentUserDetails();
@@ -88,11 +91,9 @@ export class LoginComponent implements OnInit {
         //start connection with hub  (will end on logout)
         this.signalrService.startConnection(user.sub);
       }
-
       setTimeout(() => {
-        this.router.navigate(["/"]);
-      }, (1500));
-      this.router.navigate([this.returnUrl]);
+        this.router.navigate([this.returnUrl]);
+      }, 1500);
     });
   }
 }

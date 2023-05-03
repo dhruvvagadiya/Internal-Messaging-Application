@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { SignalrService } from './core/service/signalR-service';
-import { AuthService } from './core/service/auth-service';
+import { SignalrService } from './core/service/signalR.service';
+import { AuthService } from './core/service/auth.service';
 
 @Component({
   selector: 'app-root',

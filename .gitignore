@@ -5,6 +5,7 @@
 
 # by User
 Resources/
+wwwRoot/
 
 # User-specific files
 *.suo

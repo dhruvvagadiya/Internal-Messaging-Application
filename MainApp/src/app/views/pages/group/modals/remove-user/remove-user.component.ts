@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Group } from 'src/app/core/models/Group/group';
 import { GroupMember } from 'src/app/core/models/Group/group-member';
-import { GroupChatService } from 'src/app/core/service/group-chat-service';
-import { GroupService } from 'src/app/core/service/group-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
+import { GroupChatService } from 'src/app/core/service/group-chat.service';
+import { GroupService } from 'src/app/core/service/group.service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
 
 @Component({
     selector: 'app-remove-user-modal',

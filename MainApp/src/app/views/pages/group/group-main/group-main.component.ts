@@ -5,11 +5,11 @@ import {
 
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
 
-import { UserService } from "src/app/core/service/user-service";
+import { UserService } from "src/app/core/service/user.service";
 import { GroupChatModel } from "src/app/core/models/GroupChat/group-message-model";
-import { GroupChatService } from "src/app/core/service/group-chat-service";
+import { GroupChatService } from "src/app/core/service/group-chat.service";
 import { Group } from "src/app/core/models/Group/group";
-import { SignalrService } from "src/app/core/service/signalR-service";
+import { SignalrService } from "src/app/core/service/signalR.service";
 
 @Component({
   selector: "app-group-main",

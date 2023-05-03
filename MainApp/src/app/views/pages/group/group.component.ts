@@ -2,8 +2,8 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Group } from 'src/app/core/models/Group/group';
 
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { GroupChatService } from 'src/app/core/service/group-chat-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { GroupChatService } from 'src/app/core/service/group-chat.service';
+import { UserService } from 'src/app/core/service/user.service';
 
 @Component({
   selector: 'app-chat',

@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { GroupMember } from 'src/app/core/models/Group/group-member';
 import { Group } from 'src/app/core/models/Group/group';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { GroupChatService } from 'src/app/core/service/group-chat-service';
-import { GroupService } from 'src/app/core/service/group-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { GroupChatService } from 'src/app/core/service/group-chat.service';
+import { GroupService } from 'src/app/core/service/group.service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
+import { UserService } from 'src/app/core/service/user.service';
 
 @Component({
   selector: "app-add-members-modal",

@@ -2,9 +2,9 @@ import { Component, OnInit, TemplateRef } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { Notification } from "src/app/core/models/notification/notification";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
-import { AuthService } from "src/app/core/service/auth-service";
-import { NotificationService } from "src/app/core/service/notification-service";
-import { SignalrService } from "src/app/core/service/signalR-service";
+import { AuthService } from "src/app/core/service/auth.service";
+import { NotificationService } from "src/app/core/service/notification.service";
+import { SignalrService } from "src/app/core/service/signalR.service";
 import { ViewEncapsulation } from '@angular/core';
 
 @Component({

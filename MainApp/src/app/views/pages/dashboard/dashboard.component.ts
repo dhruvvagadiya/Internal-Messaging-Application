@@ -2,18 +2,11 @@ import { Component, OnInit } from '@angular/core';
 
 import { ApexAxisChartSeries, ApexNonAxisChartSeries, ApexGrid, ApexChart, ApexXAxis, ApexYAxis, ApexMarkers, ApexStroke, ApexLegend, ApexResponsive, ApexTooltip, ApexFill, ApexDataLabels, ApexPlotOptions, ApexTitleSubtitle } from 'ng-apexcharts';
 
-import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-
-// Ng2-charts
-import { ChartOptions, ChartType, ChartDataSets, RadialChartOptions } from 'chart.js';
-import { Label, Color, SingleDataSet } from 'ng2-charts';
-
 // Progressbar.js
-import ProgressBar from 'progressbar.js';
-import { AuthService } from 'src/app/core/service/auth-service';
+import { AuthService } from 'src/app/core/service/auth.service';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { ChatService } from 'src/app/core/service/chat-service';
-import { GroupChatService } from 'src/app/core/service/group-chat-service';
+import { ChatService } from 'src/app/core/service/chat.service';
+import { GroupChatService } from 'src/app/core/service/group-chat.service';
 
 export type apexChartOptions = {
   series: ApexAxisChartSeries;

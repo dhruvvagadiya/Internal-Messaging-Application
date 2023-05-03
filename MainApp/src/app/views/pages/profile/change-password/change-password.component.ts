@@ -2,10 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { AccountService } from 'src/app/core/service/account-service';
-import { AuthService } from 'src/app/core/service/auth-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { AccountService } from 'src/app/core/service/account.service';
+import { AuthService } from 'src/app/core/service/auth.service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
+import { UserService } from 'src/app/core/service/user.service';
 import Swal from 'sweetalert2'
 
 
@@ -20,6 +20,14 @@ export class ChangePasswordModalComponent implements OnInit {
     user : LoggedInUser;
     changePasswordForm : FormGroup
     changePasswordModel;
+
+    Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+    })
 
     constructor(
         private userService : UserService,
@@ -52,13 +60,10 @@ export class ChangePasswordModalComponent implements OnInit {
 
     changePassword(){
         this.accountService.changePassword(this.changePasswordModel).subscribe(e => {
-            Swal.fire({
-                position: "top-right",
-                icon: "success",
-                title: "Passwords Changed Successfully",
-                showConfirmButton: false,
-                timer: 1000
-            });
+            this.Toast.fire({
+                icon: 'success',
+                title: 'Password changed successfully'
+            })
             this.modal.close();
 
         this.authService.logout(() => {
@@ -71,12 +76,10 @@ export class ChangePasswordModalComponent implements OnInit {
         this.userService.getCurrentUserDetails();
         },
         err => {
-            Swal.fire({
-                title: 'Error!',
-                text: "Incorrect credentials provided",
+            this.Toast.fire({
                 icon: 'error',
-                timer: 1000
-            });
+                title: 'Invalid Credentials'
+            })
 
             this.changePasswordForm.reset();
         })

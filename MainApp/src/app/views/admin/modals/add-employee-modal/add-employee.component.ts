@@ -4,8 +4,7 @@ import { AdminProfileDTO } from 'src/app/core/models/user/AdminProfileDTO';
 import { DesignationModel } from 'src/app/core/models/user/designation';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { RegistrationModel } from 'src/app/core/models/user/registration-model';
-import { AccountService } from 'src/app/core/service/account-service';
-import { AdminService } from 'src/app/core/service/admin-service';
+import { AccountService } from 'src/app/core/service/account.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,7 +12,7 @@ import Swal from 'sweetalert2';
   templateUrl: "add-employee.component.html",
 })
 export class AddEmployeeModal implements OnInit {
-  constructor(private accountService: AccountService, private adminService : AdminService) {}
+  constructor(private accountService: AccountService) {}
 
   @Input() modal;
   @Output() onEmployeeUpdate = new EventEmitter<AdminProfileDTO>();

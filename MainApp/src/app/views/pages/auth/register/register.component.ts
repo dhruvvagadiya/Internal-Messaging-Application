@@ -3,10 +3,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DesignationModel } from 'src/app/core/models/user/designation';
 import { RegistrationModel } from 'src/app/core/models/user/registration-model';
-import { AccountService } from 'src/app/core/service/account-service';
-import { AuthService } from 'src/app/core/service/auth-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { AccountService } from 'src/app/core/service/account.service';
+import { AuthService } from 'src/app/core/service/auth.service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
+import { UserService } from 'src/app/core/service/user.service';
 import Swal from 'sweetalert2'
 
 @Component({

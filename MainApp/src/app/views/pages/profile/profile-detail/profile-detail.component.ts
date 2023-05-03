@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
-import { UserService } from "src/app/core/service/user-service";
+import { UserService } from "src/app/core/service/user.service";
 
 @Component({
     selector: 'app-profile-detail',
@@ -15,7 +15,6 @@ export class ProfileDetailComponent implements OnInit {
   thumbnail : string;
 
   constructor(private userService : UserService){
-    // this.fetchUserDetails();
   }
 
   ngOnInit(): void {

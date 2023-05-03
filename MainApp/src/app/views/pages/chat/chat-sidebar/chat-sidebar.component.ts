@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
 import { RecentChatModel } from "src/app/core/models/chat/recent-chat";
-import { ChatService } from "src/app/core/service/chat-service";
-import { UserService } from "src/app/core/service/user-service";
-import { SignalrService } from "src/app/core/service/signalR-service";
+import { ChatService } from "src/app/core/service/chat.service";
+import { UserService } from "src/app/core/service/user.service";
+import { SignalrService } from "src/app/core/service/signalR.service";
 
 @Component({
   selector: "app-chat-sidebar",

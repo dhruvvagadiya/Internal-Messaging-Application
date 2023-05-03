@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Group } from 'src/app/core/models/Group/group';
 import { GroupRecentChatModel } from 'src/app/core/models/GroupChat/group-recent-chat';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { GroupChatService } from 'src/app/core/service/group-chat-service';
-import { GroupService } from 'src/app/core/service/group-service';
+import { GroupChatService } from 'src/app/core/service/group-chat.service';
+import { GroupService } from 'src/app/core/service/group.service';
 
 @Component({
   selector: 'app-create-group-modal',

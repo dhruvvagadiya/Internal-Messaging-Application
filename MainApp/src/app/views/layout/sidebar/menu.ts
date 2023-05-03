@@ -43,9 +43,4 @@ export const MENU: MenuItem[] = [
     icon: 'shield',
     link: 'admin'
   }
-  // {
-  //   label: 'Calendar',
-  //   icon: 'calendar',
-  //   link: '/apps/calendar'
-  // }
 ];

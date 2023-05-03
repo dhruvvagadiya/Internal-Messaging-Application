@@ -1,12 +1,12 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/service/auth-service';
+import { AuthService } from 'src/app/core/service/auth.service';
 import Swal from 'sweetalert2'
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { UserService } from 'src/app/core/service/user-service';
-import { AccountService } from 'src/app/core/service/account-service';
-import { SignalrService } from 'src/app/core/service/signalR-service';
+import { UserService } from 'src/app/core/service/user.service';
+import { AccountService } from 'src/app/core/service/account.service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
 
 @Component({
   selector: 'app-navbar',

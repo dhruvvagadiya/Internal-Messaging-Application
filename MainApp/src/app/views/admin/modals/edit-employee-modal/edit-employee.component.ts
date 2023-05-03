@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AdminProfileDTO } from 'src/app/core/models/user/AdminProfileDTO';
 import { DesignationModel } from 'src/app/core/models/user/designation';
-import { AdminService } from 'src/app/core/service/admin-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { AdminService } from 'src/app/core/service/admin.service';
+import { UserService } from 'src/app/core/service/user.service';
 import Swal from 'sweetalert2';
 
 @Component({

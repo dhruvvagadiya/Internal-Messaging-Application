@@ -1,18 +1,14 @@
 import {
-  AfterViewChecked,
   Component,
-  ElementRef,
   OnDestroy,
   OnInit,
-  ViewChild,
 } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
+import { ChatService } from "src/app/core/service/chat.service";
+import { UserService } from "src/app/core/service/user.service";
+import { SignalrService } from "src/app/core/service/signalR.service";
 import { MessageModel } from "src/app/core/models/chat/message-model";
-import { ChatService } from "src/app/core/service/chat-service";
-import { UserService } from "src/app/core/service/user-service";
-import { environment } from "src/environments/environment";
-import { SignalrService } from "src/app/core/service/signalR-service";
 
 @Component({
   selector: "app-chat-message",

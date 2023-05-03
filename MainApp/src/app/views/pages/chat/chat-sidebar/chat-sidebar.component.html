@@ -39,7 +39,7 @@
               </div>
             </div>
             <input type="text" class="form-control  border-0 rounded-sm" (input)="onInput($event)"
-              id="searchForm" placeholder="Search here...">
+              #userInput placeholder="Search here...">
           </div>
         </form>
 
@@ -48,7 +48,7 @@
           <ul class="list-group">
 
             <li class="list-group-item" style="z-index: 1;" *ngFor="let user of userMatched">
-              <a class="d-flex align-items-center" [routerLink]="user.userName" (click)="hideMenu()">
+              <a class="d-flex align-items-center" [routerLink]="user.userName" (click)="userInput.value = ''; hideMenu()">
                 <figure class="mb-0 mr-2">
                   <img [src]="getProfileUrl(user.imageUrl)" class="img-xs rounded-circle" alt="user">
                 </figure>

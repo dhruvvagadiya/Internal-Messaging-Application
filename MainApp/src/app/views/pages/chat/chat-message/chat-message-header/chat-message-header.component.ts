@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { SignalrService } from 'src/app/core/service/signalR-service';
-import { UserService } from 'src/app/core/service/user-service';
+import { SignalrService } from 'src/app/core/service/signalR.service';
+import { UserService } from 'src/app/core/service/user.service';
 
 @Component({
     selector: 'app-chat-message-header',

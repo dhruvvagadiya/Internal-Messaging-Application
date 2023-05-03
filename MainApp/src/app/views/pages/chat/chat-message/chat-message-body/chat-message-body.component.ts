@@ -1,7 +1,7 @@
 import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MessageModel } from 'src/app/core/models/chat/message-model';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
-import { UserService } from 'src/app/core/service/user-service';
+import { UserService } from 'src/app/core/service/user.service';
 import { environment } from 'src/environments/environment';
 
 @Component({

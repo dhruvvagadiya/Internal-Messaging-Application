@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from "@angular/core";
 import { JwtHelper } from "../helper/jwt-helper";
 import { LoggedInUser } from "../models/user/loggedin-user";
-import { UserService } from "./user-service";
+import { UserService } from "./user.service";
 
 @Injectable({
     providedIn: 'root'
