@@ -26,5 +26,24 @@ namespace ChatApp.Business.Helpers
 
             return username;
         }
+        public static string GetRoleFromRequest(HttpRequest httpRequest)
+        {
+            var authorization = httpRequest.Headers[HeaderNames.Authorization];
+            var role = "";
+            if (AuthenticationHeaderValue.TryParse(authorization, out var headerValue))
+            {
+                var parameter = headerValue.Parameter;
+
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadJwtToken(parameter);
+
+                var tokenS = jsonToken as JwtSecurityToken;
+
+                role = tokenS.Claims.First(claim => claim.Type == ClaimsConstant.DesignationClaim).Value;
+            }
+
+            return role;
+        }
+
     }
 }

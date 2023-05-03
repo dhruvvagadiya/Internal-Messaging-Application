@@ -1,11 +1,12 @@
-﻿using ChatApp.Context;
+﻿using ChatApp.Business.Helpers;
+using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace ChatApp.Controllers
@@ -25,25 +26,23 @@ namespace ChatApp.Controllers
         [HttpGet("getAll")]
         public IActionResult GetAll()
         {
-            IQueryable<Designation> list = _context.Designations;
-            if (_context.Profiles.Include("UserDesignation").FirstOrDefault(e => e.UserDesignation.Role.Equals("ceo")) != null){
-                list = list.Where(e => !e.Role.ToLower().Equals("ceo"));
-            }
-
-            if (_context.Profiles.Include("UserDesignation").FirstOrDefault(e => e.UserDesignation.Role.Equals("cto")) != null)
-            {
-                list = list.Where(e => !e.Role.ToLower().Equals("cto"));
-            }
-
+            IQueryable<Designation> list = _context.Designations.Where(e => !e.Role.Equals("CEO") && !e.Role.Equals("CTO"));
             return Ok(list.ToList());
         }
 
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy ="Admin")]
         [HttpGet("all")]
         public IActionResult AllList()
         {
-            var returnObj = _context.Designations.Where(e => !e.Role.ToLower().Equals("ceo")).ToList();
-            return Ok(returnObj);
+            var Designation = JwtHelper.GetRoleFromRequest(Request);
+
+            var returnObj = _context.Designations.Where(e => !e.Role.ToLower().Equals("ceo"));
+            if (Designation.Equals("CTO"))
+            {
+                returnObj = returnObj.Where(e => !e.Role.ToLower().Equals("cto"));
+            }
+
+            return Ok(returnObj.ToList());
         }
     }
 }

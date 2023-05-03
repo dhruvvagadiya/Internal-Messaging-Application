@@ -70,13 +70,15 @@
     <Build Include="Tables\Groups.sql" />
     <Build Include="Tables\Salts.sql" />
     <Build Include="Tables\Notifications.sql" />
-    <Build Include="Tables\Admin.sql" />
     <Build Include="Tables\Status.sql" />
     <Build Include="Tables\Designations.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatApp.local.publish.xml" />
-    <None Include="Tables\DbScript.sql" />
+    <PostDeploy Include="Tables\DbScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <QuotedIdentifier>ProjectDefault</QuotedIdentifier>
+    </PostDeploy>
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ChatApp.Database.refactorlog" />

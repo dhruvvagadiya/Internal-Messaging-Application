@@ -10,8 +10,14 @@ namespace ChatApp.Business.Helpers
     }
     public static class ProfileType
     {
-        public static int User = 1;
-        public static int Administrator = 2;
+        public static readonly int User = 1;
+        public static readonly int Administrator = 2;
+    }
+
+    public static class DesignationType
+    {
+        public static readonly int CEO = 1;
+        public static readonly int CTO = 2;
     }
 
     

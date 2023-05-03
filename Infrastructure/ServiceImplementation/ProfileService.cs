@@ -148,8 +148,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                         UserName = regModel.UserName,
                         Email = regModel.Email,
                         CreatedAt = DateTime.UtcNow,
-                        CreatedBy = 1,
-                        LastUpdatedBy = 1,
+                        CreatedBy = ProfileType.User,
+                        LastUpdatedBy = ProfileType.User,
                         StatusId = 1,
                         DesignationId = regModel.DesignationId
                     };

@@ -5,6 +5,7 @@ import { DesignationModel } from 'src/app/core/models/user/designation';
 import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { AccountService } from 'src/app/core/service/account.service';
 import { AdminService } from 'src/app/core/service/admin.service';
+import { AuthService } from 'src/app/core/service/auth.service';
 import { UserService } from 'src/app/core/service/user.service';
 import Swal from 'sweetalert2';
 
@@ -16,7 +17,7 @@ import Swal from 'sweetalert2';
 
 export class AdminComponent implements OnInit {
 
-    constructor(private adminService : AdminService, private userService : UserService, private modalService: NgbModal, private accountService : AccountService) { }
+    constructor(private adminService : AdminService, private authService : AuthService, private modalService: NgbModal, private accountService : AccountService, private userService : UserService) { }
 
     employees : AdminProfileDTO [] = [];
     isAdmin = false;
@@ -33,14 +34,18 @@ export class AdminComponent implements OnInit {
             }
         )
 
-        this.accountService.getDesignations().subscribe((e : DesignationModel []) => {
-            this.designationList = e;
-        });
-
         this.userService.getUserSubject().subscribe(e => {
-            this.user = e;
-            if(e) this.isAdmin = e.designation === "CEO" || e.designation === 'CTO';
-        })    
+            if(e){
+                this.user = e;
+                this.isAdmin = this.user.designation === 'CEO' || this.user.designation === 'CTO';
+
+                if(this.isAdmin){
+                    this.accountService.getEmpDesignations().subscribe((e : DesignationModel []) => {
+                        this.designationList = e;
+                    }); 
+                }
+            }
+        });
     }
 
     GetProfileUrl(url : string){
@@ -119,5 +124,14 @@ export class AdminComponent implements OnInit {
                 title: 'Employee Created Successfully'
             })
         }
+    }
+
+    DoAllow(employee : AdminProfileDTO){        
+        if(employee.designation === 'CEO') return false;
+        if(this.user.designation === 'CTO' && employee.designation === 'CTO'){    //also not cto
+            return false;
+        }
+
+        return true;
     }
 }

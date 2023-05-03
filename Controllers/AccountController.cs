@@ -29,6 +29,7 @@ namespace ChatApp.Controllers
         private readonly IConfiguration _config;
         private readonly IProfileService _profileService;
         private readonly IHubContext<MessageHub> _hub;
+        private readonly PasswordHelper _passwordHelp;
         #endregion
 
         #region Constructor
@@ -37,6 +38,7 @@ namespace ChatApp.Controllers
             _config = config;
             _profileService = profileService;
             _hub = hub;
+            _passwordHelp = new PasswordHelper();
         }
         #endregion
 
@@ -52,7 +54,7 @@ namespace ChatApp.Controllers
                 if (user != null)
                 {
                     //check for password
-                    if (CompareHashedPasswords(loginModel.Password, user.Password, curSalt))
+                    if (_passwordHelp.CompareHashedPasswords(loginModel.Password, user.Password, curSalt))
                     {
 
                         await _hub.Clients.All.SendAsync("updateProfileStatus", "available", user.UserName);
@@ -75,10 +77,16 @@ namespace ChatApp.Controllers
         {
             try
             {
-                var salt = GenerateSalt();
+                //admins can not be created using this route
+                if(registerModel.DesignationId == DesignationType.CEO || registerModel.DesignationId == DesignationType.CTO)
+                {
+                    return Unauthorized();
+                }
+
+                var salt = _passwordHelp.GenerateSalt();
 
                 //hash password
-                var hashedPass = GetHash(registerModel.Password, salt);
+                var hashedPass = _passwordHelp.GetHash(registerModel.Password, salt);
 
                 //change password with new hashed password
                 registerModel.Password = hashedPass;
@@ -149,10 +157,10 @@ namespace ChatApp.Controllers
                     //if google user update password directly
                     if(user.Password == null)
                     {
-                        var salt = GenerateSalt();
+                        var salt = _passwordHelp.GenerateSalt();
 
                         //hash password
-                        var hashedPass = GetHash(Obj.Password, salt);
+                        var hashedPass = _passwordHelp.GetHash(Obj.Password, salt);
 
                         _profileService.ChangePassword(salt, hashedPass, user);
 
@@ -161,12 +169,12 @@ namespace ChatApp.Controllers
 
                     var curSalt = _profileService.GetSalt(user.Id);
                     //check for password
-                    if (CompareHashedPasswords(Obj.CurrentPassword, user.Password, curSalt))
+                    if (_passwordHelp.CompareHashedPasswords(Obj.CurrentPassword, user.Password, curSalt))
                     {
-                        var salt = GenerateSalt();
+                        var salt = _passwordHelp.GenerateSalt();
 
                         //hash password
-                        var hashedPass = GetHash(Obj.Password, salt);
+                        var hashedPass = _passwordHelp.GetHash(Obj.Password, salt);
 
                         _profileService.ChangePassword(salt, hashedPass, user);
 
@@ -211,28 +219,6 @@ namespace ChatApp.Controllers
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private string GenerateSalt()
-        {
-            byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
-            return Convert.ToBase64String(salt);
-        }
-
-        private string GetHash(string plainPassword, string salt)
-        {
-            byte[] byteArray = Encoding.Unicode.GetBytes(string.Concat(plainPassword, salt));
-            SHA256Managed sha256 = new();
-
-            byte[] hashedBytes = sha256.ComputeHash(byteArray);
-            return Convert.ToBase64String(hashedBytes);
-        }
-
-        private bool CompareHashedPasswords(string userInput, string ExistingPassword, string salt)
-        {
-            string UserInputHashedPassword = GetHash(userInput, salt);
-            return ExistingPassword == UserInputHashedPassword;
         }
         #endregion
 

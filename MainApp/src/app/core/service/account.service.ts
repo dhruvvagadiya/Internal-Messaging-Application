@@ -35,5 +35,7 @@ export class AccountService {
     getDesignations(){
         return this.http.get(environment.apiUrl + "/designation/getall");
     }
-
+    getEmpDesignations(){
+        return this.http.get(environment.apiUrl + "/designation/all");
+    }
 }

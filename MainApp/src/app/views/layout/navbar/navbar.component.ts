@@ -23,7 +23,6 @@ export class NavbarComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private userService : UserService,
-    private accountService : AccountService,
     private signalrService : SignalrService,
   ) {
 
@@ -34,6 +33,12 @@ export class NavbarComponent implements OnInit {
     this.userService.getUserSubject().subscribe(e => {
       this.loggedInUser = e;
       this.thumbnail = this.userService.getProfileUrl(e?.imageUrl);
+    });
+
+    this.signalrService.hubConnection.on('deleteUser', ()=> this.onLogout());
+    this.signalrService.hubConnection.on('updateDetails', (f) => {
+      localStorage.setItem('USERTOKEN', f);
+      this.userService.getCurrentUserDetails();
     });
   }
 
@@ -48,8 +53,10 @@ export class NavbarComponent implements OnInit {
   /**
    * Logout
    */
-  onLogout(e) {
-    e.preventDefault();
+  onLogout(e?) {
+    if(e){
+      e.preventDefault();
+    }
 
     this.userService.updateProfileStatus('offline', this.loggedInUser.userName).subscribe(e => {
       this.signalrService.updateProfileStatus('offline', this.loggedInUser.userName);

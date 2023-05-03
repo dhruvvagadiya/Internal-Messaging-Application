@@ -31,6 +31,7 @@ export class AuthService implements OnInit {
     getLoggedInUserInfo() {
         let token = localStorage.getItem('USERTOKEN');
         var user: LoggedInUser = this.jwtHelper.decodeToken(token);
+        if(user) user.userName = user.sub;
         return user;
     }
 

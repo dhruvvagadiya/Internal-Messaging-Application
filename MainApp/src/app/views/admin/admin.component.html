@@ -40,14 +40,16 @@
             <td>{{ employee.userName }}</td>
             <td>{{ employee.email }}</td>
             <td>{{ employee.designation }}</td>
+
             <td *ngIf="isAdmin">
-                <i class="mdi mdi-pencil-circle editIcon" *ngIf="employee.designation !== 'CEO' && employee.designation !== 'CTO'" 
+                <i class="mdi mdi-pencil-circle editIcon" *ngIf="DoAllow(employee)" 
                     (click)="openBasicModal(editEmployeeModal, employee)">
                 </i>
                 <i class="mdi mdi-delete-circle" style="color:red; font-size: 2rem;" (click)="deleteEmployee(employee.userName)" 
-                    *ngIf="employee.designation !== 'CEO' && employee.designation !== 'CTO' && user.userName !== employee.userName">
+                    *ngIf="DoAllow(employee)">
                 </i>
             </td>
+
             <td>
                 <i class="mdi mdi-message chatIcon" *ngIf="user.userName !== employee.userName" routerLink="../chat/{{employee.userName}}"></i>
             </td>

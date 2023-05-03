@@ -2,9 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AdminProfileDTO } from 'src/app/core/models/user/AdminProfileDTO';
 import { DesignationModel } from 'src/app/core/models/user/designation';
-import { LoggedInUser } from 'src/app/core/models/user/loggedin-user';
 import { RegistrationModel } from 'src/app/core/models/user/registration-model';
-import { AccountService } from 'src/app/core/service/account.service';
+import { AdminService } from 'src/app/core/service/admin.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -12,7 +11,7 @@ import Swal from 'sweetalert2';
   templateUrl: "add-employee.component.html",
 })
 export class AddEmployeeModal implements OnInit {
-  constructor(private accountService: AccountService) {}
+  constructor(private adminService: AdminService) {}
 
   @Input() modal;
   @Output() onEmployeeUpdate = new EventEmitter<AdminProfileDTO>();
@@ -30,7 +29,7 @@ export class AddEmployeeModal implements OnInit {
         Validators.required,
         Validators.pattern("^[A-Za-z][A-Za-z0-9_]{6,20}$"),
       ]),
-      email: new FormControl(null, [Validators.required, Validators.email]),
+      email: new FormControl(null, [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]),
       designation: new FormControl(3, [Validators.required])
     });
 
@@ -49,22 +48,12 @@ export class AddEmployeeModal implements OnInit {
 
         this.regModel.password = this.regModel.email
 
-        this.accountService.register(this.regModel)
-        .subscribe((data: {token : string, user : LoggedInUser}) => {
-          
-          var temp : AdminProfileDTO = {
-            userName : data.user.userName,
-            imageUrl : data.user.imageUrl,
-            firstName : data.user.firstName,
-            lastName : data.user.lastName,
-            designation : data.user.designation,
-            email : data.user.email
-          }
-
-          this.onEmployeeUpdate.emit(temp);
-
-        }),
-        (err) => {
+        this.adminService.CreateEmployee(this.regModel)
+        .subscribe((res : AdminProfileDTO) => {
+          this.onEmployeeUpdate.emit(res);
+          this.modal.close();
+        },     
+        (e) => {
           const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -77,6 +66,6 @@ export class AddEmployeeModal implements OnInit {
             icon: 'error',
             title: 'Some error occured'
           })
-      };
+      })
     }
 }

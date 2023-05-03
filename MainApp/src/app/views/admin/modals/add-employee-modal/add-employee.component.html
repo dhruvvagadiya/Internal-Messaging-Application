@@ -6,7 +6,7 @@
     <i (click)="modal.close()" class="feather icon-x icon-xs mr-2"></i>
   </div>
 
-  <form (ngSubmit)="AddEmployee(); modal.close()" [formGroup]="AddEmployeeForm">
+  <form (ngSubmit)="AddEmployee();" [formGroup]="AddEmployeeForm">
 
     <div class="modal-body">
       <div class="form-group">
@@ -70,7 +70,7 @@
     <div class="modal-footer">
       <button class="btn btn-primary" type="submit"
         [disabled]="AddEmployeeForm.invalid || !AddEmployeeForm.dirty">Save</button>
-      <button class="btn btn-danger" (click)="modal.close()">Cancel</button>
+      <button class="btn btn-danger" type="button" (click)="modal.close()">Cancel</button>
     </div>
   </form>
 

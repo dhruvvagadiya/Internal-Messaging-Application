@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AdminProfileDTO } from '../models/user/AdminProfileDTO';
+import { RegistrationModel } from '../models/user/registration-model';
 
 @Injectable({providedIn: 'root'})
 export class AdminService {
@@ -14,6 +15,10 @@ export class AdminService {
 
     UpdateEmployee(employee : AdminProfileDTO){
         return this.http.post(environment.apiUrl + "/admin/update", employee);
+    }
+
+    CreateEmployee(registerModel : RegistrationModel){
+        return this.http.post(environment.apiUrl + "/admin/create", registerModel);
     }
 
     DeleteEmployee(username : string){

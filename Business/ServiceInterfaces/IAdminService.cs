@@ -1,7 +1,8 @@
 ﻿using ChatApp.Context.EntityClasses;
+using ChatApp.Models.Auth;
 using ChatApp.Models.Users;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ChatApp.Business.ServiceInterfaces
 {
@@ -9,8 +10,10 @@ namespace ChatApp.Business.ServiceInterfaces
     {
         IEnumerable<AdminProfileDTO> GetAll();
 
-        AdminProfileDTO UpdateEmployeeDetails(AdminProfileDTO details, Profile User);
+        Task<AdminProfileDTO> UpdateEmployeeDetails(AdminProfileDTO details, Profile User);
 
-        bool DeleteEmployee(string UserName);
+        Task<bool> DeleteEmployee(string UserName);
+
+        AdminProfileDTO AddUser(RegisterModel regModel, string salt);
     }
 }

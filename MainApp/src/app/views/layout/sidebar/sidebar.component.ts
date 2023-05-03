@@ -43,11 +43,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.menuItems = MENU;
 
-    this.userService.getUserSubject().subscribe(e => {
-
+    this.userService.getUserSubject().subscribe(e => {      
       if(e && e.designation.toLowerCase() === 'probationer'){
-        this.menuItems.pop();
-        this.menuItems.pop();
+        this.menuItems = MENU.filter(e => e.label !== 'Contact' && e.label !== 'Employees');
+      }
+      else{
+        this.menuItems = MENU;
       }
     });
 
