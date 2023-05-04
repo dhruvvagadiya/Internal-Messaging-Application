@@ -5,6 +5,7 @@ using ChatApp.Context.EntityClasses;
 using ChatApp.Hubs;
 using ChatApp.Models.Auth;
 using ChatApp.Models.Users;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -25,12 +27,14 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         private readonly ChatAppContext _context;
         private readonly IHubContext<MessageHub> hubContext;
         private readonly IConfiguration _config;
+        private readonly IWebHostEnvironment _hostEnvironment;
         #endregion
 
         #region Constuctor
-        public AdminService(ChatAppContext context, IHubContext<MessageHub> hub, IConfiguration config)
+        public AdminService(ChatAppContext context, IHubContext<MessageHub> hub, IConfiguration config, IWebHostEnvironment hostEnvironment)
         {
             _config = config;
+            _hostEnvironment = hostEnvironment;
             hubContext = hub;
             _context = context;
         }
@@ -136,6 +140,8 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 User.IsDeleted = 1;
                 _context.SaveChanges();
 
+                RemoveChats(User.Id);
+                //RemoveGroupChats(User.Id);
 
                 var conn = _context.Connections.FirstOrDefault(e => e.ProfileId == User.Id);
                 if (conn != null)
@@ -168,6 +174,37 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
 
         #region Private Methods
+        private void RemoveChats(int UserId)
+        {
+            //remove chats
+            var chatIds = _context.Chats.Where(e => e.MessageFrom == UserId || e.MessageTo == UserId).Select(e => e.Id).ToHashSet();
+
+            var repliedChats = _context.Chats.Where(e => chatIds.Contains((int)e.RepliedTo));
+            foreach (var chat in repliedChats)
+            {
+                chat.RepliedTo = -1;
+            }
+            _context.SaveChanges();
+
+            foreach (var chatId in chatIds)
+            {
+                var temp = _context.Chats.First(e => e.Id == chatId);
+
+                if (temp.FilePath != null)
+                {
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    var pathToSave = Path.Combine(wwwRootPath, @"chat");
+
+                    if (System.IO.File.Exists(Path.Combine(pathToSave, temp.FilePath)))
+                    {
+                        System.IO.File.Delete(Path.Combine(pathToSave, temp.FilePath));
+                    }
+                }
+
+                _context.Remove(temp);
+                _context.SaveChanges();
+            }
+        }
         private bool CheckEmailOrUserNameExists(string userName, string email)
         {
             return _context.Profiles.Any(
@@ -175,7 +212,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                 (x.Email.ToLower().Trim() == email.ToLower().Trim() || x.UserName.ToLower().Trim() == userName.ToLower().Trim())
                 );
         }
-
         private string GenerateJSONWebToken(Profile profileInfo)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));

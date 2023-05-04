@@ -54,7 +54,7 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     UpdatedAt = Group.UpdatedAt,
                     ImageUrl = Group.ImageUrl,
                     Description = Group.Description,
-                    CreatedBy = _userService.GetUser(e => e.Id == Group.CreatedBy).UserName
+                    CreatedBy = _context.Profiles.First(e => e.Id == Group.CreatedBy).UserName
                 };
 
                 var LastChat = _context.GroupChats.Where(e => e.GroupId == Group.Id).OrderBy(e => e.CreatedAt).LastOrDefault();
