@@ -3,6 +3,8 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Models.Notification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System;
 
 namespace ChatApp.Controllers
 {
@@ -31,68 +33,100 @@ namespace ChatApp.Controllers
         [HttpGet("{UserName}")]
         public IActionResult GetAllNotification(string UserName)
         {
-
-            var UserId = _userService.GetIdFromUsername(UserName);
-            if(UserId == -1)
+            try
             {
-                return BadRequest();
-            }
+                var UserId = _userService.GetIdFromUsername(UserName);
+                if (UserId == -1)
+                {
+                    return BadRequest();
+                }
 
-            var list = _notificationService.GetAll(UserName, UserId);
-            return Ok(list);
+                var list = _notificationService.GetAll(UserName, UserId);
+                return Ok(list);
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost]
         public IActionResult AddNotification([FromBody] NotificationDTO notificationDTO)
         {
-            var UserName = JwtHelper.GetUsernameFromRequest(Request);
-            var UserId = _userService.GetIdFromUsername(UserName);
-
-            if (UserId == -1)
+            try
             {
-                return BadRequest();
+                var UserName = JwtHelper.GetUsernameFromRequest(Request);
+                var UserId = _userService.GetIdFromUsername(UserName);
+
+                if (UserId == -1)
+                {
+                    return BadRequest();
+                }
+
+                var obj = _notificationService.AddNotification(notificationDTO, UserId);
+
+                return Ok(obj);
             }
-
-            var obj = _notificationService.AddNotification(notificationDTO, UserId);
-
-            return Ok(obj);
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("view/{UserName}")]
         public IActionResult MakeSeen(string UserName)
         {
-            var UserId = _userService.GetIdFromUsername(UserName);
-
-            if (UserId == -1)
+            try
             {
-                return BadRequest();
+                var UserId = _userService.GetIdFromUsername(UserName);
+
+                if (UserId == -1)
+                {
+                    return BadRequest();
+                }
+
+                _notificationService.SeeNotifications(UserId);
+                return Ok();
             }
-
-            _notificationService.SeeNotifications(UserId);
-            return Ok();
-
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("clear/{UserName}")]
         public IActionResult ClearNotifications(string UserName)
         {
-            var UserId = _userService.GetIdFromUsername(UserName);
-
-            if (UserId == -1)
+            try
             {
-                return BadRequest();
+                var UserId = _userService.GetIdFromUsername(UserName);
+
+                if (UserId == -1)
+                {
+                    return BadRequest();
+                }
+
+                _notificationService.DeleteNotifications(UserId);
+                return Ok();
             }
-
-            _notificationService.DeleteNotifications(UserId);
-            return Ok();
-
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("seen/{Id}")]
         public IActionResult MarkNotificationAsSeen(int Id)
         {
-            _notificationService.MarkAsSeen(Id);
-            return Ok();
+            try
+            {
+                _notificationService.MarkAsSeen(Id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         #endregion

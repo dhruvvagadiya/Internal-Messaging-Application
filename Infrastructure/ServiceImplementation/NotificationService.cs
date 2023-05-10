@@ -24,67 +24,102 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         #region Methods
         public IEnumerable<NotificationDTO> GetAll(string UserName, int UserId)
         {
-            var NotList = _context.Notifications.Where(e => e.UserId == UserId);
-
-            IList<NotificationDTO> returnObj = new List<NotificationDTO>();
-
-            foreach(var notification in  NotList)
+            try
             {
-                var tempDTO = ModelMapper.NotificationToDTO(notification);
-                returnObj.Add(tempDTO);
+                var NotList = _context.Notifications.Where(e => e.UserId == UserId);
+
+                IList<NotificationDTO> returnObj = new List<NotificationDTO>();
+
+                foreach (var notification in NotList)
+                {
+                    var tempDTO = ModelMapper.NotificationToDTO(notification);
+                    returnObj.Add(tempDTO);
+                }
+
+                returnObj = returnObj.OrderByDescending(e => e.CreatedAt).ToList();
+
+                return returnObj;
             }
-
-            returnObj = returnObj.OrderByDescending(e => e.CreatedAt).ToList();
-
-            return returnObj;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public NotificationDTO AddNotification(NotificationDTO notificationDTO, int UserId)
         {
-            var notification = new Notification()
+            try
             {
-                UserId = UserId,
-                Content = notificationDTO.Content,
-                Type = notificationDTO.Type,
-                CreatedAt = DateTime.Now,
-                IsSeen = 0
-            };
+                var notification = new Notification()
+                {
+                    UserId = UserId,
+                    Content = notificationDTO.Content,
+                    Type = notificationDTO.Type,
+                    CreatedAt = DateTime.Now,
+                    IsSeen = 0
+                };
 
-            _context.Notifications.Add(notification);
-            _context.SaveChanges();
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
 
-            notificationDTO.Id = notification.Id;
-            notificationDTO.CreatedAt = notification.CreatedAt;
+                notificationDTO.Id = notification.Id;
+                notificationDTO.CreatedAt = notification.CreatedAt;
 
-            return notificationDTO;
+                return notificationDTO;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void SeeNotifications(int UserID)
         {
-            var notList = _context.Notifications.Where(e => e.UserId == UserID);
-            foreach(var notification in notList)
+            try
             {
-                notification.IsSeen = 1;
-            }
+                var notList = _context.Notifications.Where(e => e.UserId == UserID);
+                foreach (var notification in notList)
+                {
+                    notification.IsSeen = 1;
+                }
 
-            _context.UpdateRange(notList);
-            _context.SaveChanges();
+                _context.UpdateRange(notList);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeleteNotifications(int UserID)
         {
-            var notList = _context.Notifications.Where(e => e.UserId == UserID);
-            _context.RemoveRange(notList);
-            _context.SaveChanges();
+            try
+            {
+                var notList = _context.Notifications.Where(e => e.UserId == UserID);
+                _context.RemoveRange(notList);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void MarkAsSeen(int NotificationId)
         {
-            var notification = _context.Notifications.FirstOrDefault(e => e.Id == NotificationId);
-            if(notification != null)
+            try
             {
-                notification.IsSeen = 1;
-                _context.SaveChanges();
+                var notification = _context.Notifications.FirstOrDefault(e => e.Id == NotificationId);
+                if (notification != null)
+                {
+                    notification.IsSeen = 1;
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
         #endregion

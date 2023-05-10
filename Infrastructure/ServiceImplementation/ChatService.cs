@@ -40,203 +40,236 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         //get chatList
         public IEnumerable<ChatModel> GetChatList(int userFrom, int userTo, string fromUserName, string toUserName)
         {
+            try
+            {
+                var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).OrderBy(e => e.CreatedAt).ToList();
 
-            var chats = _context.Chats.Where(u => (u.MessageFrom == userFrom && u.MessageTo == userTo) || (u.MessageFrom == userTo && u.MessageTo == userFrom)).OrderBy(e => e.CreatedAt).ToList();
+                var returnChat = chats;
 
-            var returnChat = chats;
+                IEnumerable<ChatModel> list = ConvertChatToChatModel(returnChat, fromUserName, toUserName, userFrom, userTo);
 
-            IEnumerable<ChatModel> list = ConvertChatToChatModel(returnChat, fromUserName, toUserName, userFrom, userTo);
-
-            return list;
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         //recent chat
         public IEnumerable<RecentChatModel> GetRecentList(int userID)
         {
-            //get all chats that belongs to current user then take other person's id from it. and at last take distinct
-            var chats = _context.Chats.Where(e => (e.MessageFrom == userID || e.MessageTo == userID)).Select(e => e.MessageFrom == userID ? e.MessageTo : e.MessageFrom).Distinct();
-
-
-            //convert chats to RecentChatModel..
-            var returnObj = new List<RecentChatModel>();
-
-            foreach (var chat in chats)
+            try
             {
-                Profile profile = _userService.GetUser(e => e.Id == chat);
+                //get all chats that belongs to current user then take other person's id from it. and at last take distinct
+                var chats = _context.Chats.Where(e => (e.MessageFrom == userID || e.MessageTo == userID)).Select(e => e.MessageFrom == userID ? e.MessageTo : e.MessageFrom).Distinct();
 
-                var allMsgs = _context.Chats.OrderBy(o => o.CreatedAt).Where(
-                    e => (e.MessageFrom == userID && e.MessageTo == profile.Id) || (e.MessageFrom == profile.Id && e.MessageTo == userID)
-                    );
 
-                //count where receiver is current user and is not seen by user
-                var unseenCnt = allMsgs.Count(e => e.MessageTo == userID && e.SeenByReceiver == 0);
+                //convert chats to RecentChatModel..
+                var returnObj = new List<RecentChatModel>();
 
-                //sort chats by created date then select last chat from table
-                var lastMsgObj = allMsgs.LastOrDefault();
-
-                string lastMsg = "";
-                DateTime? lastMsgTime = null;
-
-                if (lastMsgObj != null)
+                foreach (var chat in chats)
                 {
-                    lastMsg = lastMsgObj.Content;
-                    lastMsgTime = lastMsgObj.CreatedAt;
+                    Profile profile = _userService.GetUser(e => e.Id == chat);
+
+                    var allMsgs = _context.Chats.OrderBy(o => o.CreatedAt).Where(
+                        e => (e.MessageFrom == userID && e.MessageTo == profile.Id) || (e.MessageFrom == profile.Id && e.MessageTo == userID)
+                        );
+
+                    //count where receiver is current user and is not seen by user
+                    var unseenCnt = allMsgs.Count(e => e.MessageTo == userID && e.SeenByReceiver == 0);
+
+                    //sort chats by created date then select last chat from table
+                    var lastMsgObj = allMsgs.LastOrDefault();
+
+                    string lastMsg = "";
+                    DateTime? lastMsgTime = null;
+
+                    if (lastMsgObj != null)
+                    {
+                        lastMsg = lastMsgObj.Content;
+                        lastMsgTime = lastMsgObj.CreatedAt;
+                    }
+
+                    var userObj = new RecentChatModel();
+                    //userObj.User = ModelMapper.ConvertProfileToDTO(profile);
+                    userObj.LastMessage = lastMsg;
+                    userObj.LastMsgTime = lastMsgTime;
+                    userObj.UnseenCount = unseenCnt;
+                    userObj.FirstName = profile.FirstName;
+                    userObj.LastName = profile.LastName;
+                    userObj.UserName = profile.UserName;
+                    userObj.ImageUrl = profile.ImageUrl;
+
+                    returnObj.Add(userObj);
                 }
 
-                var userObj = new RecentChatModel();
-                //userObj.User = ModelMapper.ConvertProfileToDTO(profile);
-                userObj.LastMessage = lastMsg;
-                userObj.LastMsgTime = lastMsgTime;
-                userObj.UnseenCount = unseenCnt;
-                userObj.FirstName = profile.FirstName;
-                userObj.LastName = profile.LastName;
-                userObj.UserName = profile.UserName;
-                userObj.ImageUrl = profile.ImageUrl;
+                //order list by last msg time :)
+                returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList(); ;
 
-                returnObj.Add(userObj);
+                return returnObj;
             }
-
-            //order list by last msg time :)
-            returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList(); ;
-
-            return returnObj;
+            catch (Exception)
+            {
+                throw;
+            }  
         }
 
         //send message
         public async Task<ChatModel> SendTextMessage(string fromUser, string toUser, string content, int? RepliedTo)
         {
-            int fromId = _userService.GetIdFromUsername(fromUser);
-            int toId = _userService.GetIdFromUsername(toUser);
-
-            Chat chat = new Chat();
-
-            chat.MessageFrom = fromId;
-            chat.MessageTo = toId;
-            chat.Content = content;
-            chat.CreatedAt = DateTime.Now;
-            chat.UpdatedAt = DateTime.Now;
-            chat.Type = "text";
-            chat.SeenByReceiver = 0;
-
-            if (RepliedTo != null)
+            try
             {
-                chat.RepliedTo = RepliedTo;
+                int fromId = _userService.GetIdFromUsername(fromUser);
+                int toId = _userService.GetIdFromUsername(toUser);
+
+                Chat chat = new Chat();
+
+                chat.MessageFrom = fromId;
+                chat.MessageTo = toId;
+                chat.Content = content;
+                chat.CreatedAt = DateTime.Now;
+                chat.UpdatedAt = DateTime.Now;
+                chat.Type = "text";
+                chat.SeenByReceiver = 0;
+
+                if (RepliedTo != null)
+                {
+                    chat.RepliedTo = RepliedTo;
+                }
+                else
+                {
+                    chat.RepliedTo = -1;
+                }
+
+                //save chat
+                _context.Chats.Add(chat);
+                _context.SaveChanges();
+
+                string ReplyMsg = "";
+                if (RepliedTo != null)
+                {
+                    ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == RepliedTo).Content;
+                }
+
+                //return chatModel
+                var returnObj = new ChatModel()
+                {
+                    Id = chat.Id,
+                    MessageFrom = fromUser,
+                    MessageTo = toUser,
+                    Content = content,
+                    Type = "text",
+                    CreatedAt = chat.CreatedAt,
+                    UpdatedAt = chat.UpdatedAt,
+                    RepliedTo = ReplyMsg
+                };
+
+                await SendChatNotification(returnObj, toId, fromId);
+
+                return returnObj;
             }
-            else
+            catch (Exception)
             {
-                chat.RepliedTo = -1;
+                throw;
             }
-
-            //save chat
-            _context.Chats.Add(chat);
-            _context.SaveChanges();
-
-            string ReplyMsg = "";
-            if (RepliedTo != null)
-            {
-                ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == RepliedTo).Content;
-            }
-
-            //return chatModel
-            var returnObj = new ChatModel()
-            {
-                Id = chat.Id,
-                MessageFrom = fromUser,
-                MessageTo = toUser,
-                Content = content,
-                Type = "text",
-                CreatedAt = chat.CreatedAt,
-                UpdatedAt = chat.UpdatedAt,
-                RepliedTo = ReplyMsg
-            };
-
-            await SendChatNotification(returnObj, toId, fromId);
-
-            return returnObj;
         }
 
         //send files
         public async Task<ChatModel> SendFileMessage(string fromUser, string toUser, ChatSendModel SendChat)
         {
-            //var tmp = SendChat.File.ContentType;
-            //save file
-            var file = SendChat.File;
-
-            string wwwRootPath = _hostEnvironment.WebRootPath;
-
-            string fileName = Guid.NewGuid().ToString(); //new generated name of the file
-            var extension = Path.GetExtension(file.FileName); // extension of the file
-
-            var pathToSave = Path.Combine(wwwRootPath, @"chat");
-
-            var dbPath = Path.Combine(pathToSave, fileName + extension);
-            using (var fileStreams = new FileStream(dbPath, FileMode.Create))
+            try
             {
-                file.CopyTo(fileStreams);
+                //var tmp = SendChat.File.ContentType;
+                //save file
+                var file = SendChat.File;
+
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+
+                string fileName = Guid.NewGuid().ToString(); //new generated name of the file
+                var extension = Path.GetExtension(file.FileName); // extension of the file
+
+                var pathToSave = Path.Combine(wwwRootPath, @"chat");
+
+                var dbPath = Path.Combine(pathToSave, fileName + extension);
+                using (var fileStreams = new FileStream(dbPath, FileMode.Create))
+                {
+                    file.CopyTo(fileStreams);
+                }
+
+                //save chat in Database
+                int fromId = _userService.GetIdFromUsername(fromUser);
+                int toId = _userService.GetIdFromUsername(toUser);
+
+                Chat chat = new Chat();
+
+                chat.MessageFrom = fromId;
+                chat.MessageTo = toId;
+                chat.Content = SendChat.Content;
+                chat.CreatedAt = DateTime.Now;
+                chat.UpdatedAt = DateTime.Now;
+                chat.Type = file.ContentType.Split('/')[0];
+                chat.SeenByReceiver = 0;
+                chat.FilePath = fileName + extension;
+
+                if (SendChat.RepliedTo != null)
+                {
+                    chat.RepliedTo = SendChat.RepliedTo;
+                }
+                else
+                {
+                    chat.RepliedTo = -1;
+                }
+
+                //save chat
+                _context.Chats.Add(chat);
+                _context.SaveChanges();
+
+
+                //convert to chatModel
+                string ReplyMsg = "";
+                if (SendChat.RepliedTo != null)
+                {
+                    ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == SendChat.RepliedTo).Content;
+                }
+
+                var returnObj = new ChatModel()
+                {
+                    Id = chat.Id,
+                    MessageFrom = fromUser,
+                    MessageTo = toUser,
+                    Content = chat.Content,
+                    Type = file.ContentType.Split('/')[0],
+                    CreatedAt = chat.CreatedAt,
+                    UpdatedAt = chat.UpdatedAt,
+                    RepliedTo = ReplyMsg,
+                    FilePath = fileName + extension,
+                };
+
+                await SendChatNotification(returnObj, toId, fromId);
+
+                //return chatModel
+                return returnObj;
             }
-
-            //save chat in Database
-            int fromId = _userService.GetIdFromUsername(fromUser);
-            int toId = _userService.GetIdFromUsername(toUser);
-
-            Chat chat = new Chat();
-
-            chat.MessageFrom = fromId;
-            chat.MessageTo = toId;
-            chat.Content = SendChat.Content;
-            chat.CreatedAt = DateTime.Now;
-            chat.UpdatedAt = DateTime.Now;
-            chat.Type = file.ContentType.Split('/')[0];
-            chat.SeenByReceiver = 0;
-            chat.FilePath = fileName + extension;
-
-            if (SendChat.RepliedTo != null)
+            catch (Exception)
             {
-                chat.RepliedTo = SendChat.RepliedTo;
+                throw;
             }
-            else
-            {
-                chat.RepliedTo = -1;
-            }
-
-            //save chat
-            _context.Chats.Add(chat);
-            _context.SaveChanges();
-
-
-            //convert to chatModel
-            string ReplyMsg = "";
-            if (SendChat.RepliedTo != null)
-            {
-                ReplyMsg = _context.Chats.FirstOrDefault(e => e.Id == SendChat.RepliedTo).Content;
-            }
-
-            var returnObj = new ChatModel()
-            {
-                Id = chat.Id,
-                MessageFrom = fromUser,
-                MessageTo = toUser,
-                Content = chat.Content,
-                Type = file.ContentType.Split('/')[0],
-                CreatedAt = chat.CreatedAt,
-                UpdatedAt = chat.UpdatedAt,
-                RepliedTo = ReplyMsg,
-                FilePath = fileName + extension,
-            };
-
-            await SendChatNotification(returnObj, toId, fromId);
-
-            //return chatModel
-            return returnObj;
         }
 
         public IEnumerable<ChatDataModel> GetChatData(int UserId)
         {
-            //group by and then coubt
-            var ChatList = _context.Chats.Where(e => e.MessageFrom == UserId || e.MessageTo == UserId).GroupBy(e => e.CreatedAt.Date).Select(
-                e => new ChatDataModel() { Date = e.Key.ToString("yyyy-MM-dd"), Value = e.Count() }) ;
+            try
+            {
+                //group by and then coubt
+                var ChatList = _context.Chats.Where(e => e.MessageFrom == UserId || e.MessageTo == UserId).GroupBy(e => e.CreatedAt.Date).Select(
+                    e => new ChatDataModel() { Date = e.Key.ToString("yyyy-MM-dd"), Value = e.Count() });
 
-            return ChatList;
+                return ChatList;
+            }
+            catch (Exception) {
+                throw;
+            }
         }
         #endregion
 

@@ -5,7 +5,9 @@
 
 # by User
 Resources/
-wwwRoot/
+wwwRoot/Images/*
+wwwRoot/GroupChat/*
+wwwRoot/Chat/*
 
 # User-specific files
 *.suo

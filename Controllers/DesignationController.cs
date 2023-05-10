@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using System.Net;
 
 namespace ChatApp.Controllers
 {
@@ -26,23 +27,37 @@ namespace ChatApp.Controllers
         [HttpGet("getAll")]
         public IActionResult GetAll()
         {
-            IQueryable<Designation> list = _context.Designations.Where(e => !e.Role.Equals("CEO") && !e.Role.Equals("CTO"));
-            return Ok(list.ToList());
+            try
+            {
+                IQueryable<Designation> list = _context.Designations.Where(e => !e.Role.Equals("CEO") && !e.Role.Equals("CTO"));
+                return Ok(list.ToList());
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [Authorize(Policy ="Admin")]
         [HttpGet("all")]
         public IActionResult AllList()
         {
-            var Designation = JwtHelper.GetRoleFromRequest(Request);
-
-            var returnObj = _context.Designations.Where(e => !e.Role.ToLower().Equals("ceo"));
-            if (Designation.Equals("CTO"))
+            try
             {
-                returnObj = returnObj.Where(e => !e.Role.ToLower().Equals("cto"));
-            }
+                var Designation = JwtHelper.GetRoleFromRequest(Request);
 
-            return Ok(returnObj.ToList());
+                var returnObj = _context.Designations.Where(e => !e.Role.ToLower().Equals("ceo"));
+                if (Designation.Equals("CTO"))
+                {
+                    returnObj = returnObj.Where(e => !e.Role.ToLower().Equals("cto"));
+                }
+
+                return Ok(returnObj.ToList());
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

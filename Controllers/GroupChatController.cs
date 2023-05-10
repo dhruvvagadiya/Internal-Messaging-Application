@@ -3,6 +3,8 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Models.GroupChat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System;
 
 namespace ChatApp.Controllers
 {
@@ -30,18 +32,24 @@ namespace ChatApp.Controllers
         [HttpGet("recent")]
         public IActionResult GetRecentGroups()
         {
-            string UserName = JwtHelper.GetUsernameFromRequest(Request);
-
-
-            var User = _userService.GetUser(e => e.UserName == UserName);
-            if(User == null)
+            try
             {
-                return BadRequest("Bad Request!");
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+
+                var User = _userService.GetUser(e => e.UserName == UserName);
+                if (User == null)
+                {
+                    return BadRequest("Bad Request!");
+                }
+
+                var RecentGroupList = _groupChatService.GetRecentList(User.Id);
+
+                return Ok(RecentGroupList);
             }
-
-            var RecentGroupList = _groupChatService.GetRecentList(User.Id);
-
-            return Ok(RecentGroupList);
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost]
@@ -49,73 +57,94 @@ namespace ChatApp.Controllers
         public IActionResult SendMessage(int GroupId, [FromForm] GroupChatSendModel SendChat)
         {
 
-            if(GroupId != SendChat.GroupId)
+            try
             {
-                return BadRequest();
-            }
+                if (GroupId != SendChat.GroupId)
+                {
+                    return BadRequest();
+                }
 
-            if (!_groupChatService.Exists(GroupId))
+                if (!_groupChatService.Exists(GroupId))
+                {
+                    return BadRequest("Group does not exists!");
+                }
+
+                //if both content and file are not provided
+                if (SendChat.Content == null && SendChat.File == null) { return BadRequest("Bad Request !"); }
+
+                //check if user is a member of the group
+                var Sender = _userService.GetUser(e => e.UserName == SendChat.Sender);
+
+                if (Sender == null) { return BadRequest("Bad Request !"); }
+
+                if (!_groupChatService.IsaMemberOf(Sender.Id, GroupId))
+                {
+                    return BadRequest("User is not a part of the group");
+                }
+
+                //send message
+                if (SendChat.Type == "text" && SendChat.Content != null)
+                {
+                    var sentMessage = _groupChatService.SendTextMessage(Sender, SendChat.GroupId, SendChat.Content, SendChat.RepliedTo);
+                    return Ok(sentMessage);
+                }
+
+                else if (SendChat.Type == "file" && SendChat.File != null)
+                {
+                    var sentMessage = _groupChatService.SendFileMessage(Sender, SendChat);
+                    return Ok(sentMessage);
+                }
+
+                return BadRequest("Bad Request !");
+            }
+            catch (Exception e)
             {
-                return BadRequest("Group does not exists!");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-
-
-            //if both content and file are not provided
-            if (SendChat.Content == null && SendChat.File == null) { return BadRequest("Bad Request !"); }
-
-            //check if user is a member of the group
-            var Sender = _userService.GetUser(e => e.UserName == SendChat.Sender);
-
-            if(Sender == null) { return BadRequest("Bad Request !");  }
-
-            if(! _groupChatService.IsaMemberOf(Sender.Id, GroupId) )
-            {
-                return BadRequest("User is not a part of the group");
-            }
-            
-            //send message
-            if (SendChat.Type == "text" && SendChat.Content != null)
-            {
-                var sentMessage = _groupChatService.SendTextMessage(Sender, SendChat.GroupId, SendChat.Content, SendChat.RepliedTo);
-                return Ok(sentMessage);
-            }
-
-            else if (SendChat.Type == "file" && SendChat.File != null)
-            {
-                var sentMessage = _groupChatService.SendFileMessage(Sender, SendChat);
-                return Ok(sentMessage);
-            }
-
-            return BadRequest("Bad Request !");
         }
 
         [HttpGet("{GroupId}")]
         public IActionResult GetChatHistory(int GroupId)
         {
-            if(! _groupChatService.Exists(GroupId)) {
-                return BadRequest("Group does not exists!"); 
-            }
+            try
+            {
+                if (!_groupChatService.Exists(GroupId))
+                {
+                    return BadRequest("Group does not exists!");
+                }
 
-            var chatList = _groupChatService.GetChatList(GroupId);
-            
-            return Ok(chatList);
+                var chatList = _groupChatService.GetChatList(GroupId);
+
+                return Ok(chatList);
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
 
         [HttpGet("data/{UserName}")]
         public IActionResult GetGroupChatData(string UserName)
         {
-
-            int UserId = _userService.GetIdFromUsername(UserName);
-
-            if(UserId == -1)
+            try
             {
-                return BadRequest();
+                int UserId = _userService.GetIdFromUsername(UserName);
+
+                if (UserId == -1)
+                {
+                    return BadRequest();
+                }
+
+                var List = _groupChatService.GetGroupChatData(UserId);
+
+                return Ok(List);
+
             }
-
-            var List = _groupChatService.GetGroupChatData(UserId);
-
-            return Ok(List);
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
         #endregion
     }

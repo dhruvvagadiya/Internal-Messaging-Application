@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using ChatApp.Business.Helpers;
@@ -36,65 +37,99 @@ namespace ChatApp.Controllers
         [HttpGet("all")]
         public IActionResult GetAllUsers()
         {
-            var usersList = _userService.GetAll();
-
-            return Ok(usersList);
+            try
+            {
+                var usersList = _userService.GetAll();
+                return Ok(usersList);
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPut("{username}")]
         public IActionResult UpdateProfile([FromForm] UpdateModel updateModel, string username)
         {
-            //get updated user
-            var updated = _userService.UpdateUser(updateModel, username);
-
-            if (updated.UserName == null || updated.UserName.Length == 0)
+            try
             {
-                return BadRequest(new { Message = "Email already exists. Please try again" });
-            }
+                //get updated user
+                var updated = _userService.UpdateUser(updateModel, username);
 
-            if (updated != null)
+                if (updated.UserName == null || updated.UserName.Length == 0)
+                {
+                    return BadRequest(new { Message = "Email already exists. Please try again" });
+                }
+
+                if (updated != null)
+                {
+                    var tokenString = GenerateJSONWebToken(updated);
+                    return Ok(new { token = tokenString, user = updated });
+                }
+
+                //error
+                return BadRequest(new { Message = "Error occured while updating user profile. Please try again" });
+            }
+            catch (Exception e)
             {
-                var tokenString = GenerateJSONWebToken(updated);
-                return Ok(new { token = tokenString, user = updated });
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-
-            //error
-            return BadRequest(new { Message = "Error occured while updating user profile. Please try again" });
         }
 
         [HttpGet("{username}")]
         public IActionResult GetUser(string username)
         {
-            var user = _userService.GetUser(e => e.UserName == username, false);
-            var userDto = ModelMapper.ConvertProfileToDTO(user); 
-            return Ok(userDto);
+            try
+            {
+                var user = _userService.GetUser(e => e.UserName == username, false);
+                var userDto = ModelMapper.ConvertProfileToDTO(user);
+                return Ok(userDto);
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet("GetUsers/{name}")]
         public IActionResult GetUsers(string? name, [FromHeader] string authorization)
         {
-            string username = JwtHelper.GetUsernameFromRequest(Request);
-            var userList = _userService.GetAll(name.ToUpper().Trim(), username);
-            return Ok(new { data = userList });
+            try
+            {
+                string username = JwtHelper.GetUsernameFromRequest(Request);
+                var userList = _userService.GetAll(name.ToUpper().Trim(), username);
+                return Ok(new { data = userList });
+            }
+            catch (Exception e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost("profileStatus")]
         public IActionResult UpdateProfileStatus([FromBody] UpdateProfileStatus Obj)
         {
-            var User = _userService.GetUser(e => e.UserName.Equals(Obj.UserName));
-            if (User == null)
+            try
             {
-                return BadRequest("User does not exists.");
+                var User = _userService.GetUser(e => e.UserName.Equals(Obj.UserName));
+                if (User == null)
+                {
+                    return BadRequest("User does not exists.");
+                }
+
+                var status = _userService.UpdateProfileStatus(Obj.Status, User);
+
+                if (status.Length == 0)
+                {
+                    return BadRequest("Invalid Status");
+                }
+
+                return Ok(new { status });
             }
-
-            var status = _userService.UpdateProfileStatus(Obj.Status, User);
-
-            if (status.Length == 0)
+            catch (Exception e)
             {
-                return BadRequest("Invalid Status");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
-
-            return Ok(new { status });
         }
 
         #endregion

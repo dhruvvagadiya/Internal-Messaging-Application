@@ -36,223 +36,257 @@ namespace ChatApp.Infrastructure.ServiceImplementation
 
         public IEnumerable<GroupRecentModel> GetRecentList (int UserId)
         {
-            //1. get all group Ids in which user is
-            var GroupList = _context.GroupMembers.Where(e => e.UserId == UserId).Include("Group").Select(e => e.Group);
-
-            IList<GroupRecentModel> returnObj = new List<GroupRecentModel>();
-
-            //2. GetLast msg for each group
-            foreach (var Group in GroupList)
+            try
             {
-                var newObj = new GroupRecentModel();
+                //1. get all group Ids in which user is
+                var GroupList = _context.GroupMembers.Where(e => e.UserId == UserId).Include("Group").Select(e => e.Group);
 
-                newObj.Group = new GroupDTO()
+                IList<GroupRecentModel> returnObj = new List<GroupRecentModel>();
+
+                //2. GetLast msg for each group
+                foreach (var Group in GroupList)
                 {
-                    Id = Group.Id,
-                    Name = Group.Name,
-                    CreatedAt = Group.CreatedAt,
-                    UpdatedAt = Group.UpdatedAt,
-                    ImageUrl = Group.ImageUrl,
-                    Description = Group.Description,
-                    CreatedBy = _context.Profiles.First(e => e.Id == Group.CreatedBy).UserName
-                };
+                    var newObj = new GroupRecentModel();
 
-                var LastChat = _context.GroupChats.Where(e => e.GroupId == Group.Id).OrderBy(e => e.CreatedAt).LastOrDefault();
+                    newObj.Group = new GroupDTO()
+                    {
+                        Id = Group.Id,
+                        Name = Group.Name,
+                        CreatedAt = Group.CreatedAt,
+                        UpdatedAt = Group.UpdatedAt,
+                        ImageUrl = Group.ImageUrl,
+                        Description = Group.Description,
+                        CreatedBy = _context.Profiles.First(e => e.Id == Group.CreatedBy).UserName
+                    };
 
-                if (LastChat != null)
-                {
-                    newObj.LastMsgTime = LastChat.CreatedAt;
+                    var LastChat = _context.GroupChats.Where(e => e.GroupId == Group.Id).OrderBy(e => e.CreatedAt).LastOrDefault();
 
-                    if (LastChat.FilePath != null) newObj.LastMessage = "file";
-                    else newObj.LastMessage = LastChat.Content;
+                    if (LastChat != null)
+                    {
+                        newObj.LastMsgTime = LastChat.CreatedAt;
 
-                    var Sender = _context.Profiles.FirstOrDefault(e => e.Id == LastChat.MessageFrom);
+                        if (LastChat.FilePath != null) newObj.LastMessage = "file";
+                        else newObj.LastMessage = LastChat.Content;
 
-                    newObj.FirstName = Sender.FirstName;
-                    newObj.LastName = Sender.LastName;
-                    newObj.ImageUrl = Sender.ImageUrl;
+                        var Sender = _context.Profiles.FirstOrDefault(e => e.Id == LastChat.MessageFrom);
+
+                        newObj.FirstName = Sender.FirstName;
+                        newObj.LastName = Sender.LastName;
+                        newObj.ImageUrl = Sender.ImageUrl;
+                    }
+
+                    returnObj.Add(newObj);
                 }
 
-                returnObj.Add(newObj);
+                //sort by time
+                returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList();
+
+                return returnObj;
             }
-
-            //sort by time
-            returnObj = returnObj.OrderByDescending(e => e.LastMsgTime).ToList();
-
-            return returnObj;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         //send message
         public GroupChatModel SendTextMessage(Profile Sender, int groupId, string content, int? RepliedTo)
         {
-
-            GroupChat chat = new GroupChat();
-
-            chat.GroupId = groupId;
-            chat.MessageFrom = Sender.Id;
-            chat.Content = content;
-            chat.CreatedAt = DateTime.Now;
-            chat.UpdatedAt = DateTime.Now;
-            chat.Type = "text";
-
-            if (RepliedTo != null)
+            try
             {
-                chat.RepliedTo = RepliedTo;
+                GroupChat chat = new GroupChat();
+
+                chat.GroupId = groupId;
+                chat.MessageFrom = Sender.Id;
+                chat.Content = content;
+                chat.CreatedAt = DateTime.Now;
+                chat.UpdatedAt = DateTime.Now;
+                chat.Type = "text";
+
+                if (RepliedTo != null)
+                {
+                    chat.RepliedTo = RepliedTo;
+                }
+                else
+                {
+                    chat.RepliedTo = -1;
+                }
+
+                //save chat
+                _context.GroupChats.Add(chat);
+                _context.SaveChanges();
+
+                string ReplyMsg = "";
+                if (RepliedTo != null)
+                {
+                    ReplyMsg = _context.GroupChats.FirstOrDefault(e => e.Id == RepliedTo).Content;
+                }
+
+                //return chatModel
+                var returnObj = new GroupChatModel()
+                {
+                    Id = chat.Id,
+                    GroupId = chat.GroupId,
+                    MessageFrom = Sender.UserName,
+                    Content = content,
+                    Type = "text",
+                    CreatedAt = chat.CreatedAt,
+                    UpdatedAt = chat.UpdatedAt,
+                    RepliedTo = ReplyMsg,
+                    FirstName = Sender.FirstName,
+                    LastName = Sender.LastName,
+                    ImageUrl = Sender.ImageUrl
+                };
+
+                return returnObj;
             }
-            else
+            catch (Exception)
             {
-                chat.RepliedTo = -1;
+                throw;
             }
-
-            //save chat
-            _context.GroupChats.Add(chat);
-            _context.SaveChanges();
-
-            string ReplyMsg = "";
-            if (RepliedTo != null)
-            {
-                ReplyMsg = _context.GroupChats.FirstOrDefault(e => e.Id == RepliedTo).Content;
-            }
-
-            //return chatModel
-            var returnObj = new GroupChatModel()
-            {
-                Id = chat.Id,
-                GroupId = chat.GroupId,
-                MessageFrom = Sender.UserName,
-                Content = content,
-                Type = "text",
-                CreatedAt = chat.CreatedAt,
-                UpdatedAt = chat.UpdatedAt,
-                RepliedTo = ReplyMsg,
-                FirstName = Sender.FirstName,
-                LastName = Sender.LastName,
-                ImageUrl = Sender.ImageUrl
-            };
-
-            return returnObj;
         }
 
         //send files
         public GroupChatModel SendFileMessage(Profile Sender, GroupChatSendModel SendChat)
         {
-            //var tmp = SendChat.File.ContentType;
-            //save file
-            var file = SendChat.File;
-
-            string wwwRootPath = _hostEnvironment.WebRootPath;
-
-            string fileName = Guid.NewGuid().ToString(); //new generated name of the file
-            var extension = Path.GetExtension(file.FileName); // extension of the file
-
-            var pathToSave = Path.Combine(wwwRootPath, @"GroupChat");
-
-            var dbPath = Path.Combine(pathToSave, fileName + extension);
-            using (var fileStreams = new FileStream(dbPath, FileMode.Create))
+            try
             {
-                file.CopyTo(fileStreams);
+                //var tmp = SendChat.File.ContentType;
+                //save file
+                var file = SendChat.File;
+
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+
+                string fileName = Guid.NewGuid().ToString(); //new generated name of the file
+                var extension = Path.GetExtension(file.FileName); // extension of the file
+
+                var pathToSave = Path.Combine(wwwRootPath, @"GroupChat");
+
+                var dbPath = Path.Combine(pathToSave, fileName + extension);
+                using (var fileStreams = new FileStream(dbPath, FileMode.Create))
+                {
+                    file.CopyTo(fileStreams);
+                }
+
+                //save chat in Database
+
+                GroupChat chat = new GroupChat();
+
+                chat.GroupId = SendChat.GroupId;
+                chat.MessageFrom = Sender.Id;
+                chat.Content = SendChat.Content;
+                chat.CreatedAt = DateTime.Now;
+                chat.UpdatedAt = DateTime.Now;
+                chat.Type = file.ContentType.Split('/')[0];
+                chat.FilePath = fileName + extension;
+
+                if (SendChat.RepliedTo != null)
+                {
+                    chat.RepliedTo = SendChat.RepliedTo;
+                }
+                else
+                {
+                    chat.RepliedTo = -1;
+                }
+
+                //save chat
+                _context.GroupChats.Add(chat);
+                _context.SaveChanges();
+
+
+                //convert to chatModel
+                string ReplyMsg = "";
+                if (SendChat.RepliedTo != null)
+                {
+                    ReplyMsg = _context.GroupChats.FirstOrDefault(e => e.Id == SendChat.RepliedTo).Content;
+                }
+
+                var returnObj = new GroupChatModel()
+                {
+                    Id = chat.Id,
+                    GroupId = chat.GroupId,
+                    MessageFrom = Sender.UserName,
+                    Content = chat.Content,
+                    Type = file.ContentType.Split('/')[0],
+                    CreatedAt = chat.CreatedAt,
+                    UpdatedAt = chat.UpdatedAt,
+                    RepliedTo = ReplyMsg,
+                    FilePath = fileName + extension,
+                    FirstName = Sender.FirstName,
+                    LastName = Sender.LastName,
+                    ImageUrl = Sender.ImageUrl
+                };
+
+                //return chatModel
+                return returnObj;
             }
-
-            //save chat in Database
-
-            GroupChat chat = new GroupChat();
-
-            chat.GroupId = SendChat.GroupId;
-            chat.MessageFrom = Sender.Id;
-            chat.Content = SendChat.Content;
-            chat.CreatedAt = DateTime.Now;
-            chat.UpdatedAt = DateTime.Now;
-            chat.Type = file.ContentType.Split('/')[0];
-            chat.FilePath = fileName + extension;
-
-            if (SendChat.RepliedTo != null)
+            catch (Exception)
             {
-                chat.RepliedTo = SendChat.RepliedTo;
+                throw;
             }
-            else
-            {
-                chat.RepliedTo = -1;
-            }
-
-            //save chat
-            _context.GroupChats.Add(chat);
-            _context.SaveChanges();
-
-
-            //convert to chatModel
-            string ReplyMsg = "";
-            if (SendChat.RepliedTo != null)
-            {
-                ReplyMsg = _context.GroupChats.FirstOrDefault(e => e.Id == SendChat.RepliedTo).Content;
-            }
-
-            var returnObj = new GroupChatModel()
-            {
-                Id = chat.Id,
-                GroupId = chat.GroupId,
-                MessageFrom = Sender.UserName,
-                Content = chat.Content,
-                Type = file.ContentType.Split('/')[0],
-                CreatedAt = chat.CreatedAt,
-                UpdatedAt = chat.UpdatedAt,
-                RepliedTo = ReplyMsg,
-                FilePath = fileName + extension,
-                FirstName = Sender.FirstName,
-                LastName = Sender.LastName,
-                ImageUrl = Sender.ImageUrl
-            };
-
-            //return chatModel
-            return returnObj;
         }
 
         //chat list of group
         public IEnumerable<GroupChatModel> GetChatList(int GroupId)
         {
-            var ChatList = _context.GroupChats.Where(e => e.GroupId == GroupId).OrderBy(e => e.CreatedAt).Include("MessageFromUser");
-
-            IList<GroupChatModel> returnObj = new List<GroupChatModel>();
-            foreach(var GroupChat in  ChatList)
+            try
             {
-                var newObj = ConvertChatToChatModel(GroupChat);
+                var ChatList = _context.GroupChats.Where(e => e.GroupId == GroupId).OrderBy(e => e.CreatedAt).Include("MessageFromUser");
 
-                if(GroupChat.RepliedTo != -1)
+                IList<GroupChatModel> returnObj = new List<GroupChatModel>();
+                foreach (var GroupChat in ChatList)
                 {
-                    newObj.RepliedTo = _context.GroupChats.FirstOrDefault(e => e.Id == GroupChat.RepliedTo).Content;
+                    var newObj = ConvertChatToChatModel(GroupChat);
+
+                    if (GroupChat.RepliedTo != -1)
+                    {
+                        newObj.RepliedTo = _context.GroupChats.FirstOrDefault(e => e.Id == GroupChat.RepliedTo).Content;
+                    }
+
+                    returnObj.Add(newObj);
                 }
 
-                returnObj.Add(newObj);
+                return returnObj;
             }
-
-            return returnObj;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
 
         //for dashBoard
         public IEnumerable<ChatDataModel> GetGroupChatData(int UserId)
         {
-            //1. Get Id of Groups of which user is part of
-            IEnumerable<ChatDataModel> list = new List<ChatDataModel>();
-
-            var Ids = _context.GroupMembers.Where(e => e.UserId == UserId).Select(e => e.GroupId).Distinct().ToList();
-
-            foreach(int GroupId in Ids)
+            try
             {
-                //group by and then count
-                var ChatList = _context.GroupChats.Where(e => e.GroupId == GroupId).GroupBy(e => e.CreatedAt.Date).Select(
-                    e => new ChatDataModel() { Date = e.Key.ToString("yyyy-MM-dd"), Value = e.Count() }).ToList();
+                //1. Get Id of Groups of which user is part of
+                IEnumerable<ChatDataModel> list = new List<ChatDataModel>();
 
+                var Ids = _context.GroupMembers.Where(e => e.UserId == UserId).Select(e => e.GroupId).Distinct().ToList();
 
-                list = list.Concat(ChatList);
-
-                list = list.GroupBy(e => e.Date).Select(e => new ChatDataModel()
+                foreach (int GroupId in Ids)
                 {
-                    Date = e.Key,
-                    Value = e.Sum(el => el.Value)
-                }).OrderBy(e => e.Date);
-            }
+                    //group by and then count
+                    var ChatList = _context.GroupChats.Where(e => e.GroupId == GroupId).GroupBy(e => e.CreatedAt.Date).Select(
+                        e => new ChatDataModel() { Date = e.Key.ToString("yyyy-MM-dd"), Value = e.Count() }).ToList();
 
-            return list;
+
+                    list = list.Concat(ChatList);
+
+                    list = list.GroupBy(e => e.Date).Select(e => new ChatDataModel()
+                    {
+                        Date = e.Key,
+                        Value = e.Sum(el => el.Value)
+                    }).OrderBy(e => e.Date);
+                }
+
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
 

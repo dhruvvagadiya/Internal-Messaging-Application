@@ -43,8 +43,15 @@ namespace ChatApp.Infrastructure.ServiceImplementation
         #region Methods
         public IEnumerable<AdminProfileDTO> GetAll()
         {
-            var returnObj = _context.Profiles.Where(e => e.IsDeleted == 0).Include("UserDesignation").Select(e => ConvertToDto(e)).ToList();
-            return returnObj;
+            try
+            {
+                var returnObj = _context.Profiles.Where(e => e.IsDeleted == 0).Include("UserDesignation").Select(e => ConvertToDto(e)).ToList();
+                return returnObj;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public AdminProfileDTO AddUser(RegisterModel regModel, string salt)
