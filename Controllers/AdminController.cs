@@ -84,6 +84,17 @@ namespace ChatApp.Controllers
         {
             try
             {
+
+                //check first  ceo -> can create all   cto -> all except ceo,cto
+                var Designation = JwtHelper.GetRoleFromRequest(Request);
+                if (Designation.Equals("CTO"))
+                {
+                    if (obj.DesignationId == DesignationType.CEO || obj.DesignationId == DesignationType.CTO)
+                    {
+                        return Unauthorized();
+                    }
+                }
+
                 var User = _userService.GetUser(e => e.UserName.Equals(obj.UserName));
 
                 if (User == null)

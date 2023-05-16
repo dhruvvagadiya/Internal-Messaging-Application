@@ -1,20 +1,16 @@
 <div class="row chat-wrapper" *ngIf="loggedInUser">
   <div class="col-md-12">
-    <div class="card">
-      <div class="card-body">
-        <div class="row position-relative">
-          
-          <div class="col-lg-4 chat-aside border-lg-right">
-            <!-- <app-chat-sidebar [user]="loggedInUser" [recentChats]="recentChats"></app-chat-sidebar> -->
-            <app-chat-sidebar [user]="loggedInUser"></app-chat-sidebar>
-          </div>
 
-          <div class="col-lg-8 chat-content">
-            <router-outlet></router-outlet>
-          </div>
+    <div class="row position-relative">
 
-        </div>
+      <div class="col-lg-4 chat-aside border-lg-right">
+        <app-chat-sidebar [user]="loggedInUser"></app-chat-sidebar>
       </div>
+
+      <div class="col-lg-8 chat-content">
+        <router-outlet></router-outlet>
+      </div>
+
     </div>
   </div>
 </div>
