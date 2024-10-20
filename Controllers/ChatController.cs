@@ -31,8 +31,7 @@ namespace ChatApp.Controllers
         #region EndPoints
 
         [HttpGet]
-        [Route("{toUser}")]
-        public IActionResult GetHistoryWithUser (string toUser)
+        public IActionResult GetHistoryWithUser ([FromQuery] string toUser)
         {
             try
             {
@@ -94,37 +93,32 @@ namespace ChatApp.Controllers
         }
 
         //add message to DB
-        [HttpPost]
-        [Route("{toUser}")]
-        public async Task<IActionResult> SendMessage(string toUser, [FromForm] ChatSendModel SendChat)
+        [HttpPost()]
+        public async Task<IActionResult> SendMessage([FromForm] ChatSendModel SendChat)
         {
             try
             {
                 string fromUser = JwtHelper.GetUsernameFromRequest(Request);
-                //string fromUser = "dhruvPatel";
 
                 //checking 
                 if (fromUser == null) { return BadRequest(); }
 
-                if (_userService.GetUser(e => e.UserName == fromUser) == null || _userService.GetUser(e => e.UserName == toUser) == null)
+                if (_userService.GetUser(e => e.UserName == fromUser) == null || _userService.GetUser(e => e.UserName == SendChat.Receiver) == null)
                 {
                     return BadRequest();
-                }
-
-                //validate both sender and receiver
-                if (SendChat.Sender != fromUser || SendChat.Receiver != toUser) { return BadRequest(); }
+                } 
 
                 //if both content and file are not provided
                 if (SendChat.Content == null && SendChat.File == null) { return BadRequest(); }
 
                 if (SendChat.Type == "text" && SendChat.Content != null)
                 {
-                    var sentMessage = await _chatService.SendTextMessage(fromUser, toUser, SendChat.Content, SendChat.RepliedTo);
+                    var sentMessage = await _chatService.SendTextMessage(fromUser, SendChat.Receiver, SendChat.Content, SendChat.RepliedTo);
                     return Ok(sentMessage);
                 }
                 else if (SendChat.Type == "file" && SendChat.File != null)
                 {
-                    var sentMessage = await _chatService.SendFileMessage(fromUser, toUser, SendChat);
+                    var sentMessage = await _chatService.SendFileMessage(fromUser, SendChat.Receiver, SendChat);
                     return Ok();
                 }
 
@@ -136,11 +130,15 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpGet("data/{UserName}")]
-        public IActionResult GetChatData(string UserName)
+        [HttpGet("data")]
+        public IActionResult GetChatData()
         {
             try
             {
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+
+                if (UserName == null) return BadRequest();
+
                 var UserId = _userService.GetIdFromUsername(UserName);
 
                 if (UserId == -1) return BadRequest();

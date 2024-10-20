@@ -8,23 +8,23 @@ export class NotificationService {
     
     constructor(private http : HttpClient) { }
     
-    public GetNotifications(userName : string){
-        return this.http.get(environment.apiUrl + '/notification/' + userName);
+    public GetNotifications(){
+        return this.http.get(environment.apiUrl + '/notification');
     }
 
     public AddNotification(data : Notification){
         return this.http.post(environment.apiUrl + '/notification', data);
     }
 
-    public ViewAll(userName : string){
-        return this.http.get(environment.apiUrl + '/notification/view/' + userName);
+    public ViewAll(){
+        return this.http.get(environment.apiUrl + '/notification/view');
     }
 
     public MarkAsSeen(id : number){
         return this.http.get(environment.apiUrl + '/notification/seen/' + id);
     }
 
-    public ClearAll(userName : string){
-        return this.http.get(environment.apiUrl + '/notification/clear/' + userName);
+    public ClearAll(){
+        return this.http.get(environment.apiUrl + '/notification/clear');
     }
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
@@ -11,15 +11,15 @@ export class ChatService {
         return this.http.get(environment.apiUrl + "/chat/recent");
     }
 
-    sendChat(username : string, data : FormData) {
-        return this.http.post(environment.apiUrl + "/chat/" + username, data);
+    sendChat(data : FormData) {
+        return this.http.post(environment.apiUrl + "/chat", data);
     }
 
     getChatWithUser(username : string) {
-        return this.http.get(environment.apiUrl + "/chat/" + username);
+        return this.http.get(environment.apiUrl + "/chat", {params : new HttpParams().append('toUser', username)});
     }
 
-    getChatData(username : string){
-        return this.http.get(environment.apiUrl + "/chat/data/" + username)
+    getChatData(){
+        return this.http.get(environment.apiUrl + "/chat/data");
     }
 }

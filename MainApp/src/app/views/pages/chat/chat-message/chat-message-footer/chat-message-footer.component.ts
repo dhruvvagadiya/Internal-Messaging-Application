@@ -70,7 +70,6 @@ export class ChatMessageFooterComponent implements OnInit {
     if (this.file) {
       formData.append("file", this.file);
     }
-    formData.append("sender", this.user.userName);
     formData.append("receiver", this.selectedUser.userName);
     formData.append("type", this.file ? "file" : "text");
     formData.append("content", event.value);
@@ -79,7 +78,7 @@ export class ChatMessageFooterComponent implements OnInit {
       formData.append("repliedTo", "" + this.replyMsgId);
     }
 
-    this.chatService.sendChat(this.selectedUser.userName, formData).subscribe(
+    this.chatService.sendChat(formData).subscribe(
       () => {
         this.signalrService.hubConnection.invoke('GetRecentChat', this.user.userName, this.selectedUser.userName);
       },
@@ -123,7 +122,9 @@ export class ChatMessageFooterComponent implements OnInit {
     this.modalService.open(content, {}).result.then((result) => {}).catch((err) => {});
   }
 
+  // ************************************************************************************************************
   //for audio
+  
   isRecording = false;
   recordedTime;
   blobUrl;
@@ -170,7 +171,7 @@ export class ChatMessageFooterComponent implements OnInit {
         formData.append("repliedTo", "" + this.replyMsgId);
       }
   
-      this.chatService.sendChat(this.selectedUser.userName, formData).subscribe(
+      this.chatService.sendChat(formData).subscribe(
         () => {
           this.signalrService.hubConnection.invoke('GetRecentChat', this.user.userName, this.selectedUser.userName);
         },

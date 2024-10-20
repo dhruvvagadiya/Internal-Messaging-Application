@@ -161,7 +161,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Content = content,
                     Type = "text",
                     CreatedAt = chat.CreatedAt,
-                    UpdatedAt = chat.UpdatedAt,
                     RepliedTo = ReplyMsg
                 };
 
@@ -241,7 +240,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Content = chat.Content,
                     Type = file.ContentType.Split('/')[0],
                     CreatedAt = chat.CreatedAt,
-                    UpdatedAt = chat.UpdatedAt,
                     RepliedTo = ReplyMsg,
                     FilePath = fileName + extension,
                 };
@@ -288,7 +286,6 @@ namespace ChatApp.Infrastructure.ServiceImplementation
                     Type = chat.Type,
                     Content = chat.Content,
                     CreatedAt = chat.CreatedAt,
-                    UpdatedAt = chat.UpdatedAt,
                     SeenByReceiver = chat.SeenByReceiver,
                     FilePath = chat.FilePath,
                 };

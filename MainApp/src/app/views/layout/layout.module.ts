@@ -8,7 +8,7 @@ import { NavbarComponent } from "./navbar/navbar.component";
 import { SidebarComponent } from "./sidebar/sidebar.component";
 import { FooterComponent } from "./footer/footer.component";
 
-import { ContentAnimateDirective } from "../../core/content-animate/content-animate.directive";
+import { ContentAnimateDirective } from "../../core/Directives/content-animate/content-animate.directive";
 
 import {
   NgbDropdownModule,

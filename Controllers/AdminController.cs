@@ -13,7 +13,6 @@ namespace ChatApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -27,7 +26,8 @@ namespace ChatApp.Controllers
             _passwordHelp = new PasswordHelper();
         }
 
-        [HttpGet("all")]
+        [HttpGet]
+        [Authorize]
         public IActionResult GetEmployees()
         {
             try
@@ -41,7 +41,7 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         [Authorize(Policy = "Admin")]
         public IActionResult CreateEmployee([FromBody] RegisterModel registerModel)
         {
@@ -78,7 +78,7 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpPost("update")]
+        [HttpPut]
         [Authorize(Policy = "admin")]
         public async Task<IActionResult> UpdateEmployee([FromBody] AdminProfileDTO obj)
         {
@@ -113,7 +113,7 @@ namespace ChatApp.Controllers
         }
 
         [Authorize(Policy = "admin")]
-        [HttpDelete("delete")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteEmployee([FromQuery] string UserName)
         {
             try

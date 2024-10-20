@@ -7,7 +7,6 @@ namespace ChatApp.Models.Group
     {
 
         public int? GroupId { get; set; }
-        [Required]
         public string UserName { get; set; }
 
         [Required]

@@ -17,8 +17,14 @@ export class ChatMessageHeaderComponent implements OnInit {
 
 
     @Input() selectedUser : LoggedInUser
+    user : LoggedInUser
 
     ngOnInit() {
+
+        this.userService.getUserSubject().subscribe((e) => {
+            this.user = e;
+        });
+
         this.signalrService.hubConnection.on("updateProfileStatus", (status : string, username : string) => {
             if(this.selectedUser.userName === username){
                 this.selectedUser.profileStatus = status;

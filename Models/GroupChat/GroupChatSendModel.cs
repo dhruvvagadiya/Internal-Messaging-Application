@@ -6,7 +6,6 @@ namespace ChatApp.Models.GroupChat
 {
     public class GroupChatSendModel
     {
-        [Required]
         public string Sender { get; set; }
         [Required]
         public int GroupId { get; set; }

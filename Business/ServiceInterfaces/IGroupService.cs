@@ -20,5 +20,7 @@ namespace ChatApp.Business.ServiceInterfaces
         IEnumerable<GroupMemberDTO> GetAllMembers(int GroupId);
 
         Group GetGroup(Expression<Func<Group, bool>> filter);
+        bool IsaMemberOf(int UserId, int GroupId);
+        bool Exists(int GroupId);
     }
 }

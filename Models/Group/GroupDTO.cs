@@ -1,6 +1,4 @@
-﻿using ChatApp.Context.EntityClasses;
-using System.ComponentModel.DataAnnotations.Schema;
-using System;
+﻿using System;
 
 namespace ChatApp.Models.Group
 {

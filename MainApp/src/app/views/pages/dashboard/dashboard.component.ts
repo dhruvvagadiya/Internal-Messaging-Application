@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
   }
 
   getChatData(){
-    this.chatService.getChatData(this.user.sub).subscribe(
+    this.chatService.getChatData().subscribe(
       (e : []) => {
         this.dataSeries = e;           
         this.initChartData();
@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit {
   }
 
   GetGroupChatData(){
-    this.groupChatService.getChatData(this.user.sub).subscribe(
+    this.groupChatService.getChatData().subscribe(
       (e : []) => {
         this.groupDataSeries = e;
         this.initChartData();

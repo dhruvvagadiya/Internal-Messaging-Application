@@ -291,6 +291,7 @@ namespace ChatApp.Hubs
                 {
                     var notificationDto = ModelMapper.NotificationToDTO(notification);
                     await Clients.Client(rConnection.SignalId).SendAsync("addNotification", notificationDto);
+                    await Clients.Client(rConnection.SignalId).SendAsync("leaveFromGroup", groupId, username);
                 }
             }
 

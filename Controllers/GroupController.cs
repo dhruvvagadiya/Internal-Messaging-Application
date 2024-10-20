@@ -3,7 +3,6 @@ using ChatApp.Business.ServiceInterfaces;
 using ChatApp.Hubs;
 using ChatApp.Models.Group;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -15,7 +14,6 @@ namespace ChatApp.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    //[AllowAnonymous]
     public class GroupController : ControllerBase
     {
         #region Fields
@@ -33,15 +31,15 @@ namespace ChatApp.Controllers
 
         #region End points 
 
-        [HttpPost("Create")]
+        [HttpPost]
         public IActionResult CreateGroup([FromForm] CreateGroup Obj)
         {
             try
             {
-                if (Obj.GroupName.Length == 0)
-                {
-                    return BadRequest("Cannot create a group without a name");
-                }
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+
+                if (UserName == null) return BadRequest();
+                Obj.UserName = UserName;
 
                 var UserId = _userService.GetIdFromUsername(Obj.UserName);
 
@@ -54,18 +52,23 @@ namespace ChatApp.Controllers
 
                 return Ok(GroupDto);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
-        [HttpPut("Update")]
+        [HttpPut]
         public IActionResult UpdateGroup([FromForm] CreateGroup Obj)
         {
             try
             {
                 if (Obj.GroupId == 0) return BadRequest("Invalid Group Id");
+
+
+                //validate
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if (UserName == null || !Obj.UserName.Equals(UserName)) return BadRequest();
 
                 //only creator can update group details
                 var UserId = _userService.GetIdFromUsername(Obj.UserName);
@@ -91,52 +94,7 @@ namespace ChatApp.Controllers
         }
 
         [HttpPost("Add")]
-        public IActionResult AddUser([FromBody] AddUser AddUser)
-        {
-            try
-            {
-                var CurGroup = _groupService.GetGroup(e => e.Id == AddUser.GroupId);
-                var UserId = _userService.GetIdFromUsername(AddUser.UserName);
-
-                if (UserId == -1 || CurGroup == null)
-                {
-                    return NotFound();
-                }
-
-                var CurUserName = JwtHelper.GetUsernameFromRequest(Request);
-                var CurUserId = _userService.GetIdFromUsername(CurUserName);
-
-                //only creator can add/remove user
-                if (CurGroup.CreatedBy != CurUserId)
-                {
-                    return Unauthorized();
-                }
-
-                var obj = _groupService.AddUser(UserId, CurGroup);
-                if (obj != null)
-                {
-                    var returnObj = new GroupMemberDTO()
-                    {
-                        FirstName = obj.User.FirstName,
-                        LastName = obj.User.LastName,
-                        UserName = obj.User.UserName,
-                        ImageUrl = obj.User.ImageUrl,
-                        AddedAt = obj.AddedAt
-                    };
-
-                    return Ok(returnObj);
-                }
-
-                return BadRequest("Can not add user to this group");
-            }
-            catch (Exception e)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
-        }
-
-        [HttpPost("Add/{GroupId}")]
-        public IActionResult AddUsers(int GroupId, [FromBody] string[] userNames)
+        public IActionResult AddUsers([FromQuery] int GroupId, [FromBody] string[] userNames)
         {
             try
             {
@@ -220,11 +178,13 @@ namespace ChatApp.Controllers
         }
 
         //get all group to which user belongs
-        [HttpGet("{UserName}")]
-        public IActionResult GetAll(string UserName)
+        [HttpGet]
+        public IActionResult GetAll()
         {
             try
             {
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+
                 if (UserName == null || UserName.Length == 0)
                 {
                     return BadRequest();
@@ -248,14 +208,23 @@ namespace ChatApp.Controllers
         }
 
         //get all members of a particular group
-        [HttpGet("all/{Id}")]
+        [HttpGet("{Id}")]
         public IActionResult GetAllMembers(int Id)
         {
             try
             {
-                if (Id == 0)
+                if (!_groupService.Exists(Id))
                 {
-                    return NotFound("Group does not exists");
+                    return BadRequest("Group does not exists!");
+                }
+
+                //check if user is a member of the group
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                var Sender = _userService.GetUser(e => e.UserName == UserName);
+
+                if (!_groupService.IsaMemberOf(Sender.Id, Id))
+                {
+                    return BadRequest("User is not a part of the group");
                 }
 
                 var Members = _groupService.GetAllMembers(Id);
@@ -267,8 +236,8 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpDelete("{Id}")]
-        public IActionResult DeleteGroup (int Id)
+        [HttpDelete]
+        public IActionResult DeleteGroup ([FromQuery] int Id)
         {
             try
             {

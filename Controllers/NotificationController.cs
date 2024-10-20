@@ -30,11 +30,14 @@ namespace ChatApp.Controllers
 
         #region End points 
 
-        [HttpGet("{UserName}")]
-        public IActionResult GetAllNotification(string UserName)
+        [HttpGet()]
+        public IActionResult GetAllNotification()
         {
             try
             {
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if (UserName == null) return BadRequest();
+
                 var UserId = _userService.GetIdFromUsername(UserName);
                 if (UserId == -1)
                 {
@@ -56,6 +59,8 @@ namespace ChatApp.Controllers
             try
             {
                 var UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if (UserName == null) return BadRequest();
+
                 var UserId = _userService.GetIdFromUsername(UserName);
 
                 if (UserId == -1)
@@ -73,11 +78,14 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpGet("view/{UserName}")]
-        public IActionResult MakeSeen(string UserName)
+        [HttpGet("view")]
+        public IActionResult MakeSeen()
         {
             try
             {
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if (UserName == null) return BadRequest();
+
                 var UserId = _userService.GetIdFromUsername(UserName);
 
                 if (UserId == -1)
@@ -94,11 +102,14 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpGet("clear/{UserName}")]
-        public IActionResult ClearNotifications(string UserName)
+        [HttpGet("clear")]
+        public IActionResult ClearNotifications()
         {
             try
             {
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if (UserName == null) return BadRequest();
+
                 var UserId = _userService.GetIdFromUsername(UserName);
 
                 if (UserId == -1)
@@ -120,7 +131,25 @@ namespace ChatApp.Controllers
         {
             try
             {
-                _notificationService.MarkAsSeen(Id);
+                //check if notification belongs to current user
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if (UserName == null) return BadRequest();
+
+                int userId = _userService.GetIdFromUsername(UserName);
+                if(userId == -1)
+                {
+                    return BadRequest();
+                }
+
+                var notification = _notificationService.GetNotification(Id);
+
+                if(notification == null || notification.UserId != userId)
+                {
+                    return Unauthorized();
+                }
+
+                _notificationService.MarkAsSeen(notification);
+
                 return Ok();
             }
             catch (Exception e)

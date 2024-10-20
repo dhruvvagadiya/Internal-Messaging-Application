@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AddUser } from '../models/Group/add-user';
@@ -11,15 +11,15 @@ export class GroupService {
     }
     
     createGroup(data : FormData) {
-        return this.http.post(environment.apiUrl + "/group/create", data);
+        return this.http.post(environment.apiUrl + "/group", data);
     }
 
     updateGroup(data : FormData) {
-        return this.http.put(environment.apiUrl + "/group/update", data);
+        return this.http.put(environment.apiUrl + "/group", data);
     }
 
     addMembers(selectedUsers : LoggedInUser[], groupId : number){
-        return this.http.post(environment.apiUrl + "/group/add/" + groupId, selectedUsers);
+        return this.http.post(environment.apiUrl + "/group/add", selectedUsers, {params : new HttpParams().append('groupId', groupId)});
     }
 
     removeMember(userName : string, groupId : number){
@@ -31,6 +31,6 @@ export class GroupService {
     }
 
     getMembers(groupId : number){
-        return this.http.get(environment.apiUrl + "/group/all/" + groupId);
+        return this.http.get(environment.apiUrl + "/group/" + groupId);
     }
 }

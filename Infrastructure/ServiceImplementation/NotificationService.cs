@@ -106,21 +106,32 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             }
         }
 
-        public void MarkAsSeen(int NotificationId)
+        public void MarkAsSeen(Notification notification)
         {
             try
             {
-                var notification = _context.Notifications.FirstOrDefault(e => e.Id == NotificationId);
-                if (notification != null)
-                {
-                    notification.IsSeen = 1;
-                    _context.SaveChanges();
-                }
+                 notification.IsSeen = 1;
+                _context.SaveChanges();
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+
+        public Notification GetNotification(int id)
+        {
+            try
+            {
+                var notification = _context.Notifications.FirstOrDefault(e => e.Id == id);
+                return notification;
+            }
+            catch(Exception e)
+            {
+                throw;
+            }
+
+
         }
         #endregion
 

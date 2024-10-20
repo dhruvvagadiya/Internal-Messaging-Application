@@ -24,7 +24,7 @@ export class StatusComponent implements OnInit {
 
     updateStatus(status : string){
 
-        this.userService.updateProfileStatus(status ,this.user.userName).subscribe(
+        this.userService.updateProfileStatus(status).subscribe(
             (e : {status : string}) => {
                 this.user.profileStatus = e.status;
                 this.signalrService.updateProfileStatus(status, this.user.userName);

@@ -1,5 +1,5 @@
-﻿using ChatApp.Models.Notification;
-using System.Collections;
+﻿using ChatApp.Context.EntityClasses;
+using ChatApp.Models.Notification;
 using System.Collections.Generic;
 
 namespace ChatApp.Business.ServiceInterfaces
@@ -14,6 +14,8 @@ namespace ChatApp.Business.ServiceInterfaces
 
         void DeleteNotifications(int UserID);
 
-        void MarkAsSeen(int NotificationId);
+        void MarkAsSeen(Notification notification);
+
+        Notification GetNotification(int id);
     }
 }

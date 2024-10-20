@@ -72,7 +72,6 @@ export class GroupMessageFooterComponent implements OnInit {
     if(this.file){
       formData.append('file', this.file);
     }
-    formData.append('sender', this.user.userName);
     formData.append('type', this.file ? 'file' : 'text');
     formData.append('content', event.value);
     formData.append('groupId', '' + this.selectedGroup.id);

@@ -2,10 +2,8 @@ import { Component, OnInit, TemplateRef } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { Notification } from "src/app/core/models/notification/notification";
 import { LoggedInUser } from "src/app/core/models/user/loggedin-user";
-import { AuthService } from "src/app/core/service/auth.service";
 import { NotificationService } from "src/app/core/service/notification.service";
 import { SignalrService } from "src/app/core/service/signalR.service";
-import { ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: "app-notification-component",
@@ -16,7 +14,6 @@ import { ViewEncapsulation } from '@angular/core';
 export class NotificationComponent implements OnInit {
   constructor(
     private notificationService: NotificationService,
-    private authService: AuthService,
     private signalrService: SignalrService,
     private modalService: NgbModal
   ) {}
@@ -25,10 +22,9 @@ export class NotificationComponent implements OnInit {
   notificationList: Notification[] = [];
 
   ngOnInit() {
-    this.user = this.authService.getLoggedInUserInfo();
 
     this.notificationService
-      .GetNotifications(this.user.sub)
+      .GetNotifications()
       .subscribe((e: Notification[]) => {
         this.notificationList = e;        
       });
@@ -48,7 +44,7 @@ export class NotificationComponent implements OnInit {
   viewAll() {
     if (this.notificationList.length > 0) {
 
-      this.notificationService.ViewAll(this.user.sub).subscribe((e) => {
+      this.notificationService.ViewAll().subscribe((e) => {
         //make seen all not
         this.notificationList.forEach((element) => {
           element.isSeen = 1;
@@ -68,7 +64,7 @@ export class NotificationComponent implements OnInit {
 
   clearAll() {
     if (this.notificationList.length > 0) {
-      this.notificationService.ClearAll(this.user.sub).subscribe((e) => {
+      this.notificationService.ClearAll().subscribe((e) => {
         this.notificationList = [];
       });
     }

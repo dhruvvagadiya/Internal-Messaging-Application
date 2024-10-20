@@ -41,7 +41,6 @@ export class CreateGroupModalComponent {
 
   createGroup(){
     var formdata = new FormData();
-    formdata.append('userName', this.user.userName);
     formdata.append('groupName', this.createGroupData.name);
     formdata.append('description', this.createGroupData.description);
 

@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from "@angular/core";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from "src/environments/environment";
 import { BehaviorSubject } from "rxjs";
 import { LoggedInUser } from "../models/user/loggedin-user";
@@ -24,8 +24,8 @@ export class UserService implements OnInit {
         return this.http.put(environment.apiUrl + "/user/" + username, formData);
     }
 
-    updateProfileStatus(status : string, userName : string){
-        return this.http.post(environment.apiUrl + "/user/profileStatus" , {status, userName});
+    updateProfileStatus(status : string){
+        return this.http.post(environment.apiUrl + "/user/change/", {}, {params : new HttpParams().append('status', status)});
     }
 
     // getImage(){

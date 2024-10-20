@@ -2,10 +2,7 @@
 using ChatApp.Context;
 using ChatApp.Context.EntityClasses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Net;

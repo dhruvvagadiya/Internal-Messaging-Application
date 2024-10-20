@@ -307,6 +307,19 @@ namespace ChatApp.Infrastructure.ServiceImplementation
             return _context.Groups.FirstOrDefault(filter);
         }
 
+        //check whether user is part of the group
+        public bool IsaMemberOf(int UserId, int GroupId)
+        {
+            var member = _context.GroupMembers.FirstOrDefault(e => e.GroupId == GroupId && e.UserId == UserId);
+            return member != null;
+        }
+
+        //check if group exists or not
+        public bool Exists(int GroupId)
+        {
+            return _context.Groups.FirstOrDefault(e => e.Id == GroupId) != null;
+        }
+
         #endregion
 
         #region P Methods

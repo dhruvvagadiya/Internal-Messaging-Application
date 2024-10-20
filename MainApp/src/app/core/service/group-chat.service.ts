@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Group } from '../models/Group/group';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class GroupChatService {
@@ -11,7 +11,6 @@ export class GroupChatService {
     
     constructor(private http : HttpClient) {
     }
-
     
     getRecentGroups() {
         return this.http.get(environment.apiUrl + "/groupchat/recent");
@@ -21,8 +20,8 @@ export class GroupChatService {
         return this.http.post(environment.apiUrl + "/groupchat/" + groupId, data);
     }
 
-    getChatData(username: string){
-        return this.http.get(environment.apiUrl + "/groupchat/data/" + username);
+    getChatData(){
+        return this.http.get(environment.apiUrl + "/groupchat/data");
     }
 
     getChatOfGroup(groupId : number) {

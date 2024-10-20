@@ -56,7 +56,7 @@ export class GroupSideBarComponent implements OnInit {
     });
 
     //leave from group -> remove from list
-    this.signalrService.hubConnection.on("leaveFromGroup", (groupId : number, userName : string) => {
+    this.signalrService.hubConnection.on("leaveFromGroup", (groupId : number, userName : string) => {      
       if(this.user.userName === userName){
         this.recentGroups = this.recentGroups.filter(e => e.group.id !== groupId);
       }

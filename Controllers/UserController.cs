@@ -53,6 +53,12 @@ namespace ChatApp.Controllers
         {
             try
             {
+                string tokenUName = JwtHelper.GetUsernameFromRequest(Request);
+                if (!tokenUName.Equals(username))
+                {
+                    return Unauthorized();
+                }
+
                 //get updated user
                 var updated = _userService.UpdateUser(updateModel, username);
 
@@ -92,7 +98,7 @@ namespace ChatApp.Controllers
         }
 
         [HttpGet("GetUsers/{name}")]
-        public IActionResult GetUsers(string? name, [FromHeader] string authorization)
+        public IActionResult GetUsers(string name)
         {
             try
             {
@@ -106,18 +112,24 @@ namespace ChatApp.Controllers
             }
         }
 
-        [HttpPost("profileStatus")]
-        public IActionResult UpdateProfileStatus([FromBody] UpdateProfileStatus Obj)
+        [HttpPost("change")]
+        public IActionResult UpdateProfileStatus([FromQuery] string Status)
         {
             try
             {
-                var User = _userService.GetUser(e => e.UserName.Equals(Obj.UserName));
+                string userName = JwtHelper.GetUsernameFromRequest(Request);
+                if (userName == null)
+                {
+                    return BadRequest();
+                }
+
+                var User = _userService.GetUser(e => e.UserName.Equals(userName));
                 if (User == null)
                 {
                     return BadRequest("User does not exists.");
                 }
 
-                var status = _userService.UpdateProfileStatus(Obj.Status, User);
+                var status = _userService.UpdateProfileStatus(Status, User);
 
                 if (status.Length == 0)
                 {

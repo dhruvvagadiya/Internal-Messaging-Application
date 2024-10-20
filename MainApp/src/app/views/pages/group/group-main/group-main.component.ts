@@ -42,6 +42,13 @@ export class GroupMainComponent implements OnInit {
       }     
     });
 
+        //leave from group -> remove from list
+      this.signalrService.hubConnection.on("leaveFromGroup", (groupId : number, userName : string) => {
+          if(this.user.userName === userName && this.selectedGroup.id === groupId){
+            this.groupChatService.groupChanged.next(null);
+          }
+      });
+
     this.userService.getUserSubject().subscribe(e => {
       this.user = e;
     });

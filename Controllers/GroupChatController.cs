@@ -11,7 +11,6 @@ namespace ChatApp.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    //[AllowAnonymous]
     public class GroupChatController : ControllerBase
     {
         #region Fields
@@ -59,6 +58,8 @@ namespace ChatApp.Controllers
 
             try
             {
+                SendChat.Sender = JwtHelper.GetUsernameFromRequest(Request);
+
                 if (GroupId != SendChat.GroupId)
                 {
                     return BadRequest();
@@ -113,6 +114,16 @@ namespace ChatApp.Controllers
                     return BadRequest("Group does not exists!");
                 }
 
+                //check if user is a member of the group
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                var Sender = _userService.GetUser(e => e.UserName == UserName);
+
+                if (!_groupChatService.IsaMemberOf(Sender.Id, GroupId))
+                {
+                    return BadRequest("User is not a part of the group");
+                }
+
+
                 var chatList = _groupChatService.GetChatList(GroupId);
 
                 return Ok(chatList);
@@ -124,11 +135,16 @@ namespace ChatApp.Controllers
         }
 
 
-        [HttpGet("data/{UserName}")]
-        public IActionResult GetGroupChatData(string UserName)
+        [HttpGet("data")]
+        public IActionResult GetGroupChatData()
         {
             try
             {
+                string UserName = JwtHelper.GetUsernameFromRequest(Request);
+                if(UserName == null) {
+                    return BadRequest();
+                }
+
                 int UserId = _userService.GetIdFromUsername(UserName);
 
                 if (UserId == -1)

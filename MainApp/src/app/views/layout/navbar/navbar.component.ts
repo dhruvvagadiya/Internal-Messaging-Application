@@ -58,7 +58,7 @@ export class NavbarComponent implements OnInit {
       e.preventDefault();
     }
 
-    this.userService.updateProfileStatus('offline', this.loggedInUser.userName).subscribe(e => {
+    this.userService.updateProfileStatus('offline').subscribe(e => {
       this.signalrService.updateProfileStatus('offline', this.loggedInUser.userName);
     });
 
